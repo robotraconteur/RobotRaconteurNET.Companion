@@ -33,6 +33,8 @@ using com.robotraconteur.robotics.tool;
 using com.robotraconteur.robotics.payload;
 using com.robotraconteur.device;
 using com.robotraconteur.device.isoch;
+using System.Security.Cryptography.X509Certificates;
+using MathNet.Numerics.Integration;
 
 namespace RobotRaconteur.Companion.Robot
 {
@@ -53,8 +55,8 @@ namespace RobotRaconteur.Companion.Robot
         protected double[] _joint_velocity = new double[0];
         protected double[] _joint_effort = new double[0];
 
-        protected double[] _position_command = new double[0];
-        protected double[] _velocity_command = new double[0];
+        protected double[] _position_command = null;
+        protected double[] _velocity_command = null;
 
         protected Pose[] _endpoint_pose;
         protected SpatialVelocity[] _endpoint_vel;
@@ -353,8 +355,8 @@ namespace RobotRaconteur.Companion.Robot
             rob_state.joint_position = (double[])_joint_position.Clone();
             rob_state.joint_velocity = (double[])_joint_velocity.Clone();
             rob_state.joint_effort = (double[])_joint_effort.Clone();
-            rob_state.joint_position_command = new double[0];
-            rob_state.joint_velocity_command = new double[0];
+            rob_state.joint_position_command = _position_command ??new double[0];
+            rob_state.joint_velocity_command = _velocity_command ?? new double[0];
             rob_state.kin_chain_tcp = _endpoint_pose ?? new Pose[0];
             rob_state.kin_chain_tcp_vel = _endpoint_vel ?? new SpatialVelocity[0];
             rob_state.trajectory_running = _trajectory_valid;
@@ -579,69 +581,36 @@ namespace RobotRaconteur.Companion.Robot
             {
                 case RobotCommandMode.jog:
                     {
-                        if (_jog_command_pos == null || now - _last_jog_command_pos > _jog_joint_timeout)
+                        
+                        if (_jog_trajectory_generator != null)
                         {
-                            if (_jog_completion_source != null)
-                            {
-                                _jog_completion_source.TrySetException(new OperationFailedException("Operation timed out"));
-                                _jog_completion_source = null;
-                            }
                             
-                            return true;
-                        }
+                            double jog_time = (now - _jog_start_time)/1000.0;
 
-                        bool within_tol = true;
-                        for (int i = 0; i < _joint_count; i++)
-                        {
-                            if (Math.Abs(_jog_command_pos[i] - _jog_current_pos[i]) > _jog_joint_tol)
-                            {
-                                within_tol = false;
+                            if (!_jog_trajectory_generator.GetCommand(jog_time, out var jog_command))
+                            {                                
+                                return false;
                             }
-                        }
-
-                        if (within_tol)
-                        {
-                            if (_jog_completion_source != null)
+                            joint_pos_cmd = jog_command.command_position;
+                            if (jog_time > _jog_trajectory_generator.T_Final)
                             {
-                                _jog_completion_source.SetResult(0);
-                                _jog_completion_source = null;
-                            }
-
-                            return true;
-                        }
-
-                        double jog_ratio = 5.0;
-                        for (int i=0; i<_joint_count; i++)
-                        {
-                            double dq = Math.Abs(_jog_command_pos[i] - _jog_current_pos[i]);
-                            if (dq > 1e-6)
-                            {
-                                double r = _jog_max_vel[i] * (_update_period * 1e-3) / Math.Abs(_jog_command_pos[i] - _jog_current_pos[i]);
-                                if (r < jog_ratio)
+                                if (_jog_completion_source != null)
                                 {
-                                    jog_ratio = r;
+                                    _jog_completion_source.TrySetResult(0);
+                                    _jog_completion_source = null;
                                 }
+                                _jog_trajectory_generator = null;                                
                             }
-                        }
-
-                        if (jog_ratio >= 1.0)
-                        {
-                            joint_pos_cmd = _jog_command_pos;
-                            _jog_current_pos = _jog_command_pos;
+                            return true;
                         }
                         else
                         {
-                            var jog_command_pos2 = new double[_joint_count];
-                            for (int i=0; i<_joint_count; i++)
+                            if (_jog_completion_source != null)
                             {
-                                jog_command_pos2[i] = jog_ratio * (_jog_command_pos[i] - _jog_current_pos[i]) + _jog_current_pos[i];
+                                _jog_completion_source.TrySetResult(0);
+                                _jog_completion_source = null;
                             }
-                            for (int i = 0; i < _joint_count; i++)
-                            {
-                                _jog_current_pos[i] = jog_command_pos2[i];
-                            }
-                            joint_pos_cmd = jog_command_pos2;
-                        }                                 
+                        }
                                                 
                         return true;
                     }
@@ -898,7 +867,7 @@ namespace RobotRaconteur.Companion.Robot
                 {
                     case RobotCommandMode.jog:
                         {
-                            _jog_command_pos = null;
+                            _jog_trajectory_generator = null;
                             _command_mode = RobotCommandMode.jog;
                             break;
                         }
@@ -944,13 +913,10 @@ namespace RobotRaconteur.Companion.Robot
 
             return Task.FromResult(0);
         }
-        
 
-        protected double[] _jog_command_pos = null;
-        protected double[] _jog_max_vel = null;
-        protected double[] _jog_start_pos = null;
-        protected double[] _jog_current_pos = null;
-        protected long _last_jog_command_pos = 0;
+
+        protected double _jog_start_time;
+        protected JointTrajectoryGenerator _jog_trajectory_generator;
         protected TaskCompletionSource<int> _jog_completion_source;
 
 
@@ -963,7 +929,7 @@ namespace RobotRaconteur.Companion.Robot
                     throw new InvalidOperationException("Robot not in jog mode");
                 }
 
-                if (!_ready || _joint_position.Length != _joint_count)
+                if (!_ready)
                 {
                     throw new OperationAbortedException("Robot not ready");
                 }
@@ -976,27 +942,6 @@ namespace RobotRaconteur.Companion.Robot
                 if (max_velocity.Length != _joint_count)
                 {
                     throw new ArgumentException($"max_velocity array must have {_joint_count} elements");
-                }
-
-
-                if (_jog_current_pos == null)
-                {
-                    _jog_current_pos = (double[])_joint_position.Clone();
-                }
-                else
-                {
-                    bool within_tol = true;
-                    for (int i=0; i<_joint_count; i++)
-                    {
-                        if (Math.Abs(_joint_position[i] - _jog_current_pos[i]) > (0.5*Math.PI/180.0))
-                        {
-                            //within_tol = false;
-                        }
-                        if (!within_tol)
-                        {
-                            _jog_current_pos = (double[])_joint_position.Clone();
-                        }
-                    }
                 }
 
                 for (int i=0; i<_joint_count; i++)
@@ -1021,10 +966,46 @@ namespace RobotRaconteur.Companion.Robot
 
                 long now = _stopwatch.ElapsedMilliseconds;
 
-                _jog_command_pos = joint_position;
-                _jog_max_vel = max_velocity;
-                _jog_start_pos = _joint_position;
-                _last_jog_command_pos = now;
+                if (_jog_trajectory_generator == null)
+                {
+                    var limits = new JointTrajectoryLimits();
+                    limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.acceleration).ToArray();
+                    limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.velocity).ToArray();
+                    limits.x_min = _robot_info.joint_info.Select(x => x.joint_limits.lower).ToArray();
+                    limits.x_max = _robot_info.joint_info.Select(x => x.joint_limits.upper).ToArray();
+
+                    _jog_trajectory_generator = new TrapezoidalJointTrajectoryGenerator((uint)_joint_count, ref limits);
+
+                    var new_req = new JointTrajectoryPositionRequest();
+                    new_req.current_position = _position_command ?? _joint_position;
+                    new_req.current_velocity = _velocity_command ?? new double[_joint_count];
+                    new_req.desired_position = joint_position;
+                    new_req.desired_velocity = new double[_joint_count];
+                    new_req.max_velocity = max_velocity;
+                    new_req.speed_ratio = _speed_ratio;
+
+                    _jog_trajectory_generator.UpdateDesiredPosition(ref new_req);
+                    _jog_start_time = now;
+                }
+                else
+                {
+                    double jog_trajectory_t = (now - _jog_start_time)/1000.0;
+                    if (!_jog_trajectory_generator.GetCommand(jog_trajectory_t, out var cmd))
+                    {
+                        throw new InvalidOperationException("Cannot update jog command");
+                    }
+
+                    var new_req = new JointTrajectoryPositionRequest();
+                    new_req.current_position = cmd.command_position;
+                    new_req.current_velocity = cmd.command_velocity;
+                    new_req.desired_position = joint_position;
+                    new_req.desired_velocity = new double[_joint_count];
+                    new_req.max_velocity = max_velocity;
+                    new_req.speed_ratio = _speed_ratio;
+
+                    _jog_trajectory_generator.UpdateDesiredPosition(ref new_req);
+                    _jog_start_time = now;
+                }
 
                 if (!wait)
                 {
