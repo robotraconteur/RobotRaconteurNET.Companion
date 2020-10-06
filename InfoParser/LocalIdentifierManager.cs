@@ -24,7 +24,7 @@ using com.robotraconteur.identifier;
 using com.robotraconteur.uuid;
 using RobotRaconteur;
 
-namespace RobotRaconteur.InfoParser
+namespace RobotRaconteur.Companion.InfoParser
 {
 
     public class YamlUuid

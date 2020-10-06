@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace RobotRaconteur.InfoParser
+namespace RobotRaconteur.Companion.InfoParser
 {
     public class YamlDataType
     {

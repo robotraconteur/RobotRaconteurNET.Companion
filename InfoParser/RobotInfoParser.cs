@@ -26,7 +26,7 @@ using com.robotraconteur.robotics.trajectory;
 using com.robotraconteur.robotics.joints;
 using com.robotraconteur.sensor;
 
-namespace RobotRaconteur.InfoParser
+namespace RobotRaconteur.Companion.InfoParser
 {
     public class YamlRobotInfo
     {

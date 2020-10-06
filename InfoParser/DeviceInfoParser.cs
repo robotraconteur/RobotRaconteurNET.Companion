@@ -22,7 +22,7 @@ using com.robotraconteur.geometry;
 using System.IO;
 using System.Linq;
 
-namespace RobotRaconteur.InfoParser
+namespace RobotRaconteur.Companion.InfoParser
 {
     public class YamlDeviceInfo
     {

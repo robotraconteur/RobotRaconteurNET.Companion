@@ -22,7 +22,7 @@ using RobotRaconteur;
 using YamlDotNet.Core.Events;
 using System.Runtime.Serialization;
 
-namespace RobotRaconteur.InfoParser
+namespace RobotRaconteur.Companion.InfoParser
 {
     public class YamlVarValue : IYamlConvertible
     {
