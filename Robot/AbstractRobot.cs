@@ -35,10 +35,11 @@ using com.robotraconteur.device;
 using com.robotraconteur.device.isoch;
 using System.Security.Cryptography.X509Certificates;
 using MathNet.Numerics.Integration;
+using RobotRaconteur.Companion.Converters;
 
 namespace RobotRaconteur.Companion.Robot
 {
-    public abstract class AbstractRobot : Robot_default_impl, async_Robot, IDisposable
+    public abstract class AbstractRobot : Robot_default_impl, async_Robot, IDisposable, IRRServiceObject
     {        
         protected internal int _joint_count;
         protected internal string[] _joint_names;
@@ -73,6 +74,7 @@ namespace RobotRaconteur.Companion.Robot
 
 
         protected Stopwatch _stopwatch;
+        protected DateTime _stopwatch_epoch;
 
         protected com.robotraconteur.uuid.UUID _robot_uuid;
         protected com.robotraconteur.robotics.robot.RobotInfo _robot_info;
@@ -85,9 +87,15 @@ namespace RobotRaconteur.Companion.Robot
 
         protected bool _has_velocity_command = false;
 
-        protected uint robot_caps;
+        protected uint _robot_caps;
 
-        protected Rox.Robot[] rox_robots;
+        protected Rox.Robot[] _rox_robots;
+
+        protected ToolInfo[] _current_tool = null;
+
+        protected PayloadInfo[] _current_payload = null;
+
+        protected BroadcastDownsampler _broadcast_downsampler;
         
         public AbstractRobot(com.robotraconteur.robotics.robot.RobotInfo robot_info, int default_joint_count)
         {            
@@ -114,35 +122,38 @@ namespace RobotRaconteur.Companion.Robot
 
             _robot_uuid = robot_info.device_info.device.uuid;
 
-            robot_caps = robot_info.robot_capabilities;
+            _robot_caps = robot_info.robot_capabilities;
 
-            if ((robot_caps & (uint)RobotCapabilities.homing_command) != 0)
+            if ((_robot_caps & (uint)RobotCapabilities.homing_command) != 0)
             {
                 _uses_homing = true;
             }
 
-            if ((robot_caps & (uint)RobotCapabilities.position_command) != 0)
+            if ((_robot_caps & (uint)RobotCapabilities.position_command) != 0)
             {
                 _has_position_command = true;
             }
 
-            if ((robot_caps & (uint)RobotCapabilities.velocity_command) != 0)
+            if ((_robot_caps & (uint)RobotCapabilities.velocity_command) != 0)
             {
                 _has_velocity_command = true;
             }
 
             try
             {
-                rox_robots = new Rox.Robot[robot_info.chains.Count];
+                _rox_robots = new Rox.Robot[robot_info.chains.Count];
                 for (int i = 0; i < robot_info.chains.Count; i++)
                 {
-                    rox_robots[i] = RobotInfoConverter.ToToolboxRobot(robot_info, i);
+                    _rox_robots[i] = RobotInfoConverter.ToToolboxRobot(robot_info, i);
                 }
             }
             catch (Exception e)
             {
                 throw new ArgumentException("invalid robot_info, could not populate GeneralRoboticsToolbox.Robot", e);
             }
+
+            _current_tool = new ToolInfo[robot_info.chains.Count];
+            _current_payload = new PayloadInfo[robot_info.chains.Count];
         }
 
         protected bool _keep_going = false;
@@ -153,7 +164,8 @@ namespace RobotRaconteur.Companion.Robot
             {
                 Debug.WriteLine("warning: not using high resolution timer");
             }
-            _stopwatch = Stopwatch.StartNew();            
+            _stopwatch = Stopwatch.StartNew();
+            _stopwatch_epoch = DateTime.UtcNow;
                         
             _keep_going = true;
             _loop_thread = new Thread(_loop_thread_func);
@@ -212,16 +224,6 @@ namespace RobotRaconteur.Companion.Robot
         }
 
         
-        public override Pipe<RobotStateSensorData> robot_state_sensor_data
-        {
-            get => base.robot_state_sensor_data;
-            set
-            {
-                base.robot_state_sensor_data = value;
-                rrvar_robot_state_sensor_data.MaxBacklog = 3;
-            }
-        }
-
         protected internal ulong _state_seqno = 0;
 
         protected internal virtual void _run_timestep(long now)
@@ -237,13 +239,21 @@ namespace RobotRaconteur.Companion.Robot
 
             lock (this)
             {
-                _state_seqno++;
-                
-                res = _verify_communication(now);
-                res = res && _verify_robot_state(now);
-                res = res && _fill_robot_command(now, out joint_pos_cmd, out joint_vel_cmd);
+                BroadcastDownsamplerStep downsampler_step = null;
+                if (_broadcast_downsampler != null)
+                {
+                    downsampler_step = new BroadcastDownsamplerStep(_broadcast_downsampler);
+                }
+                using (downsampler_step)
+                {
+                    _state_seqno++;
 
-                _fill_states(now, out rr_robot_state, out rr_advanced_robot_state, out rr_state_sensor_data);
+                    res = _verify_communication(now);
+                    res = res && _verify_robot_state(now);
+                    res = res && _fill_robot_command(now, out joint_pos_cmd, out joint_vel_cmd);
+
+                    _fill_states(now, out rr_robot_state, out rr_advanced_robot_state, out rr_state_sensor_data);
+                }
             }
 
 
@@ -340,6 +350,70 @@ namespace RobotRaconteur.Companion.Robot
 
         }
 
+        protected Pose _calc_endpoint_pose(int chain)
+        {
+            // CALL LOCKED!
+            if (_current_tool[chain] == null)
+            {
+                return _endpoint_pose[chain];
+            }
+            var endpoint_transform = GeometryConverter.ToTransform(_endpoint_pose[chain]);
+            var tool_transform = GeometryConverter.ToTransform(_current_tool[chain].tcp);
+            var res = endpoint_transform * tool_transform;
+            return GeometryConverter.ToPose(res);            
+        }
+
+        protected Pose[] _calc_endpoint_poses()
+        {
+            if (_endpoint_pose == null)
+            {
+                return new Pose[0];
+            }
+
+            var o = new Pose[_endpoint_pose.Length];
+            for (int i=0; i<o.Length; i++)
+            {
+                o[i] = _calc_endpoint_pose(i);
+            }
+            return o;
+        }
+
+        protected SpatialVelocity _calc_endpoint_vel(int chain)
+        {
+            // CALL LOCKED!
+            if (_current_tool[chain] == null)
+            {
+                return _endpoint_vel[chain];
+            }
+            var endpoint_vel_lin = GeometryConverter.ToVector(_endpoint_vel[chain].linear);
+            var endpoint_vel_ang = GeometryConverter.ToVector(_endpoint_vel[chain].angular);
+            var current_tool_p = GeometryConverter.ToVector(_current_tool[chain].tcp.translation);            
+            
+            var endpoint_transform = GeometryConverter.ToTransform(_endpoint_pose[chain]);
+            
+            var o = new SpatialVelocity();
+            o.linear = GeometryConverter.ToVector3(endpoint_vel_lin + Rox.Functions.Cross(endpoint_vel_ang, endpoint_transform.R * current_tool_p));
+            o.angular = _endpoint_vel[chain].angular;
+
+            return o;
+        }
+
+        protected SpatialVelocity[] _calc_endpoint_vels()
+        {
+            if (_endpoint_pose == null)
+            {
+                return new SpatialVelocity[0];
+            }
+
+            var o = new SpatialVelocity[_endpoint_pose.Length];
+            for (int i = 0; i < o.Length; i++)
+            {
+                o[i] = _calc_endpoint_vel(i);
+            }
+            return o;
+        }
+
+
         protected internal virtual void _fill_states(long now, out RobotState rr_robot_state, out AdvancedRobotState rr_advanced_robot_state, out RobotStateSensorData rr_state_sensor_data)
         {
             var rob_state = new RobotState();
@@ -357,8 +431,8 @@ namespace RobotRaconteur.Companion.Robot
             rob_state.joint_effort = (double[])_joint_effort.Clone();
             rob_state.joint_position_command = _position_command ??new double[0];
             rob_state.joint_velocity_command = _velocity_command ?? new double[0];
-            rob_state.kin_chain_tcp = _endpoint_pose ?? new Pose[0];
-            rob_state.kin_chain_tcp_vel = _endpoint_vel ?? new SpatialVelocity[0];
+            rob_state.kin_chain_tcp = _calc_endpoint_poses();
+            rob_state.kin_chain_tcp_vel = _calc_endpoint_vels();
             rob_state.trajectory_running = _trajectory_valid;
 
             var a_rob_state = new AdvancedRobotState();
@@ -969,8 +1043,8 @@ namespace RobotRaconteur.Companion.Robot
                 if (_jog_trajectory_generator == null)
                 {
                     var limits = new JointTrajectoryLimits();
-                    limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.acceleration).ToArray();
-                    limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.velocity).ToArray();
+                    limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_acceleration).ToArray();
+                    limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_velocity).ToArray();
                     limits.x_min = _robot_info.joint_info.Select(x => x.joint_limits.lower).ToArray();
                     limits.x_max = _robot_info.joint_info.Select(x => x.joint_limits.upper).ToArray();
 
@@ -1020,9 +1094,109 @@ namespace RobotRaconteur.Companion.Robot
             }
         }
 
+        public Task async_jog_joint(double[] joint_velocity, double timeout, bool wait, int rr_timeout = -1)
+        {
+            lock (this)
+            {
+                if (_command_mode != RobotCommandMode.jog)
+                {
+                    throw new InvalidOperationException("Robot not in jog mode");
+                }
+
+                if (!_ready)
+                {
+                    throw new OperationAbortedException("Robot not ready");
+                }
+
+                if (joint_velocity.Length != _joint_count)
+                {
+                    throw new ArgumentException($"joint_velocity array must have {_joint_count} elements");
+                }
+
+                if (timeout <= 0)
+                {
+                    throw new ArgumentException("Invalid jog timeout specified");
+                }
+
+                for (int i=0; i< _joint_count; i++)
+                {
+                    if (Math.Abs(joint_velocity[i]) > _robot_info.joint_info[i].joint_limits.reduced_velocity)
+                    {
+                        throw new ArgumentException("Joint velocity exceeds joint limits");
+                    }
+                }
+
+                if (_jog_completion_source != null)
+                {
+                    _jog_completion_source.TrySetException(new OperationAbortedException("Operation interrupted by new jog command"));
+                    _jog_completion_source = null;
+                }
+
+                long now = _stopwatch.ElapsedMilliseconds;
+
+                if (_jog_trajectory_generator == null)
+                {
+                    var limits = new JointTrajectoryLimits();
+                    limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_acceleration).ToArray();
+                    limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_velocity).ToArray();
+                    limits.x_min = _robot_info.joint_info.Select(x => x.joint_limits.lower).ToArray();
+                    limits.x_max = _robot_info.joint_info.Select(x => x.joint_limits.upper).ToArray();
+
+                    _jog_trajectory_generator = new TrapezoidalJointTrajectoryGenerator((uint)_joint_count, ref limits);
+
+                    var new_req = new JointTrajectoryVelocityRequest();
+                    new_req.current_position = _position_command ?? _joint_position;
+                    new_req.current_velocity = _velocity_command ?? new double[_joint_count];
+                    new_req.desired_velocity = joint_velocity;
+                    new_req.speed_ratio = _speed_ratio;
+                    new_req.timeout = timeout;
+
+                    _jog_trajectory_generator.UpdateDesiredVelocity(ref new_req);
+                    _jog_start_time = now;
+                }
+                else
+                {
+                    double jog_trajectory_t = (now - _jog_start_time) / 1000.0;
+                    if (!_jog_trajectory_generator.GetCommand(jog_trajectory_t, out var cmd))
+                    {
+                        throw new InvalidOperationException("Cannot update jog command");
+                    }
+
+                    var new_req = new JointTrajectoryVelocityRequest();
+                    new_req.current_position = cmd.command_position;
+                    new_req.current_velocity = cmd.command_velocity;
+                    new_req.desired_velocity = joint_velocity;
+                    new_req.timeout = timeout;
+                    new_req.speed_ratio = _speed_ratio;
+
+                    _jog_trajectory_generator.UpdateDesiredVelocity(ref new_req);
+                    _jog_start_time = now;
+                }
+
+                if (!wait)
+                {
+                    _jog_completion_source = null;
+                    return Task.FromResult(0);
+                }
+                else
+                {
+                    _jog_completion_source = new TaskCompletionSource<int>();
+                    return _jog_completion_source.Task;
+                }
+            }
+        }
+
         public Task<RobotInfo> async_get_robot_info(int timeout = -1)
         {
-            return Task.FromResult(_robot_info);
+            lock (this)
+            {
+                for (int i = 0; i < _robot_info.chains.Count; i++)
+                {
+                    _robot_info.chains[i].current_tool = _current_tool[i];
+                    _robot_info.chains[i].current_payload = _current_payload[i];
+                }
+                return Task.FromResult(_robot_info);
+            }
         }
         
         protected TrajectoryTask _active_trajectory;
@@ -1146,17 +1320,23 @@ namespace RobotRaconteur.Companion.Robot
 
         public virtual Task<RobotOperationalMode> async_get_operational_mode(int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            lock(this)
+            {
+                return Task.FromResult(_operational_mode);
+            }
         }
 
         public virtual Task<RobotControllerState> async_get_controller_state(int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            lock(this)
+            {
+                return Task.FromResult(_controller_state);
+            }
         }
 
         public virtual Task<List<EventLogMessage>> async_get_current_errors(int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new List<EventLogMessage>());
         }
 
         public virtual Task async_jog_cartesian(Dictionary<int, SpatialVelocity> velocity, double timeout, bool wait, int rr_timeout = -1)
@@ -1166,7 +1346,8 @@ namespace RobotRaconteur.Companion.Robot
 
         public virtual Task<Generator2<TrajectoryStatus>> async_execute_trajectory(JointTrajectory trajectory, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            // NOTE: Not called because this is a generator function, execute_trajector is called instead
+            throw new InvalidOperationException("Call execute_trajectory()");
         }
 
         public virtual Task<Generator2<ActionStatusCode>> async_home(int rr_timeout = -1)
@@ -1186,57 +1367,189 @@ namespace RobotRaconteur.Companion.Robot
 
         public virtual Task async_tool_attached(int chain, ToolInfo tool, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            if (tool == null)
+            {
+                throw new NullReferenceException("Tool cannot be null");
+            }
+            if (chain < 0 || !(chain < _current_tool.Length))
+            {
+                throw new ArgumentException($"Invalid kinematic chain {chain} for tool");
+            }
+            lock(this)
+            {
+                if (_current_tool[chain] != null)
+                {
+                    throw new ArgumentException($"Tool alread attached to kinematic chain {chain}");
+                }
+
+                _current_tool[chain] = tool;
+
+                //TODO: Invoke events on tool change
+                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                _state_seqno++;                
+            }
+
+            return Task.FromResult(0);
         }
 
         public virtual Task async_tool_detached(int chain, string tool_name, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            if (chain < 0 || !(chain < _current_tool.Length))
+            {
+                throw new ArgumentException($"Invalid kinematic chain {chain} for tool");
+            }
+
+            lock (this)
+            {
+                if (_current_tool[chain] == null)
+                {
+                    throw new ArgumentException($"Tool not attached to kinematic chain {chain}");
+                }
+
+                if (_current_payload[chain] != null)
+                {
+                    throw new ArgumentException($"Cannot remove tool while payload attached");
+                }
+
+                if (!string.IsNullOrEmpty(tool_name))
+                {
+                    if (_current_tool[chain]?.device_info?.device?.name != tool_name)
+                    {
+                        throw new ArgumentException($"Invalid tool name to detach from kinematic chain {chain}");
+                    }
+                }
+
+                _current_tool[chain] = null;
+
+                //TODO: Invoke events on tool change
+                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                _state_seqno++;
+            }
+
+            return Task.FromResult(0);
+
         }
 
         public virtual Task async_payload_attached(int chain, PayloadInfo payload, Pose pose, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            if (payload == null)
+            {
+                throw new NullReferenceException("Tool cannot be null");
+            }
+            if (chain < 0 || !(chain < _current_tool.Length))
+            {
+                throw new ArgumentException($"Invalid kinematic chain {chain} for payload");
+            }
+            lock (this)
+            {
+                if (_current_tool[chain] == null)
+                {
+                    throw new ArgumentException($"No tool attached to kinematic chain {chain}, cannot attach payload");
+                }
+
+                if (_current_payload[chain] != null)
+                {
+                    throw new ArgumentException($"Payload alread attached to kinematic chain {chain}");
+                }
+
+                _current_payload[chain] = payload;
+
+                //TODO: Invoke events on tool change
+                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                _state_seqno++;
+            }
+
+            return Task.FromResult(0);
         }
 
         public virtual Task async_payload_detached(int chain, string payload_name, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            if (chain < 0 || !(chain < _current_tool.Length))
+            {
+                throw new ArgumentException($"Invalid kinematic chain {chain} for tool");
+            }
+
+            lock (this)
+            {
+                if (_current_payload[chain] == null)
+                {
+                    throw new ArgumentException($"Payload not attached to kinematic chain {chain}");
+                }
+
+                if (!string.IsNullOrEmpty(payload_name))
+                {
+                    if (_current_payload[chain]?.device_info?.device?.name != payload_name)
+                    {
+                        throw new ArgumentException($"Invalid payload name to detach from kinematic chain {chain}");
+                    }
+                }
+
+                _current_payload[chain] = null;
+
+                //TODO: Invoke events on tool change
+                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                _state_seqno++;
+            }
+
+            return Task.FromResult(0);
         }
 
         public virtual Task<object> async_getf_param(string param_name, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            throw new ArgumentException("Invalid parameter");
         }
 
         public virtual Task async_setf_param(string param_name, object value_, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            throw new ArgumentException("Invalid parameter");
         }
 
         public Task<DeviceInfo> async_get_device_info(int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_robot_info.device_info);
         }
 
         public Task<IsochInfo> async_get_isoch_info(int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+
+            var isoch_info = new IsochInfo();
+            isoch_info.update_rate = 1.0 / _update_period;
+            isoch_info.max_downsample = 1000;
+            TimeSpan t;
+            lock (this)
+            {
+                 t = _stopwatch_epoch.ToUniversalTime() - (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+            }
+            isoch_info.isoch_epoch = new com.robotraconteur.datetime.DateTimeUTC();
+            isoch_info.isoch_epoch.seconds = (long)Math.Round(t.TotalSeconds);
+            isoch_info.isoch_epoch.nanoseconds = (int)Math.IEEERemainder(t.TotalMilliseconds * 1e6, 1e9);
+            return Task.FromResult(isoch_info);            
         }
 
         public Task<uint> async_get_isoch_downsample(int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            lock(this)
+            {
+                return Task.FromResult(_broadcast_downsampler.GetClientDownsample(ServerEndpoint.CurrentEndpoint));
+            }
         }
 
         public Task async_set_isoch_downsample(uint value, int rr_timeout = -1)
         {
-            throw new NotImplementedException();
+            lock(this)
+            {
+                _broadcast_downsampler.SetClientDownsample(ServerEndpoint.CurrentEndpoint, value);
+                return Task.FromResult(0);
+            }
         }
 
-        public Task async_jog_joint(double[] joint_velocity, double timeout, bool wait, int rr_timeout = -1)
+        public void RRServiceObjectInit(ServerContext context, string service_path)
         {
-            throw new NotImplementedException();
+            rrvar_robot_state_sensor_data.MaxBacklog = 3;
+            _broadcast_downsampler = new BroadcastDownsampler(context, 0);
+            _broadcast_downsampler.AddPipeBroadcaster(rrvar_robot_state_sensor_data);
+            _broadcast_downsampler.AddWireBroadcaster(rrvar_robot_state);
+            _broadcast_downsampler.AddWireBroadcaster(rrvar_advanced_robot_state);
         }
     }
     
