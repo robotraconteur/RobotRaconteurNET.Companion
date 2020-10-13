@@ -19851,6 +19851,8 @@ namespace com.robotraconteur.robotics.tool
 public class ToolInfo
 {
     public com.robotraconteur.device.DeviceInfo device_info;
+    public ToolTypeCode tool_type;
+    public uint tool_capabilities;
     public com.robotraconteur.geometry.Transform tcp;
     public com.robotraconteur.geometry.SpatialInertia inertia;
     public double actuation_time;
@@ -19865,7 +19867,8 @@ public class ToolInfo
 
 public class ToolState
 {
-    public ToolStatus tool_status;
+    public ulong seqno;
+    public uint tool_state_flags;
     public double position;
     public double command;
     public double[] sensor;
@@ -19885,7 +19888,7 @@ public interface Tool : com.robotraconteur.device.Device
 public static class com__robotraconteur__robotics__toolConstants 
 {
 }
-    public enum ToolType
+    public enum ToolTypeCode
     {
     unknown = 0,
     basic_gripper = 1,
@@ -19897,12 +19900,25 @@ public static class com__robotraconteur__robotics__toolConstants
     palletizer = 7,
     other = 8
     };
-    public enum ToolStatus
+    public enum ToolCapabilities
     {
     unknown = 0,
-    open = 1,
-    closed = 2,
-    between = 3
+    open_close = 0x1,
+    continuous_command = 0x2
+    };
+    public enum ToolStateFlags
+    {
+    unknown = 0,
+    error = 0x1,
+    fatal_error = 0x2,
+    estop = 0x4,
+    communication_failure = 0x8,
+    enabled = 0x10,
+    ready = 0x20,
+    opened = 0x40,
+    closed = 0x80,
+    between = 0x100,
+    actuating = 0x200
     };
 }
 namespace com.robotraconteur.robotics.tool
@@ -19911,7 +19927,7 @@ public class com__robotraconteur__robotics__toolFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.robotics.tool\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.units\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.sensor.SensorTypeCode\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.units.SIUnit\n\nenum ToolType\nunknown = 0,\nbasic_gripper,\nbasic_continuous_gripper,\nvaccum_gripper,\nsoft_gripper,\nwelder,\nhand,\npalletizer,\nother\nend\n\nenum ToolStatus\nunknown = 0,\nopen,\nclosed,\nbetween\nend\n\nstruct ToolInfo\nfield DeviceInfo device_info\nfield Transform tcp\nfield SpatialInertia inertia\nfield double actuation_time\nfield double command_min\nfield double command_max\nfield SensorTypeCode sensor_type\nfield double[] sensor_min\nfield double[] sensor_max\nfield SIUnit{list} sensor_units\nfield varvalue{string} extended\nend\n\nstruct ToolState\nfield ToolStatus tool_status\nfield double position\nfield double command\nfield double[] sensor\nend\n\nobject Tool\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ToolInfo tool_info [readonly,nolock]\nfunction void open()\nfunction void close()\nfunction void setf_command(double command)\nwire ToolState tool_state [readonly,nolock]\nend\n";
+    const string s="service com.robotraconteur.robotics.tool\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.units\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.sensor.SensorTypeCode\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.units.SIUnit\n\nenum ToolTypeCode\nunknown = 0,\nbasic_gripper,\nbasic_continuous_gripper,\nvaccum_gripper,\nsoft_gripper,\nwelder,\nhand,\npalletizer,\nother\nend\n\nenum ToolCapabilities\nunknown = 0,\nopen_close = 0x1,\ncontinuous_command = 0x2,\nend\n\nenum ToolStateFlags\nunknown = 0,\nerror = 0x1,\nfatal_error = 0x2,\nestop = 0x4,\ncommunication_failure = 0x8,\nenabled = 0x10,\nready = 0x20,\nopened = 0x40,\nclosed = 0x80,\nbetween = 0x100,\nactuating = 0x200\nend\n\nstruct ToolInfo\nfield DeviceInfo device_info\nfield ToolTypeCode tool_type\nfield uint32 tool_capabilities\nfield Transform tcp\nfield SpatialInertia inertia\nfield double actuation_time\nfield double command_min\nfield double command_max\nfield SensorTypeCode sensor_type\nfield double[] sensor_min\nfield double[] sensor_max\nfield SIUnit{list} sensor_units\nfield varvalue{string} extended\nend\n\nstruct ToolState\nfield uint64 seqno\nfield uint32 tool_state_flags\nfield double position\nfield double command\nfield double[] sensor\nend\n\nobject Tool\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ToolInfo tool_info [readonly,nolock]\nfunction void open()\nfunction void close()\nfunction void setf_command(double command)\nwire ToolState tool_state [readonly,nolock]\nend\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.robotics.tool";}
@@ -19989,6 +20005,8 @@ public class ToolInfo_stub : IStructureStub {
     if (s1 ==null) return null;
     ToolInfo s = (ToolInfo)s1;
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<ToolTypeCode>("tool_type",s.tool_type));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("tool_capabilities",s.tool_capabilities));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Transform>("tcp",ref s.tcp));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.SpatialInertia>("inertia",ref s.inertia));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("actuation_time",s.actuation_time));
@@ -20008,6 +20026,8 @@ public class ToolInfo_stub : IStructureStub {
     using(vectorptr_messageelement mm=m.Elements)
     {
     s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
+    s.tool_type =MessageElementUtil.UnpackEnum<ToolTypeCode>(MessageElement.FindElement(mm,"tool_type"));
+    s.tool_capabilities =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"tool_capabilities")));
     s.tcp =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Transform>(MessageElement.FindElement(mm,"tcp"));
     s.inertia =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.SpatialInertia>(MessageElement.FindElement(mm,"inertia"));
     s.actuation_time =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"actuation_time")));
@@ -20032,7 +20052,8 @@ public class ToolState_stub : IStructureStub {
     {
     if (s1 ==null) return null;
     ToolState s = (ToolState)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<ToolStatus>("tool_status",s.tool_status));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("tool_state_flags",s.tool_state_flags));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("position",s.position));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command",s.command));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("sensor",s.sensor));
@@ -20044,7 +20065,8 @@ public class ToolState_stub : IStructureStub {
     ToolState s=new ToolState();
     using(vectorptr_messageelement mm=m.Elements)
     {
-    s.tool_status =MessageElementUtil.UnpackEnum<ToolStatus>(MessageElement.FindElement(mm,"tool_status"));
+    s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
+    s.tool_state_flags =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"tool_state_flags")));
     s.position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"position")));
     s.command =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command")));
     s.sensor =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"sensor"));
@@ -23689,8 +23711,17 @@ public class Robot_default_impl : Robot{
     public virtual void setf_param(string param_name, object value_) {
     throw new NotImplementedException();    }
     public virtual event Action<int, string> tool_changed;
+    protected virtual void rrfire_tool_changed(int chain, string tool_name) {
+    tool_changed(chain, tool_name);
+    }
     public virtual event Action<int, string> payload_changed;
+    protected virtual void rrfire_payload_changed(int chain, string payload_name) {
+    payload_changed(chain, payload_name);
+    }
     public virtual event Action<string> param_changed;
+    protected virtual void rrfire_param_changed(string param_name) {
+    param_changed(param_name);
+    }
     public virtual Pipe<RobotStateSensorData> robot_state_sensor_data {
     get { return rrvar_robot_state_sensor_data.Pipe;  }
     set {

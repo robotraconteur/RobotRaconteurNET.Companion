@@ -44,8 +44,6 @@ namespace RobotRaconteur.Companion.Robot
         protected internal int _joint_count;
         protected internal string[] _joint_names;
         protected internal double _jog_joint_limit = Math.PI * (10000.0 / 180.0);
-        protected internal long _jog_joint_timeout = 5000; // milliseconds
-        protected internal double _jog_joint_tol = Math.PI * (0.5 / 180.0);
         protected internal double _trajectory_error_tol = Math.PI * (5.0 / 180.0);
                 
         protected internal RobotCommandMode _command_mode = RobotCommandMode.halt;
@@ -400,7 +398,7 @@ namespace RobotRaconteur.Companion.Robot
 
         protected SpatialVelocity[] _calc_endpoint_vels()
         {
-            if (_endpoint_pose == null)
+            if (_endpoint_vel == null)
             {
                 return new SpatialVelocity[0];
             }
@@ -546,7 +544,7 @@ namespace RobotRaconteur.Companion.Robot
                 return false;
             }
 
-            //_operational_mode = RobotOperationalMode.cobot;
+            _operational_mode = RobotOperationalMode.cobot;
                         
             _communication_failure = false;
             return true;
@@ -1043,15 +1041,36 @@ namespace RobotRaconteur.Companion.Robot
                 if (_jog_trajectory_generator == null)
                 {
                     var limits = new JointTrajectoryLimits();
-                    limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_acceleration).ToArray();
-                    limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_velocity).ToArray();
+                    switch (_operational_mode)
+                    {
+                        case RobotOperationalMode.manual_reduced_speed:
+                            limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_acceleration).ToArray();
+                            limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_velocity).ToArray();
+                            break;
+                        case RobotOperationalMode.manual_full_speed:
+                        case RobotOperationalMode.cobot:
+                            limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.acceleration).ToArray();
+                            limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.velocity).ToArray();
+                            break;
+                        default:
+                            throw new InvalidOperationException("Invalid operation mode for robot jog");
+                    }
+                
                     limits.x_min = _robot_info.joint_info.Select(x => x.joint_limits.lower).ToArray();
                     limits.x_max = _robot_info.joint_info.Select(x => x.joint_limits.upper).ToArray();
+
+                    for (int i = 0; i < _joint_count; i++)
+                    {
+                        if (Math.Abs(max_velocity[i]) > limits.v_max[i])
+                        {
+                            throw new ArgumentException($"max_velocity[{i}] is greater than joint limits ({limits.v_max[i]})");
+                        }
+                    }
 
                     _jog_trajectory_generator = new TrapezoidalJointTrajectoryGenerator((uint)_joint_count, ref limits);
 
                     var new_req = new JointTrajectoryPositionRequest();
-                    new_req.current_position = _position_command ?? _joint_position;
+                    new_req.current_position = _position_command ?? (double[])_joint_position.Clone();
                     new_req.current_velocity = _velocity_command ?? new double[_joint_count];
                     new_req.desired_position = joint_position;
                     new_req.desired_velocity = new double[_joint_count];
@@ -1137,8 +1156,20 @@ namespace RobotRaconteur.Companion.Robot
                 if (_jog_trajectory_generator == null)
                 {
                     var limits = new JointTrajectoryLimits();
-                    limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_acceleration).ToArray();
-                    limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_velocity).ToArray();
+                    switch (_operational_mode)
+                    {
+                        case RobotOperationalMode.manual_reduced_speed:
+                            limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_acceleration).ToArray();
+                            limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.reduced_velocity).ToArray();
+                            break;
+                        case RobotOperationalMode.manual_full_speed:
+                        case RobotOperationalMode.cobot:
+                            limits.a_max = _robot_info.joint_info.Select(x => x.joint_limits.acceleration).ToArray();
+                            limits.v_max = _robot_info.joint_info.Select(x => x.joint_limits.velocity).ToArray();
+                            break;
+                        default:
+                            throw new InvalidOperationException("Invalid operation mode for robot jog");
+                    }
                     limits.x_min = _robot_info.joint_info.Select(x => x.joint_limits.lower).ToArray();
                     limits.x_max = _robot_info.joint_info.Select(x => x.joint_limits.upper).ToArray();
 
@@ -1384,8 +1415,7 @@ namespace RobotRaconteur.Companion.Robot
 
                 _current_tool[chain] = tool;
 
-                //TODO: Invoke events on tool change
-                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                rrfire_tool_changed(chain, tool?.device_info?.device?.name ?? "");
                 _state_seqno++;                
             }
 
@@ -1421,8 +1451,7 @@ namespace RobotRaconteur.Companion.Robot
 
                 _current_tool[chain] = null;
 
-                //TODO: Invoke events on tool change
-                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                rrfire_tool_changed(chain, "");
                 _state_seqno++;
             }
 
@@ -1454,8 +1483,7 @@ namespace RobotRaconteur.Companion.Robot
 
                 _current_payload[chain] = payload;
 
-                //TODO: Invoke events on tool change
-                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                rrfire_payload_changed(chain, payload?.device_info?.device?.name ?? "");
                 _state_seqno++;
             }
 
@@ -1486,8 +1514,7 @@ namespace RobotRaconteur.Companion.Robot
 
                 _current_payload[chain] = null;
 
-                //TODO: Invoke events on tool change
-                //tool_changed?.Invoke(chain, tool?.device_info?.device?.name ?? "");
+                rrfire_payload_changed(chain, "");
                 _state_seqno++;
             }
 
