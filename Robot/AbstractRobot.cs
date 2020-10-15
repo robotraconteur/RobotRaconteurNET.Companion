@@ -85,6 +85,8 @@ namespace RobotRaconteur.Companion.Robot
 
         protected bool _has_velocity_command = false;
 
+        protected bool _has_jog_command = true;
+
         protected uint _robot_caps;
 
         protected Rox.Robot[] _rox_robots;
@@ -348,7 +350,7 @@ namespace RobotRaconteur.Companion.Robot
 
         }
 
-        protected Pose _calc_endpoint_pose(int chain)
+        protected virtual Pose _calc_endpoint_pose(int chain)
         {
             // CALL LOCKED!
             if (_current_tool[chain] == null)
@@ -361,7 +363,7 @@ namespace RobotRaconteur.Companion.Robot
             return GeometryConverter.ToPose(res);            
         }
 
-        protected Pose[] _calc_endpoint_poses()
+        protected virtual Pose[] _calc_endpoint_poses()
         {
             if (_endpoint_pose == null)
             {
@@ -376,7 +378,7 @@ namespace RobotRaconteur.Companion.Robot
             return o;
         }
 
-        protected SpatialVelocity _calc_endpoint_vel(int chain)
+        protected virtual SpatialVelocity _calc_endpoint_vel(int chain)
         {
             // CALL LOCKED!
             if (_current_tool[chain] == null)
@@ -396,7 +398,7 @@ namespace RobotRaconteur.Companion.Robot
             return o;
         }
 
-        protected SpatialVelocity[] _calc_endpoint_vels()
+        protected virtual SpatialVelocity[] _calc_endpoint_vels()
         {
             if (_endpoint_vel == null)
             {
@@ -472,7 +474,7 @@ namespace RobotRaconteur.Companion.Robot
             rr_state_sensor_data = sensor_data;
         }
 
-        protected void _send_states(long now, RobotState rr_robot_state, AdvancedRobotState rr_advanced_robot_state, RobotStateSensorData rr_state_sensor_data)
+        protected virtual void _send_states(long now, RobotState rr_robot_state, AdvancedRobotState rr_advanced_robot_state, RobotStateSensorData rr_state_sensor_data)
         {
             if (rrvar_robot_state != null)
             {
@@ -489,19 +491,19 @@ namespace RobotRaconteur.Companion.Robot
 
         protected internal abstract Task _send_disable();
         
-        public async Task async_disable(int timeout = -1)
+        public virtual async Task async_disable(int timeout = -1)
         {
             await _send_disable();
         }
 
-        public async Task async_enable(int timeout = -1)
+        public virtual async Task async_enable(int timeout = -1)
         {
             await _send_enable();
         }
 
         protected internal abstract Task _send_enable();
 
-        public async Task async_reset_errors(int timeout = -1)
+        public virtual async Task async_reset_errors(int timeout = -1)
         {
             await _send_reset_errors();
         }
@@ -509,7 +511,7 @@ namespace RobotRaconteur.Companion.Robot
         protected internal abstract Task _send_reset_errors();
 
 
-        public Task async_halt(int timeout = -1)
+        public virtual Task async_halt(int timeout = -1)
         {
             if (_command_mode == RobotCommandMode.invalid_state)
             {
@@ -902,7 +904,7 @@ namespace RobotRaconteur.Companion.Robot
         protected abstract void _send_robot_command(long now, double[] joint_pos_cmd, double[] joint_vel_cmd);
        
 
-        public Task<RobotCommandMode> async_get_command_mode(int timeout = -1)
+        public virtual Task<RobotCommandMode> async_get_command_mode(int timeout = -1)
         {
             lock (this)
             {
@@ -910,7 +912,7 @@ namespace RobotRaconteur.Companion.Robot
             }
         }
         
-        public Task async_set_command_mode(RobotCommandMode value, int timeout = -1)
+        public virtual Task async_set_command_mode(RobotCommandMode value, int timeout = -1)
         {
             lock (this)
             {
@@ -939,6 +941,10 @@ namespace RobotRaconteur.Companion.Robot
                 {
                     case RobotCommandMode.jog:
                         {
+                            if (!_has_jog_command)
+                            {
+                                throw new InvalidOperationException("Robot does not support jog command mode");
+                            }
                             _jog_trajectory_generator = null;
                             _command_mode = RobotCommandMode.jog;
                             break;
@@ -992,7 +998,7 @@ namespace RobotRaconteur.Companion.Robot
         protected TaskCompletionSource<int> _jog_completion_source;
 
 
-        public Task async_jog_freespace(double[] joint_position, double[] max_velocity, bool wait, int timeout = -1)
+        public virtual Task async_jog_freespace(double[] joint_position, double[] max_velocity, bool wait, int timeout = -1)
         {
             lock(this)
             {
@@ -1113,7 +1119,7 @@ namespace RobotRaconteur.Companion.Robot
             }
         }
 
-        public Task async_jog_joint(double[] joint_velocity, double timeout, bool wait, int rr_timeout = -1)
+        public virtual Task async_jog_joint(double[] joint_velocity, double timeout, bool wait, int rr_timeout = -1)
         {
             lock (this)
             {
@@ -1217,7 +1223,7 @@ namespace RobotRaconteur.Companion.Robot
             }
         }
 
-        public Task<RobotInfo> async_get_robot_info(int timeout = -1)
+        public virtual Task<RobotInfo> async_get_robot_info(int timeout = -1)
         {
             lock (this)
             {
@@ -1531,12 +1537,12 @@ namespace RobotRaconteur.Companion.Robot
             throw new ArgumentException("Invalid parameter");
         }
 
-        public Task<DeviceInfo> async_get_device_info(int rr_timeout = -1)
+        public virtual Task<DeviceInfo> async_get_device_info(int rr_timeout = -1)
         {
             return Task.FromResult(_robot_info.device_info);
         }
 
-        public Task<IsochInfo> async_get_isoch_info(int rr_timeout = -1)
+        public virtual Task<IsochInfo> async_get_isoch_info(int rr_timeout = -1)
         {
 
             var isoch_info = new IsochInfo();
@@ -1553,7 +1559,7 @@ namespace RobotRaconteur.Companion.Robot
             return Task.FromResult(isoch_info);            
         }
 
-        public Task<uint> async_get_isoch_downsample(int rr_timeout = -1)
+        public virtual Task<uint> async_get_isoch_downsample(int rr_timeout = -1)
         {
             lock(this)
             {
@@ -1561,7 +1567,7 @@ namespace RobotRaconteur.Companion.Robot
             }
         }
 
-        public Task async_set_isoch_downsample(uint value, int rr_timeout = -1)
+        public virtual Task async_set_isoch_downsample(uint value, int rr_timeout = -1)
         {
             lock(this)
             {
@@ -1570,7 +1576,7 @@ namespace RobotRaconteur.Companion.Robot
             }
         }
 
-        public void RRServiceObjectInit(ServerContext context, string service_path)
+        public virtual void RRServiceObjectInit(ServerContext context, string service_path)
         {
             rrvar_robot_state_sensor_data.MaxBacklog = 3;
             _broadcast_downsampler = new BroadcastDownsampler(context, 0);
