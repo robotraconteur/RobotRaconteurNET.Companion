@@ -68,12 +68,7 @@ namespace RobotRaconteur.Companion.Robot
                 throw new ArgumentException("Trajectory time_from_start must equal zero for first waypoint");
             }
 
-            if (traj.interpolation_mode != com.robotraconteur.robotics.trajectory.InterpolationMode.default_
-                    && traj.interpolation_mode != com.robotraconteur.robotics.trajectory.InterpolationMode.cubic_spline)
-            {
-                throw new ArgumentException($"Only default and cubic_spline interpolation supported for trajectory execution");
-            }
-
+            
             int n_waypoints = traj.waypoints.Count;
             int n_joints = joint_names.Length;
 

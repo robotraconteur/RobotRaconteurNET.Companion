@@ -174,36 +174,7 @@ namespace RobotRaconteur.Companion.InfoParser
         }
     }
 
-    public class YamlToolInfo
-    {
-        public YamlDeviceInfo device_info { get; set; }
-        public YamlTransform tcp { get; set; }
-        public YamlSpatialInertia inertia { get; set; }
-        public double actuation_time { get; set; }
-        public double command_min { get; set; }
-        public double command_mix { get; set; }
-        public SensorTypeCode sensor_type { get; set; }
-        public double[] sensor_min { get; set; }
-        public double[] sensor_max { get; set; }
-
-        public Dictionary<string, YamlVarValue> extended { get; set; }
-
-        public void CopyTo(com.robotraconteur.robotics.tool.ToolInfo info)
-        {
-            info.device_info = device_info?.ToRRInfo();
-            info.tcp = tcp?.ToRRInfo() ?? new Transform();
-            info.inertia = inertia?.ToRRInfo() ?? new SpatialInertia();
-            info.extended = extended?.ToDictionary(x => x.Key, x => x.Value?.value);
-        }
-
-        public com.robotraconteur.robotics.tool.ToolInfo ToRRInfo()
-        {
-            var info = new com.robotraconteur.robotics.tool.ToolInfo();
-            CopyTo(info);
-            return info;
-        }
-    }
-
+    
     public class YamlPayloadInfo
     {
         public YamlDeviceInfo device_info { get; set; }

@@ -236,26 +236,24 @@ namespace RobotRaconteur.Companion.Robot
             RobotState rr_robot_state;
             AdvancedRobotState rr_advanced_robot_state;
             RobotStateSensorData rr_state_sensor_data;
-
+            BroadcastDownsamplerStep downsampler_step;
             lock (this)
             {
-                BroadcastDownsamplerStep downsampler_step = null;
+                downsampler_step = null;
                 if (_broadcast_downsampler != null)
                 {
                     downsampler_step = new BroadcastDownsamplerStep(_broadcast_downsampler);
                 }
-                using (downsampler_step)
-                {
-                    _state_seqno++;
 
-                    res = _verify_communication(now);
-                    res = res && _verify_robot_state(now);
-                    res = res && _fill_robot_command(now, out joint_pos_cmd, out joint_vel_cmd);
+                _state_seqno++;
 
-                    _fill_states(now, out rr_robot_state, out rr_advanced_robot_state, out rr_state_sensor_data);
-                }
+                res = _verify_communication(now);
+                res = res && _verify_robot_state(now);
+                res = res && _fill_robot_command(now, out joint_pos_cmd, out joint_vel_cmd);
+
+                _fill_states(now, out rr_robot_state, out rr_advanced_robot_state, out rr_state_sensor_data);
+
             }
-
 
             if (!res)
             {
@@ -266,7 +264,10 @@ namespace RobotRaconteur.Companion.Robot
                 _send_robot_command(now, joint_pos_cmd, joint_vel_cmd);
             }
 
-            _send_states(now, rr_robot_state, rr_advanced_robot_state, rr_state_sensor_data);
+            using (downsampler_step)
+            {
+                _send_states(now, rr_robot_state, rr_advanced_robot_state, rr_state_sensor_data);
+            }
         }
 
         protected internal virtual ulong _fill_state_flags(long now)
