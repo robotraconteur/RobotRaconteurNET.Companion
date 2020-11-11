@@ -25,7 +25,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public YamlIdentifier parameter_identifier { get; set; }
         public YamlDeviceClass parameter_class { get; set; }
         public YamlDataType data_type { get; set; }
-        public string user_description { get; set; }
+        public string description { get; set; }
         public YamlVarValue default_value { get; set; }
         public YamlVarValue min_value { get; set; }
         public YamlVarValue max_value { get; set; }
@@ -37,7 +37,7 @@ namespace RobotRaconteur.Companion.InfoParser
             info.parameter_identifier = parameter_identifier?.ToRRInfo();
             info.parameter_class = parameter_class?.ToRRInfo();
             info.data_type = data_type?.ToRRInfo();
-            info.user_description = user_description ?? "";
+            info.description = description ?? "";
             info.default_value = default_value?.value;
             info.min_value = min_value?.value;
             info.max_value = max_value?.value;
