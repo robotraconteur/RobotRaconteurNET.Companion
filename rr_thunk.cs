@@ -31688,3 +31688,773 @@ public class IsochDevice_default_impl : IsochDevice{
 public static class RRExtensions{
 }
 }
+namespace com.robotraconteur.objectrecognition
+{
+public class ObjectRecognitionTemplate
+{
+    public com.robotraconteur.identifier.Identifier object_identifier;
+    public com.robotraconteur.device.DeviceClass object_class;
+    public com.robotraconteur.geometry.shapes.ShapeObject object_shape;
+    public Dictionary<string,object> extended;
+}
+
+public class RecognizedObject
+{
+    public com.robotraconteur.identifier.Identifier recognized_object;
+    public com.robotraconteur.device.DeviceClass recognized_object_class;
+    public com.robotraconteur.geometry.NamedPoseWithCovariance pose;
+    public double confidence;
+    public Dictionary<string,object> extended;
+}
+
+public class RecognizedObjects
+{
+    public List<RecognizedObject> recognized_objects;
+    public object source_data;
+    public Dictionary<string,object> extended;
+}
+
+public class ObjectRecognitionSensorInfo
+{
+    public com.robotraconteur.device.DeviceInfo device_info;
+    public com.robotraconteur.geometry.Point range_min;
+    public com.robotraconteur.geometry.Point range_max;
+    public com.robotraconteur.geometry.Vector3 resolution;
+    public List<com.robotraconteur.param.ParameterInfo> param_info;
+    public List<com.robotraconteur.identifier.Identifier> object_template_identifiers;
+    public List<com.robotraconteur.device.DeviceClass> object_template_classes;
+    public Dictionary<string,object> extended;
+}
+
+public class ObjectRecognitionSensorData
+{
+    public com.robotraconteur.sensordata.SensorDataHeader sensor_data;
+    public RecognizedObjects recognized_objects;
+}
+
+[RobotRaconteurServiceObjectInterface()]
+public interface ObjectRecognitionSensor : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+{
+    com.robotraconteur.device.DeviceInfo device_info { get; 	}
+    ObjectRecognitionSensorInfo object_recognition_sensor_info { get; 	}
+    bool active { get;  set; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
+    RecognizedObjects capture_recognized_objects();
+    object getf_param(string param_name);
+    void setf_param(string param_name, object value_);
+    ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier);
+    ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class);
+    Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data{ get; set; }
+}
+
+}
+namespace com.robotraconteur.objectrecognition
+{
+public class com__robotraconteur__objectrecognitionFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.objectrecognition\n\nstdver 0.10\n\nimport com.robotraconteur.identifier\nimport com.robotraconteur.geometry\nimport com.robotraconteur.geometry.shapes\nimport com.robotraconteur.param\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.sensordata\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.DeviceClass\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.geometry.shapes.ShapeObject\nusing com.robotraconteur.geometry.NamedPoseWithCovariance\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.sensordata.SensorDataHeader\n\nstruct ObjectRecognitionTemplate\nfield Identifier object_identifier\nfield DeviceClass object_class\nfield ShapeObject object_shape\nfield varvalue{string} extended\nend\n\nstruct RecognizedObject\nfield Identifier recognized_object\nfield DeviceClass recognized_object_class\nfield NamedPoseWithCovariance pose\nfield double confidence\nfield varvalue{string} extended\nend\n\nstruct RecognizedObjects\nfield RecognizedObject{list} recognized_objects\nfield varvalue source_data\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorInfo\nfield DeviceInfo device_info\nfield Point range_min\nfield Point range_max\nfield Vector3 resolution\nfield ParameterInfo{list} param_info\nfield Identifier{list} object_template_identifiers\nfield DeviceClass{list} object_template_classes\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorData\nfield SensorDataHeader sensor_data\nfield RecognizedObjects recognized_objects\nend\n\nobject ObjectRecognitionSensor\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ObjectRecognitionSensorInfo object_recognition_sensor_info [readonly,nolock]\nproperty bool active\nfunction RecognizedObjects capture_recognized_objects()\npipe ObjectRecognitionSensorData object_recognition_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction ObjectRecognitionTemplate getf_object_template(Identifier object_identifier)\nfunction ObjectRecognitionTemplate getf_object_class_template(Identifier object_class)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\n\n\n\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.objectrecognition";}
+    public ObjectRecognitionTemplate_stub ObjectRecognitionTemplate_stubentry;
+    public RecognizedObject_stub RecognizedObject_stubentry;
+    public RecognizedObjects_stub RecognizedObjects_stubentry;
+    public ObjectRecognitionSensorInfo_stub ObjectRecognitionSensorInfo_stubentry;
+    public ObjectRecognitionSensorData_stub ObjectRecognitionSensorData_stubentry;
+    public com__robotraconteur__objectrecognitionFactory()
+{
+    ObjectRecognitionTemplate_stubentry=new ObjectRecognitionTemplate_stub(this);
+    RecognizedObject_stubentry=new RecognizedObject_stub(this);
+    RecognizedObjects_stubentry=new RecognizedObjects_stub(this);
+    ObjectRecognitionSensorInfo_stubentry=new ObjectRecognitionSensorInfo_stub(this);
+    ObjectRecognitionSensorData_stubentry=new ObjectRecognitionSensorData_stub(this);
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    if (objecttype=="ObjectRecognitionTemplate")    return ObjectRecognitionTemplate_stubentry;
+    if (objecttype=="RecognizedObject")    return RecognizedObject_stubentry;
+    if (objecttype=="RecognizedObjects")    return RecognizedObjects_stubentry;
+    if (objecttype=="ObjectRecognitionSensorInfo")    return ObjectRecognitionSensorInfo_stubentry;
+    if (objecttype=="ObjectRecognitionSensorData")    return ObjectRecognitionSensorData_stubentry;
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    case "ObjectRecognitionSensor":
+    return new ObjectRecognitionSensor_stub(innerstub);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    case "ObjectRecognitionSensor":
+    return new ObjectRecognitionSensor_skel((ObjectRecognitionSensor)obj);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class ObjectRecognitionTemplate_stub : IStructureStub {
+    public ObjectRecognitionTemplate_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ObjectRecognitionTemplate s = (ObjectRecognitionTemplate)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_identifier",s.object_identifier));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_class",s.object_class));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_shape",s.object_shape));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionTemplate",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ObjectRecognitionTemplate s=new ObjectRecognitionTemplate();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.object_identifier =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"object_identifier"));
+    s.object_class =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"object_class"));
+    s.object_shape =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.shapes.ShapeObject>(MessageElement.FindElement(mm,"object_shape"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class RecognizedObject_stub : IStructureStub {
+    public RecognizedObject_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    RecognizedObject s = (RecognizedObject)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_object",s.recognized_object));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_object_class",s.recognized_object_class));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("pose",s.pose));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("confidence",s.confidence));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.RecognizedObject",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    RecognizedObject s=new RecognizedObject();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.recognized_object =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"recognized_object"));
+    s.recognized_object_class =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"recognized_object_class"));
+    s.pose =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.NamedPoseWithCovariance>(MessageElement.FindElement(mm,"pose"));
+    s.confidence =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"confidence")));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class RecognizedObjects_stub : IStructureStub {
+    public RecognizedObjects_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    RecognizedObjects s = (RecognizedObjects)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<RecognizedObject>("recognized_objects",s.recognized_objects));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackVarType("source_data",s.source_data));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.RecognizedObjects",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    RecognizedObjects s=new RecognizedObjects();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.recognized_objects =MessageElementUtil.UnpackList<RecognizedObject>(MessageElement.FindElement(mm,"recognized_objects"));
+    s.source_data =MessageElementUtil.UnpackVarType(MessageElement.FindElement(mm,"source_data"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class ObjectRecognitionSensorInfo_stub : IStructureStub {
+    public ObjectRecognitionSensorInfo_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ObjectRecognitionSensorInfo s = (ObjectRecognitionSensorInfo)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Point>("range_min",ref s.range_min));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Point>("range_max",ref s.range_max));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Vector3>("resolution",ref s.resolution));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.param.ParameterInfo>("param_info",s.param_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.identifier.Identifier>("object_template_identifiers",s.object_template_identifiers));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.device.DeviceClass>("object_template_classes",s.object_template_classes));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionSensorInfo",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ObjectRecognitionSensorInfo s=new ObjectRecognitionSensorInfo();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
+    s.range_min =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Point>(MessageElement.FindElement(mm,"range_min"));
+    s.range_max =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Point>(MessageElement.FindElement(mm,"range_max"));
+    s.resolution =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Vector3>(MessageElement.FindElement(mm,"resolution"));
+    s.param_info =MessageElementUtil.UnpackList<com.robotraconteur.param.ParameterInfo>(MessageElement.FindElement(mm,"param_info"));
+    s.object_template_identifiers =MessageElementUtil.UnpackList<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"object_template_identifiers"));
+    s.object_template_classes =MessageElementUtil.UnpackList<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"object_template_classes"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class ObjectRecognitionSensorData_stub : IStructureStub {
+    public ObjectRecognitionSensorData_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ObjectRecognitionSensorData s = (ObjectRecognitionSensorData)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("sensor_data",s.sensor_data));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_objects",s.recognized_objects));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionSensorData",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ObjectRecognitionSensorData s=new ObjectRecognitionSensorData();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.sensor_data =MessageElementUtil.UnpackStructure<com.robotraconteur.sensordata.SensorDataHeader>(MessageElement.FindElement(mm,"sensor_data"));
+    s.recognized_objects =MessageElementUtil.UnpackStructure<RecognizedObjects>(MessageElement.FindElement(mm,"recognized_objects"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public interface async_ObjectRecognitionSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+{
+    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ObjectRecognitionSensorInfo> async_get_object_recognition_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<bool> async_get_active(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_active(bool value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<RecognizedObjects> async_capture_recognized_objects(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ObjectRecognitionTemplate> async_getf_object_template(com.robotraconteur.identifier.Identifier object_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ObjectRecognitionTemplate> async_getf_object_class_template(com.robotraconteur.identifier.Identifier object_class,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+}
+public class ObjectRecognitionSensor_stub : ServiceStub , ObjectRecognitionSensor, async_ObjectRecognitionSensor{
+    private Pipe<ObjectRecognitionSensorData> rr_object_recognition_sensor_data;
+    public ObjectRecognitionSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    rr_object_recognition_sensor_data=new Pipe<ObjectRecognitionSensorData>(innerstub.GetPipe("object_recognition_sensor_data"));
+    }
+    public com.robotraconteur.device.DeviceInfo device_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
+    }
+    }
+    public ObjectRecognitionSensorInfo object_recognition_sensor_info {
+    get {
+    return MessageElementUtil.UnpackStructure<ObjectRecognitionSensorInfo>(rr_innerstub.PropertyGet("object_recognition_sensor_info"));
+    }
+    }
+    public bool active {
+    get {
+    return (MessageElementUtil.UnpackScalar<bool>(rr_innerstub.PropertyGet("active")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<bool>("value",value))
+    {
+    rr_innerstub.PropertySet("active", m);
+    }
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
+    }
+    }
+    public RecognizedObjects capture_recognized_objects() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("capture_recognized_objects",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<RecognizedObjects>(rr_me);
+    }
+    }
+    }
+    public object getf_param(string param_name) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_param",rr_param))
+    {
+    return MessageElementUtil.UnpackVarType(rr_me);
+    }
+    }
+    }
+    public void setf_param(string param_name, object value_) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_param",rr_param))
+    {
+    }
+    }
+    }
+    public ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_identifier",object_identifier));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_object_template",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_me);
+    }
+    }
+    }
+    public ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_class",object_class));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_object_class_template",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_me);
+    }
+    }
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data {
+    get { return rr_object_recognition_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<ObjectRecognitionSensorInfo> async_get_object_recognition_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("object_recognition_sensor_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionSensorInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<bool> async_get_active(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("active",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<bool>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_active(bool value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<bool>("value",value))
+    {
+    await rr_async_PropertySet("active",mm,rr_timeout);
+    }
+    }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
+    public virtual async Task<RecognizedObjects> async_capture_recognized_objects(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("capture_recognized_objects",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<RecognizedObjects>(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    using(var rr_return = await rr_async_FunctionCall("getf_param",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackVarType(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
+    using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task<ObjectRecognitionTemplate> async_getf_object_template(com.robotraconteur.identifier.Identifier object_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_identifier",object_identifier));
+    using(var rr_return = await rr_async_FunctionCall("getf_object_template",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task<ObjectRecognitionTemplate> async_getf_object_class_template(com.robotraconteur.identifier.Identifier object_class,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_class",object_class));
+    using(var rr_return = await rr_async_FunctionCall("getf_object_class_template",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_return);
+    return rr_ret;
+    } } }
+}
+public class ObjectRecognitionSensor_skel : ServiceSkel {
+    protected ObjectRecognitionSensor obj;
+    protected async_ObjectRecognitionSensor async_obj;
+    public ObjectRecognitionSensor_skel(object o) : base(o)    {
+    obj=(ObjectRecognitionSensor)o;
+    async_obj = o as async_ObjectRecognitionSensor;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "device_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "object_recognition_sensor_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_object_recognition_sensor_info().ContinueWith(t => async_adapter.EndTask<ObjectRecognitionSensorInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ObjectRecognitionSensorInfo ret=obj.object_recognition_sensor_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "active":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_active().ContinueWith(t => async_adapter.EndTask<bool>(t,async_ret => MessageElementUtil.PackScalar<bool>("return",async_ret)));
+    return null;
+    }
+    bool ret=obj.active;
+    return MessageElementUtil.PackScalar<bool>("return",ret);
+    }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "active":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_active((MessageElementUtil.UnpackScalar<bool>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.active=(MessageElementUtil.UnpackScalar<bool>(m));
+    return;
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    case "capture_recognized_objects":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_capture_recognized_objects().ContinueWith(t => rr_async_adapter.EndTask<RecognizedObjects>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    RecognizedObjects rr_ret=this.obj.capture_recognized_objects();
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    case "getf_param":
+    {
+    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_getf_param(param_name).ContinueWith(t => rr_async_adapter.EndTask<object>(t,async_ret => MessageElementUtil.PackVarType("return",async_ret)));
+    return null;
+    }
+    object rr_ret=this.obj.getf_param(param_name);
+    return MessageElementUtil.PackVarType("return",rr_ret);
+    }
+    case "setf_param":
+    {
+    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
+    object value_=MessageElementUtil.UnpackVarType(vectorptr_messageelement_util.FindElement(rr_m,"value"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_setf_param(param_name, value_).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.setf_param(param_name, value_);
+    return new MessageElement("return",(int)0);
+    }
+    case "getf_object_template":
+    {
+    com.robotraconteur.identifier.Identifier object_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"object_identifier"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_getf_object_template(object_identifier).ContinueWith(t => rr_async_adapter.EndTask<ObjectRecognitionTemplate>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ObjectRecognitionTemplate rr_ret=this.obj.getf_object_template(object_identifier);
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    case "getf_object_class_template":
+    {
+    com.robotraconteur.identifier.Identifier object_class=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"object_class"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_getf_object_class_template(object_class).ContinueWith(t => rr_async_adapter.EndTask<ObjectRecognitionTemplate>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ObjectRecognitionTemplate rr_ret=this.obj.getf_object_class_template(object_class);
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    obj.object_recognition_sensor_data=new Pipe<ObjectRecognitionSensorData>(innerskel.GetPipe("object_recognition_sensor_data"));
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "com.robotraconteur.objectrecognition.ObjectRecognitionSensor"; } }
+}
+public class ObjectRecognitionSensor_default_impl : ObjectRecognitionSensor{
+    protected PipeBroadcaster<ObjectRecognitionSensorData> rrvar_object_recognition_sensor_data;
+    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
+    public virtual ObjectRecognitionSensorInfo object_recognition_sensor_info {get; set;} = default(ObjectRecognitionSensorInfo);
+    public virtual bool active {get; set;} = default(bool);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
+    public virtual RecognizedObjects capture_recognized_objects() {
+    throw new NotImplementedException();    }
+    public virtual object getf_param(string param_name) {
+    throw new NotImplementedException();    }
+    public virtual void setf_param(string param_name, object value_) {
+    throw new NotImplementedException();    }
+    public virtual ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier) {
+    throw new NotImplementedException();    }
+    public virtual ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class) {
+    throw new NotImplementedException();    }
+    public virtual Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data {
+    get { return rrvar_object_recognition_sensor_data.Pipe;  }
+    set {
+    if (rrvar_object_recognition_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_object_recognition_sensor_data= new PipeBroadcaster<ObjectRecognitionSensorData>(value);
+    }
+    }
+}
+public static class RRExtensions{
+}
+}
