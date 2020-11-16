@@ -23,92 +23,10 @@ using System.Text.RegularExpressions;
 using com.robotraconteur.identifier;
 using com.robotraconteur.uuid;
 using RobotRaconteur;
-using RobotRaconteurNET.Companion.Util;
+using RobotRaconteur.Companion.Util;
 
-namespace RobotRaconteur.Companion.InfoParser
+namespace RobotRaconteur.Companion.Util
 {
-
-    public class YamlUuid
-    {
-        public string source_string { get; set; }
-        public byte[] uuid_bytes { get; set; } = new byte[16];
-
-        public YamlUuid(string str_uuid)
-        {
-            source_string = str_uuid;
-            if (!UuidUtil.TryParse(str_uuid, out byte[] uuid_bytes))
-            {
-                throw new ArgumentException("Invalid UUID string in yaml config file");
-            }
-            this.uuid_bytes = uuid_bytes;
-        }
-
-
-              
-
-        public static explicit operator YamlUuid(string s) => new YamlUuid(s);
-
-        public void CopyTo(ref com.robotraconteur.uuid.UUID uuid)
-        {
-            uuid.uuid_bytes = (byte[])uuid_bytes.Clone() ?? new byte[16];
-        }
-
-        public com.robotraconteur.uuid.UUID ToRRInfo()
-        {
-            var uuid = new com.robotraconteur.uuid.UUID();
-            CopyTo(ref uuid);
-            return uuid;        
-        }
-    }
-
-    public class YamlIdentifier
-    {
-        public string name { get; set; }
-        public YamlUuid uuid { get; set; }
-
-        public static explicit operator YamlIdentifier(string s) => new YamlIdentifier() { name = s };
-
-        public void CopyTo(com.robotraconteur.identifier.Identifier id)
-        {
-            id.name = name;
-            if (uuid == null)
-            {
-                id.uuid = new com.robotraconteur.uuid.UUID();
-                id.uuid.uuid_bytes = new byte[16];
-            }
-            else
-            {
-                id.uuid = uuid.ToRRInfo();
-            }
-        }
-
-        public com.robotraconteur.identifier.Identifier ToRRInfo()
-        {
-            var id = new com.robotraconteur.identifier.Identifier();
-            CopyTo(id);
-            return id;
-        }
-    }
-
-    public class YamlResourceIdentifier
-    {
-        public YamlIdentifier bucket { get; set; }
-        public string key { get; set; }
-
-        public void CopyTo(com.robotraconteur.resource.ResourceIdentifier id)
-        {
-            id.bucket = bucket?.ToRRInfo();
-            id.key = key ?? "";
-        }
-
-        public com.robotraconteur.resource.ResourceIdentifier ToRRInfo()
-        {
-            var id = new com.robotraconteur.resource.ResourceIdentifier();
-            CopyTo(id);
-            return id;
-        }
-    }
-
     // This file is largely based on RobotRaconteurWeb.LocalTransport NodeID generation and locking
 
 

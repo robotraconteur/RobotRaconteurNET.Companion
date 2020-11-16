@@ -24,6 +24,7 @@ using System.IO;
 using System.Linq;
 using com.robotraconteur.robotics.tool;
 using com.robotraconteur.sensor;
+using RobotRaconteur.Companion.Util;
 
 namespace RobotRaconteur.Companion.InfoParser
 {

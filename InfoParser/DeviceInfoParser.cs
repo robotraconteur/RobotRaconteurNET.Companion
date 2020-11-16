@@ -21,6 +21,7 @@ using com.robotraconteur.uuid;
 using com.robotraconteur.geometry;
 using System.IO;
 using System.Linq;
+using RobotRaconteur.Companion.Util;
 
 namespace RobotRaconteur.Companion.InfoParser
 {

@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
-namespace RobotRaconteurNET.Companion.Util
+namespace RobotRaconteur.Companion.Util
 {
     public static class IdentifierUtil
     {
@@ -114,6 +115,53 @@ namespace RobotRaconteurNET.Companion.Util
                 name = name,
                 uuid = new UUID { uuid_bytes = new byte[16] }
             };
+        }
+
+        public static string IdentifierToString(Identifier id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            if (!IsIdentifierAnyName(id) && !IsIdentifierAnyUuid(id))
+            {
+                return id.name + "|" + UuidUtil.UuidToString(id.uuid);
+            }
+            if (!IsIdentifierAnyName(id))
+            {
+                return id.name;
+            }
+            if (!IsIdentifierAnyUuid(id))
+            {
+                return UuidUtil.UuidToString(id.uuid);
+            }
+            return null;
+        }
+
+        public static Identifier StringToIdentifier(string string_id)
+        {
+            const string name_regex = "(?:[a-zA-Z](?:\\w*[a-zA-Z0-9])?)(?:\\.[a-zA-Z](?:\\w*[a-zA-Z0-9])?)+";
+            const string uuid_regex = @"\{?([a-fA-F0-9]{8})-([a-fA-F0-9]{4})-([a-fA-F0-9]{4})-([a-fA-F0-9]{4})-([a-fA-F0-9]{12})\}?";
+            string identifier_regex = $"(?{name_regex}\\|{uuid_regex})|({name_regex})|({uuid_regex})";
+            var r = new Regex(identifier_regex);
+            var res = r.Match(string_id);
+            if (!res.Success)
+            {
+                throw new ArgumentException("Invalid Identifier string");
+            }
+            if (res.Groups[1].Success && res.Groups[2].Success)
+            {
+                return CreateIdentifier(res.Groups[1].Value, res.Groups[2].Value);
+            }
+            if (res.Groups[3].Success)
+            {
+                return CreateIdentifierFromName(res.Groups[3].Value);
+            }
+            if (res.Groups[4].Success)
+            {
+                return CreateIdentifier("", res.Groups[4].Value);
+            }
+            throw new ArgumentException("Invalid Identifier string");
         }
     }
 }

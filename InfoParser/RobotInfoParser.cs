@@ -25,6 +25,7 @@ using System.Linq;
 using com.robotraconteur.robotics.trajectory;
 using com.robotraconteur.robotics.joints;
 using com.robotraconteur.sensor;
+using RobotRaconteur.Companion.Util;
 
 namespace RobotRaconteur.Companion.InfoParser
 {
