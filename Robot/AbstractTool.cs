@@ -6,6 +6,8 @@ using RobotRaconteur;
 using System.Diagnostics;
 using System.Threading;
 using com.robotraconteur.device.isoch;
+using com.robotraconteur.datetime;
+using RobotRaconteur.Companion.Util;
 
 namespace RobotRaconteur.Companion.Robot
 {
@@ -19,7 +21,7 @@ namespace RobotRaconteur.Companion.Robot
         protected double _command;
         protected double[] _sensor;
         protected Stopwatch _stopwatch;
-        private DateTime _stopwatch_epoch;
+        protected DateTimeUTC _stopwatch_epoch;
         protected BroadcastDownsampler _broadcast_downsampler;
         private bool _keep_going;
         private Thread _loop_thread;
@@ -51,7 +53,7 @@ namespace RobotRaconteur.Companion.Robot
                 Debug.WriteLine("warning: not using high resolution timer");
             }
             _stopwatch = Stopwatch.StartNew();
-            _stopwatch_epoch = DateTime.UtcNow;
+            _stopwatch_epoch = DateTimeUtil.UtcNow;
 
             _keep_going = true;
             _loop_thread = new Thread(_loop_thread_func);
@@ -136,17 +138,10 @@ namespace RobotRaconteur.Companion.Robot
                 return;
             }
 
-            var now_utc = new com.robotraconteur.datetime.DateTimeUTC();
-            now_utc.clock_info.clock_type = (int)com.robotraconteur.datetime.ClockTypeCode.default_;
-            now_utc.clock_info.clock_uuid = _tool_uuid;
-            var ts = TimeSpec.Now();
-            now_utc.seconds = ts.seconds;
-            now_utc.nanoseconds = ts.nanoseconds;
 
-            var sensor_data_header = new com.robotraconteur.sensordata.SensorDataHeader();
-            sensor_data_header.seqno = _state_seqno;
-            sensor_data_header.ts = now_utc;
 
+            var sensor_data_header = SensorDataUtil.FillSensorDataHeader(_tool_info?.device_info, _state_seqno);
+            
             var sensor_data = new ToolStateSensorData();
             sensor_data.data_header = sensor_data_header;
             sensor_data.robot_state = rr_tool_state;
@@ -171,14 +166,12 @@ namespace RobotRaconteur.Companion.Robot
                 var isoch_info = new IsochInfo();
                 isoch_info.update_rate = 1.0 / _update_period;
                 isoch_info.max_downsample = 1000;
-                TimeSpan t;
+                
                 lock (this)
                 {
-                    t = _stopwatch_epoch.ToUniversalTime() - (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+                    isoch_info.isoch_epoch = _stopwatch_epoch;
                 }
-                isoch_info.isoch_epoch = new com.robotraconteur.datetime.DateTimeUTC();
-                isoch_info.isoch_epoch.seconds = (long)Math.Round(t.TotalSeconds);
-                isoch_info.isoch_epoch.nanoseconds = (int)Math.IEEERemainder(t.TotalMilliseconds * 1e6, 1e9);
+                
                 return isoch_info;
             }
         }
