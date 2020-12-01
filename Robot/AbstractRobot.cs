@@ -74,7 +74,7 @@ namespace RobotRaconteur.Companion.Robot
 
 
         protected Stopwatch _stopwatch;
-        protected DateTimeUTC _stopwatch_epoch;
+        protected TimeSpec2 _stopwatch_epoch;
 
         protected com.robotraconteur.uuid.UUID _robot_uuid;
         protected com.robotraconteur.robotics.robot.RobotInfo _robot_info;
@@ -167,7 +167,7 @@ namespace RobotRaconteur.Companion.Robot
                 Debug.WriteLine("warning: not using high resolution timer");
             }
             _stopwatch = Stopwatch.StartNew();
-            _stopwatch_epoch = DateTimeUtil.UtcNow;
+            _stopwatch_epoch = DateTimeUtil.TimeSpec2Now(RobotRaconteurNode.s);
                         
             _keep_going = true;
             _loop_thread = new Thread(_loop_thread_func);
@@ -268,7 +268,7 @@ namespace RobotRaconteur.Companion.Robot
 
             using (downsampler_step)
             {
-                _send_states(now, rr_robot_state, rr_advanced_robot_state, rr_state_sensor_data);
+                _send_states(now, rr_robot_state, rr_advanced_robot_state, rr_state_sensor_data);                
             }
         }
 
@@ -419,7 +419,10 @@ namespace RobotRaconteur.Companion.Robot
 
         protected internal virtual void _fill_states(long now, out RobotState rr_robot_state, out AdvancedRobotState rr_advanced_robot_state, out RobotStateSensorData rr_state_sensor_data)
         {
+            var ts = DateTimeUtil.TimeSpec3Now(RobotRaconteurNode.s);
+
             var rob_state = new RobotState();
+            rob_state.ts = ts;
             rob_state.seqno = _state_seqno;
             rob_state.command_mode = _command_mode;
             rob_state.operational_mode = _operational_mode;
@@ -439,6 +442,7 @@ namespace RobotRaconteur.Companion.Robot
             rob_state.trajectory_running = _trajectory_valid;
 
             var a_rob_state = new AdvancedRobotState();
+            a_rob_state.ts = ts;
             a_rob_state.seqno = rob_state.seqno;
             a_rob_state.command_mode = rob_state.command_mode;
             a_rob_state.operational_mode = rob_state.operational_mode;
@@ -456,12 +460,8 @@ namespace RobotRaconteur.Companion.Robot
             a_rob_state.trajectory_time = _trajectory_current_time;
             a_rob_state.trajectory_max_time = _trajectory_max_time;
             a_rob_state.trajectory_current_waypoint = _trajectory_waypoint;
-
-            var now_utc = new com.robotraconteur.datetime.DateTimeUTC();
-            now_utc.clock_info.clock_type = (int)com.robotraconteur.datetime.ClockTypeCode.default_;
-            now_utc.clock_info.clock_uuid = _robot_uuid;
-            
-            var sensor_data_header = SensorDataUtil.FillSensorDataHeader(_robot_info?.device_info, _state_seqno);
+                                    
+            var sensor_data_header = SensorDataUtil.FillSensorDataHeader(RobotRaconteurNode.s,_robot_info?.device_info, _state_seqno);
             
             var sensor_data = new RobotStateSensorData();
             sensor_data.data_header = sensor_data_header;
@@ -485,6 +485,11 @@ namespace RobotRaconteur.Companion.Robot
             }
 
             rrvar_robot_state_sensor_data?.AsyncSendPacket(rr_state_sensor_data).ContinueWith(t => { var ignore = t.Exception; }, System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);                        
+            
+            if (rrvar_device_clock_now != null)
+            {
+                rrvar_device_clock_now.OutValue = DateTimeUtil.FillDeviceTime(RobotRaconteurNode.s, robot_info?.device_info, _state_seqno);
+            }
         }
 
         protected internal abstract Task _send_disable();
@@ -1578,6 +1583,7 @@ namespace RobotRaconteur.Companion.Robot
             _broadcast_downsampler.AddPipeBroadcaster(rrvar_robot_state_sensor_data);
             _broadcast_downsampler.AddWireBroadcaster(rrvar_robot_state);
             _broadcast_downsampler.AddWireBroadcaster(rrvar_advanced_robot_state);
+            _broadcast_downsampler.AddWireBroadcaster(rrvar_device_clock_now);
         }
     }
     

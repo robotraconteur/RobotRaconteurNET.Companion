@@ -1630,10 +1630,33 @@ public class DateTimeLocal
     public string timezone_name;
 }
 
+[NamedArrayElementTypeAndCount(typeof(long), 1)]
+public struct TimeSpec3
+{
+    public long microseconds;
+    public long[] GetNumericArray()
+    {
+    var a=new ArraySegment<long>(new long[1]);
+    GetNumericArray(ref a);
+    return a.Array;
+    }
+    public void GetNumericArray(ref ArraySegment<long> rr_a)
+    {
+    if(rr_a.Count < 1) throw new ArgumentException("ArraySegment invalid length");
+    rr_a.Array[rr_a.Offset + 0] = microseconds;
+    }
+    public void AssignFromNumericArray(ref ArraySegment<long> rr_a)
+    {
+    if(rr_a.Count < 1) throw new ArgumentException("ArraySegment invalid length");
+    microseconds = rr_a.Array[rr_a.Offset + 0];
+    }
+}
+
 public struct ClockInfo
 {
     public int clock_type;
     public com.robotraconteur.uuid.UUID clock_uuid;
+    public long offset_microseconds;
 }
 
 public struct DateTimeUTC
@@ -1644,6 +1667,13 @@ public struct DateTimeUTC
 }
 
 public struct Duration
+{
+    public ClockInfo clock_info;
+    public long seconds;
+    public int nanoseconds;
+}
+
+public struct TimeSpec2
 {
     public ClockInfo clock_info;
     public long seconds;
@@ -1661,9 +1691,20 @@ public static class com__robotraconteur__datetimeConstants
     system_rtc_clock = 2,
     system_ntp_clock = 3,
     system_ptp_clock = 4,
-    system_other_clock = 5,
-    sim_clock_realtime = 6,
-    sim_clock_scaled = 7,
+    system_arb_clock = 5,
+    system_gps_clock = 6,
+    system_tai_clock = 7,
+    system_other_clock = 8,
+    sim_clock_realtime = 9,
+    sim_clock_scaled = 10,
+    node_default = 11,
+    node_rtc_clock = 12,
+    node_ntp_clock = 13,
+    node_ptp_clock = 14,
+    node_arb_clock = 15,
+    node_gps_clock = 16,
+    node_tai_clock = 17,
+    node_other_clock = 18,
     aux_0 = 0x1000,
     aux_1 = 0x1001,
     aux_2 = 0x1002,
@@ -1680,7 +1721,7 @@ public class com__robotraconteur__datetimeFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.datetime\n\nstdver 0.10\n\nimport com.robotraconteur.uuid\nusing com.robotraconteur.uuid.UUID\n\nconstant string EPOCH_ISO8601 \"1970-01-01T00:00:00Z\"\n\nenum ClockTypeCode\nunknown = 0,\ndefault,\nsystem_rtc_clock,\nsystem_ntp_clock,\nsystem_ptp_clock,\nsystem_other_clock,\nsim_clock_realtime,\nsim_clock_scaled,\naux_0 = 0x1000,\naux_1,\naux_2,\naux_3,\naux_4,\naux_5,\naux_6,\naux_7\nend\n\npod ClockInfo\nfield int32 clock_type\nfield UUID clock_uuid\nend\n\npod DateTimeUTC\nfield ClockInfo clock_info\nfield int64 seconds\nfield int32 nanoseconds\nend\n\nstruct DateTimeLocal\nfield ClockInfo clock_info\nfield int64 seconds\nfield int32 nanoseconds\nfield int32 utc_offset_seconds\nfield string timezone_name\nend\n\npod Duration\nfield ClockInfo clock_info\nfield int64 seconds\nfield int32 nanoseconds\nend\n\n\n";
+    const string s="service com.robotraconteur.datetime\n\nstdver 0.10\n\nimport com.robotraconteur.uuid\nusing com.robotraconteur.uuid.UUID\n\nconstant string EPOCH_ISO8601 \"1970-01-01T00:00:00Z\"\n\nenum ClockTypeCode\nunknown = 0,\ndefault,\nsystem_rtc_clock,\nsystem_ntp_clock,\nsystem_ptp_clock,\nsystem_arb_clock,\nsystem_gps_clock,\nsystem_tai_clock,\nsystem_other_clock,\nsim_clock_realtime,\nsim_clock_scaled,\nnode_default,\nnode_rtc_clock,\nnode_ntp_clock,\nnode_ptp_clock,\nnode_arb_clock,\nnode_gps_clock,\nnode_tai_clock,\nnode_other_clock,\naux_0 = 0x1000,\naux_1,\naux_2,\naux_3,\naux_4,\naux_5,\naux_6,\naux_7\nend\n\npod ClockInfo\nfield int32 clock_type\nfield UUID clock_uuid\n# Offset from TAI time\nfield int64 offset_microseconds\nend\n\npod DateTimeUTC\nfield ClockInfo clock_info\nfield int64 seconds\nfield int32 nanoseconds\nend\n\nstruct DateTimeLocal\nfield ClockInfo clock_info\nfield int64 seconds\nfield int32 nanoseconds\nfield int32 utc_offset_seconds\nfield string timezone_name\nend\n\npod Duration\nfield ClockInfo clock_info\nfield int64 seconds\nfield int32 nanoseconds\nend\n\n# TimeSpec2 in Node Clock\npod TimeSpec2\nfield ClockInfo clock_info\nfield int64 seconds\nfield int32 nanoseconds\nend\n\n# Compact TimeSpec3 in Node Clock\nnamedarray TimeSpec3\nfield int64 microseconds\nend\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.datetime";}
@@ -1688,12 +1729,16 @@ public class com__robotraconteur__datetimeFactory : ServiceFactory
     public ClockInfo_stub ClockInfo_stubentry;
     public DateTimeUTC_stub DateTimeUTC_stubentry;
     public Duration_stub Duration_stubentry;
+    public TimeSpec2_stub TimeSpec2_stubentry;
+    public TimeSpec3_stub TimeSpec3_stubentry;
     public com__robotraconteur__datetimeFactory()
 {
     DateTimeLocal_stubentry=new DateTimeLocal_stub(this);
     ClockInfo_stubentry=new ClockInfo_stub(this);
     DateTimeUTC_stubentry=new DateTimeUTC_stub(this);
     Duration_stubentry=new Duration_stub(this);
+    TimeSpec2_stubentry=new TimeSpec2_stub(this);
+    TimeSpec3_stubentry=new TimeSpec3_stub();
     }
     public override IStructureStub FindStructureStub(string objecttype)
     {
@@ -1705,10 +1750,12 @@ public class com__robotraconteur__datetimeFactory : ServiceFactory
     if (objecttype=="ClockInfo")    return ClockInfo_stubentry;
     if (objecttype=="DateTimeUTC")    return DateTimeUTC_stubentry;
     if (objecttype=="Duration")    return Duration_stubentry;
+    if (objecttype=="TimeSpec2")    return TimeSpec2_stubentry;
     throw new DataTypeException("Cannot find appropriate pod stub");
     }
     public override INamedArrayStub FindNamedArrayStub(string objecttype)
     {
+    if (objecttype=="TimeSpec3")    return TimeSpec3_stubentry;
     throw new DataTypeException("Cannot find appropriate pod stub");
     }
     public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
@@ -1792,6 +1839,7 @@ public class ClockInfo_stub : PodStub<ClockInfo> {
     ClockInfo s = (ClockInfo)s1;
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<int>("clock_type",s.clock_type));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.uuid.UUID>("clock_uuid",ref s.clock_uuid));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<long>("offset_microseconds",s.offset_microseconds));
     return new MessageElementNestedElementList(DataTypes.pod_t,"",m);
     }
     }
@@ -1802,6 +1850,7 @@ public class ClockInfo_stub : PodStub<ClockInfo> {
     ClockInfo s = new ClockInfo();
     s.clock_type =(MessageElementUtil.UnpackScalar<int>(MessageElement.FindElement(mm,"clock_type")));
     s.clock_uuid =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.uuid.UUID>(MessageElement.FindElement(mm,"clock_uuid"));
+    s.offset_microseconds =(MessageElementUtil.UnpackScalar<long>(MessageElement.FindElement(mm,"offset_microseconds")));
     return s;
     }
     }
@@ -1859,7 +1908,80 @@ public class Duration_stub : PodStub<Duration> {
     }
     public override string TypeName { get { return "com.robotraconteur.datetime.Duration"; } }}
 
+public class TimeSpec2_stub : PodStub<TimeSpec2> {
+    public TimeSpec2_stub(com__robotraconteur__datetimeFactory d) {def=d;}
+    private com__robotraconteur__datetimeFactory def;
+    public override MessageElementNestedElementList PackPod(ref TimeSpec2 s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    TimeSpec2 s = (TimeSpec2)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<ClockInfo>("clock_info",ref s.clock_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<long>("seconds",s.seconds));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<int>("nanoseconds",s.nanoseconds));
+    return new MessageElementNestedElementList(DataTypes.pod_t,"",m);
+    }
+    }
+    public override TimeSpec2 UnpackPod(MessageElementNestedElementList m) {
+    if (m == null ) throw new NullReferenceException("Pod must not be null");
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    TimeSpec2 s = new TimeSpec2();
+    s.clock_info =MessageElementUtil.UnpackPodFromArray<ClockInfo>(MessageElement.FindElement(mm,"clock_info"));
+    s.seconds =(MessageElementUtil.UnpackScalar<long>(MessageElement.FindElement(mm,"seconds")));
+    s.nanoseconds =(MessageElementUtil.UnpackScalar<int>(MessageElement.FindElement(mm,"nanoseconds")));
+    return s;
+    }
+    }
+    public override string TypeName { get { return "com.robotraconteur.datetime.TimeSpec2"; } }}
+
+public class TimeSpec3_stub : NamedArrayStub<TimeSpec3,long> {
+    public override long[] GetNumericArrayFromNamedArrayStruct(ref TimeSpec3 s) {
+    return s.GetNumericArray();
+    }
+    public override TimeSpec3 GetNamedArrayStructFromNumericArray(long[] m) {
+    if (m.Length != 1) throw new DataTypeException("Invalid namedarray array");
+    var s = new TimeSpec3();
+    var a = new ArraySegment<long>(m);
+    s.AssignFromNumericArray(ref a);
+    return s;
+    }
+    public override long[] GetNumericArrayFromNamedArray(TimeSpec3[] s) {
+    return s.GetNumericArray();
+    }
+    public override TimeSpec3[] GetNamedArrayFromNumericArray(long[] m) {
+    if (m.Length % 1 != 0) throw new DataTypeException("Invalid namedarray array");
+    TimeSpec3[] s = new TimeSpec3[m.Length / 1];
+    var a = new ArraySegment<long>(m);
+    s.AssignFromNumericArray(ref a);
+    return s;
+    }
+    public override string TypeName { get { return "com.robotraconteur.datetime.TimeSpec3"; } }}
+
 public static class RRExtensions{
+    public static long[] GetNumericArray(this TimeSpec3[] s)
+    {
+    var a=new ArraySegment<long>(new long[1 * s.Length]);
+    s.GetNumericArray(ref a);
+    return a.Array;
+    }
+    public static void GetNumericArray(this TimeSpec3[] s, ref ArraySegment<long> a)
+    {
+    if(a.Count < 1 * s.Length) throw new ArgumentException("ArraySegment invalid length");
+    for (int i=0; i<s.Length; i++)
+    {
+    var a1 = new ArraySegment<long>(a.Array, a.Offset + 1*i,1);
+    s[i].GetNumericArray(ref a1);
+    }
+    }
+    public static void AssignFromNumericArray(this TimeSpec3[] s, ref ArraySegment<long> a)
+    {
+    if(a.Count < 1 * s.Length) throw new ArgumentException("ArraySegment invalid length");
+    for (int i=0; i<s.Length; i++)
+    {
+    var a1 = new ArraySegment<long>(a.Array, a.Offset + 1*i,1);
+    s[i].AssignFromNumericArray(ref a1);
+    }
+    }
 }
 }
 namespace com.robotraconteur.datetime.clock
@@ -1874,12 +1996,13 @@ public class ClockDeviceInfo
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Clock : com.robotraconteur.device.Device
+public interface Clock : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     ClockDeviceInfo clock_info { get; 	}
     Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc{ get; set; }
     Wire<com.robotraconteur.datetime.DateTimeLocal> time_local{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 }
@@ -1889,7 +2012,7 @@ public class com__robotraconteur__datetime__clockFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.datetime.clock\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\nimport com.robotraconteur.device\n\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.DateTimeLocal\nusing com.robotraconteur.datetime.ClockTypeCode\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\n\nstruct ClockDeviceInfo\nfield DeviceInfo device_info\nfield ClockTypeCode clock_type\nfield int32 timezone_utc_offset_seconds\nfield string timezone_name\nfield varvalue{string} extended\nend\n\nobject Clock\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ClockDeviceInfo clock_info [readonly,nolock]\nwire DateTimeUTC time_utc [readonly]\nwire DateTimeLocal time_local [readonly]\nend\n";
+    const string s="service com.robotraconteur.datetime.clock\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\nimport com.robotraconteur.device\nimport com.robotraconteur.device.clock\n\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.DateTimeLocal\nusing com.robotraconteur.datetime.ClockTypeCode\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\n\nstruct ClockDeviceInfo\nfield DeviceInfo device_info\nfield ClockTypeCode clock_type\nfield int32 timezone_utc_offset_seconds\nfield string timezone_name\nfield varvalue{string} extended\nend\n\nobject Clock\nimplements Device\nimplements DeviceClock\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ClockDeviceInfo clock_info [readonly,nolock]\nwire DateTimeUTC time_utc [readonly]\nwire DateTimeLocal time_local [readonly]\n# Optional device clock\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.datetime.clock";}
@@ -1987,7 +2110,7 @@ public class ClockDeviceInfo_stub : IStructureStub {
     }
 }
 
-public interface async_Clock : com.robotraconteur.device.async_Device
+public interface async_Clock : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<ClockDeviceInfo> async_get_clock_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -1995,9 +2118,11 @@ public interface async_Clock : com.robotraconteur.device.async_Device
 public class Clock_stub : ServiceStub , Clock, async_Clock{
     private Wire<com.robotraconteur.datetime.DateTimeUTC> rr_time_utc;
     private Wire<com.robotraconteur.datetime.DateTimeLocal> rr_time_local;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public Clock_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_time_utc=new Wire<com.robotraconteur.datetime.DateTimeUTC>(innerstub.GetWire("time_utc"));
     rr_time_local=new Wire<com.robotraconteur.datetime.DateTimeLocal>(innerstub.GetWire("time_local"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -2021,6 +2146,10 @@ public class Clock_stub : ServiceStub , Clock, async_Clock{
     }
     public Wire<com.robotraconteur.datetime.DateTimeLocal> time_local {
     get { return rr_time_local;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -2126,6 +2255,7 @@ public class Clock_skel : ServiceSkel {
     obj=(Clock)rrobj1;
     obj.time_utc=new Wire<com.robotraconteur.datetime.DateTimeUTC>(innerskel.GetWire("time_utc"));
     obj.time_local=new Wire<com.robotraconteur.datetime.DateTimeLocal>(innerskel.GetWire("time_local"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -2174,6 +2304,7 @@ public class Clock_skel : ServiceSkel {
 public class Clock_default_impl : Clock{
     protected WireBroadcaster<com.robotraconteur.datetime.DateTimeUTC> rrvar_time_utc;
     protected WireBroadcaster<com.robotraconteur.datetime.DateTimeLocal> rrvar_time_local;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual ClockDeviceInfo clock_info {get; set;} = default(ClockDeviceInfo);
     public virtual Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc {
@@ -2188,6 +2319,13 @@ public class Clock_default_impl : Clock{
     set {
     if (rrvar_time_local!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_time_local= new WireBroadcaster<com.robotraconteur.datetime.DateTimeLocal>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
     }
     }
 }
@@ -10362,7 +10500,7 @@ public class JoystickStateSensorData
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Joystick : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface Joystick : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     JoystickInfo joystick_info { get; 	}
@@ -10371,6 +10509,7 @@ public interface Joystick : com.robotraconteur.device.Device, com.robotraconteur
     void rumble(double intensity, double duration);
     void force_feedback(com.robotraconteur.geometry.Vector2 force, double duration);
     Pipe<JoystickStateSensorData> joystick_sensor_data{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
     Wire<JoystickState> joystick_state{ get; set; }
     Wire<GamepadState> gamepad_state{ get; set; }
 }
@@ -10422,7 +10561,7 @@ public class com__robotraconteur__hid__joystickFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.hid.joystick\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.geometry\nimport com.robotraconteur.uuid\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.geometry.Vector2\nusing com.robotraconteur.uuid.UUID\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nenum JoystickCapabilities\nnone = 0,\nrumble = 0x1,\nforce_feedback = 0x2,\nstandard_gamepad = 0x4\nend\n\nenum GamepadButtons\nbutton_A = 0,\nbutton_B,\nbutton_X,\nbutton_Y,\nbutton_back,\nbutton_guide,\nbutton_start,\nbutton_left_stick,\nbutton_right_stick,\nbutton_left_shoulder,\nbutton_right_shoulder,\nbutton_dpad_up,\nbutton_dpad_down,\nbutton_dpad_left,\nbutton_dpad_right\nend\n\nenum JoystickHatState\nhat_centered = 0,\nhat_up = 0x01,\nhat_right = 0x02,\nhat_down = 0x04,\nhat_left = 0x08,\nhat_rightup = 0x03,\nhat_rightdown = 0x06,\nhat_leftup = 0x09,\nhat_leftdown = 0x0C\nend\n\nstruct JoystickInfo\nfield DeviceInfo device_info\nfield uint32 id\nfield uint32 axes_count\nfield uint32 button_count\nfield uint32 hat_count\nfield uint32 joystick_capabilities\nfield uint16 joystick_device_vendor\nfield uint16 joystick_device_product\nfield uint16 joystick_device_version\nfield UUID joystick_uuid\nend\n\nstruct JoystickState\nfield int16[] axes\nfield uint8[] buttons\nfield uint8[] hats\nend\n\nstruct GamepadState\nfield int16 left_x\nfield int16 left_y\nfield int16 right_x\nfield int16 right_y\nfield int16 trigger_left\nfield int16 trigger_right\nfield uint16 buttons\nend\n\nstruct JoystickStateSensorData\nfield SensorDataHeader data_header\nfield JoystickState joystick_state\nfield GamepadState gamepad_state\nend\n\nobject Joystick\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty JoystickInfo joystick_info [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire JoystickState joystick_state [readonly,nolock]\nwire GamepadState gamepad_state [readonly,nolock]\npipe JoystickStateSensorData joystick_sensor_data [readonly,nolock]\nfunction void rumble(double intensity, double duration)\nfunction void force_feedback(Vector2 force, double duration)\nend\n\n";
+    const string s="service com.robotraconteur.hid.joystick\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.geometry\nimport com.robotraconteur.uuid\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.geometry.Vector2\nusing com.robotraconteur.uuid.UUID\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\n\nenum JoystickCapabilities\nnone = 0,\nrumble = 0x1,\nforce_feedback = 0x2,\nstandard_gamepad = 0x4\nend\n\nenum GamepadButtons\nbutton_A = 0,\nbutton_B,\nbutton_X,\nbutton_Y,\nbutton_back,\nbutton_guide,\nbutton_start,\nbutton_left_stick,\nbutton_right_stick,\nbutton_left_shoulder,\nbutton_right_shoulder,\nbutton_dpad_up,\nbutton_dpad_down,\nbutton_dpad_left,\nbutton_dpad_right\nend\n\nenum JoystickHatState\nhat_centered = 0,\nhat_up = 0x01,\nhat_right = 0x02,\nhat_down = 0x04,\nhat_left = 0x08,\nhat_rightup = 0x03,\nhat_rightdown = 0x06,\nhat_leftup = 0x09,\nhat_leftdown = 0x0C\nend\n\nstruct JoystickInfo\nfield DeviceInfo device_info\nfield uint32 id\nfield uint32 axes_count\nfield uint32 button_count\nfield uint32 hat_count\nfield uint32 joystick_capabilities\nfield uint16 joystick_device_vendor\nfield uint16 joystick_device_product\nfield uint16 joystick_device_version\nfield UUID joystick_uuid\nend\n\nstruct JoystickState\nfield int16[] axes\nfield uint8[] buttons\nfield uint8[] hats\nend\n\nstruct GamepadState\nfield int16 left_x\nfield int16 left_y\nfield int16 right_x\nfield int16 right_y\nfield int16 trigger_left\nfield int16 trigger_right\nfield uint16 buttons\nend\n\nstruct JoystickStateSensorData\nfield SensorDataHeader data_header\nfield JoystickState joystick_state\nfield GamepadState gamepad_state\nend\n\nobject Joystick\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty JoystickInfo joystick_info [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nwire JoystickState joystick_state [readonly,nolock]\nwire GamepadState gamepad_state [readonly,nolock]\npipe JoystickStateSensorData joystick_sensor_data [readonly,nolock]\nfunction void rumble(double intensity, double duration)\nfunction void force_feedback(Vector2 force, double duration)\nend\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.hid.joystick";}
@@ -10631,7 +10770,7 @@ public class JoystickStateSensorData_stub : IStructureStub {
     }
 }
 
-public interface async_Joystick : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_Joystick : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<JoystickInfo> async_get_joystick_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -10643,10 +10782,12 @@ public interface async_Joystick : com.robotraconteur.device.async_Device, com.ro
 }
 public class Joystick_stub : ServiceStub , Joystick, async_Joystick{
     private Pipe<JoystickStateSensorData> rr_joystick_sensor_data;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     private Wire<JoystickState> rr_joystick_state;
     private Wire<GamepadState> rr_gamepad_state;
     public Joystick_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_joystick_sensor_data=new Pipe<JoystickStateSensorData>(innerstub.GetPipe("joystick_sensor_data"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     rr_joystick_state=new Wire<JoystickState>(innerstub.GetWire("joystick_state"));
     rr_gamepad_state=new Wire<GamepadState>(innerstub.GetWire("gamepad_state"));
     }
@@ -10704,6 +10845,10 @@ public class Joystick_stub : ServiceStub , Joystick, async_Joystick{
     }
     public Pipe<JoystickStateSensorData> joystick_sensor_data {
     get { return rr_joystick_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public Wire<JoystickState> joystick_state {
@@ -10905,6 +11050,7 @@ public class Joystick_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(Joystick)rrobj1;
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     obj.joystick_state=new Wire<JoystickState>(innerskel.GetWire("joystick_state"));
     obj.gamepad_state=new Wire<GamepadState>(innerskel.GetWire("gamepad_state"));
     }
@@ -10954,6 +11100,7 @@ public class Joystick_skel : ServiceSkel {
 }
 public class Joystick_default_impl : Joystick{
     protected PipeBroadcaster<JoystickStateSensorData> rrvar_joystick_sensor_data;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     protected WireBroadcaster<JoystickState> rrvar_joystick_state;
     protected WireBroadcaster<GamepadState> rrvar_gamepad_state;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
@@ -10969,6 +11116,13 @@ public class Joystick_default_impl : Joystick{
     set {
     if (rrvar_joystick_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_joystick_sensor_data= new PipeBroadcaster<JoystickStateSensorData>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
     }
     }
     public virtual Wire<JoystickState> joystick_state {
@@ -12165,8 +12319,16 @@ public static class RRExtensions{
 }
 namespace com.robotraconteur.imaging
 {
+public class CameraState
+{
+    public com.robotraconteur.datetime.TimeSpec3 ts;
+    public ulong seqno;
+    public int state_flags;
+    public Dictionary<string,object> extended;
+}
+
 [RobotRaconteurServiceObjectInterface()]
-public interface Camera : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface Camera : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     com.robotraconteur.imaging.camerainfo.CameraInfo camera_info { get; 	}
@@ -12185,6 +12347,8 @@ public interface Camera : com.robotraconteur.device.Device, com.robotraconteur.d
     Pipe<com.robotraconteur.image.Image> frame_stream{ get; set; }
     Pipe<com.robotraconteur.image.CompressedImage> frame_stream_compressed{ get; set; }
     Pipe<com.robotraconteur.image.CompressedImage> preview_stream{ get; set; }
+    Wire<CameraState> camera_state{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
@@ -12205,7 +12369,7 @@ public interface MultiCamera : com.robotraconteur.device.Device
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface ImagePartCamera : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface ImagePartCamera : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     com.robotraconteur.imaging.camerainfo.CameraInfo camera_info { get; 	}
@@ -12221,6 +12385,8 @@ public interface ImagePartCamera : com.robotraconteur.device.Device, com.robotra
     object getf_param(string param_name);
     void setf_param(string param_name, object value_);
     Pipe<com.robotraconteur.image.CompressedImage> preview_stream{ get; set; }
+    Wire<CameraState> camera_state{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 public static class com__robotraconteur__imagingConstants 
@@ -12248,6 +12414,15 @@ public static class com__robotraconteur__imagingConstants
     external_trigger = 0x40,
     aux_trigger = 0x80
     };
+    public enum CameraStateFlags
+    {
+    unknown = 0,
+    ready = 0x1,
+    streaming = 0x2,
+    warning = 0x4,
+    error = 0x8,
+    fatal_error = 0x10
+    };
 }
 namespace com.robotraconteur.imaging
 {
@@ -12255,15 +12430,18 @@ public class com__robotraconteur__imagingFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.imaging\n\nstdver 0.10\n\nimport com.robotraconteur.image\nimport com.robotraconteur.imaging.camerainfo\nimport com.robotraconteur.param\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.image.Image\nusing com.robotraconteur.image.ImagePart\nusing com.robotraconteur.image.CompressedImage\nusing com.robotraconteur.imaging.camerainfo.CameraInfo\nusing com.robotraconteur.imaging.camerainfo.MultiCameraInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nenum TriggerMode\nunknown = 0,\nsoftware,\ncontinuous,\nexternal,\naux1,\naux2,\naux3,\naux4\nend\n\nenum Capabilities\nunknown = 0,\nstill = 0x1,\nstream = 0x2,\npreview = 0x4,\nsoftware_trigger = 0x10,\ncontinuous_trigger = 0x20,\nexternal_trigger = 0x40,\naux_trigger = 0x80\nend\n\nobject Camera\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty CameraInfo camera_info [readonly,nolock]\nproperty uint32 capabilities [readonly]\nfunction Image capture_frame()\nfunction CompressedImage capture_frame_compressed()\nproperty TriggerMode trigger_mode [nolockread]\nfunction void trigger()\nfunction void start_streaming()\nfunction void stop_streaming()\npipe Image frame_stream [readonly]\npipe CompressedImage frame_stream_compressed [readonly]\npipe CompressedImage preview_stream [readonly,nolock]\nproperty ParameterInfo{list} param_info [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject MultiCamera\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty MultiCameraInfo multicamera_info [readonly,nolock]\nproperty string{int32} camera_names [readonly,nolock]\nobjref Camera{int32} cameras\nfunction Image{int32} capture_frame_all()\nfunction void trigger_all()\npipe Image{int32} frame_stream_all [readonly]\npipe CompressedImage{int32} frame_stream_compressed_all [readonly]\npipe CompressedImage{int32} preview_stream_all [readonly,nolock]\nproperty ParameterInfo{list} param_info [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nend\n\nobject ImagePartCamera\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty CameraInfo camera_info [readonly,nolock]\nproperty uint32 capabilities [readonly]\nfunction ImagePart{generator} capture_frame()\nproperty TriggerMode trigger_mode [nolockread]\nfunction void trigger()\nfunction void start_streaming()\nfunction void stop_streaming()\npipe CompressedImage preview_stream [readonly,nolock]\nproperty ParameterInfo{list} param_info [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n";
+    const string s="service com.robotraconteur.imaging\n\nstdver 0.10\n\nimport com.robotraconteur.image\nimport com.robotraconteur.imaging.camerainfo\nimport com.robotraconteur.param\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.image.Image\nusing com.robotraconteur.image.ImagePart\nusing com.robotraconteur.image.CompressedImage\nusing com.robotraconteur.imaging.camerainfo.CameraInfo\nusing com.robotraconteur.imaging.camerainfo.MultiCameraInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.datetime.TimeSpec3\n\nenum TriggerMode\nunknown = 0,\nsoftware,\ncontinuous,\nexternal,\naux1,\naux2,\naux3,\naux4\nend\n\nenum Capabilities\nunknown = 0,\nstill = 0x1,\nstream = 0x2,\npreview = 0x4,\nsoftware_trigger = 0x10,\ncontinuous_trigger = 0x20,\nexternal_trigger = 0x40,\naux_trigger = 0x80\nend\n\nenum CameraStateFlags\nunknown = 0,\nready = 0x1,\nstreaming = 0x2,\nwarning = 0x4,\nerror = 0x8,\nfatal_error = 0x10\nend\n\nstruct CameraState\nfield TimeSpec3 ts\nfield uint64 seqno\nfield int32 state_flags\nfield varvalue{string} extended\nend\n\nobject Camera\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty CameraInfo camera_info [readonly,nolock]\nproperty uint32 capabilities [readonly]\nfunction Image capture_frame()\nfunction CompressedImage capture_frame_compressed()\nproperty TriggerMode trigger_mode [nolockread]\nfunction void trigger()\nfunction void start_streaming()\nfunction void stop_streaming()\nwire CameraState camera_state [readonly,nolock]\npipe Image frame_stream [readonly]\npipe CompressedImage frame_stream_compressed [readonly]\npipe CompressedImage preview_stream [readonly,nolock]\nproperty ParameterInfo{list} param_info [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\nobject MultiCamera\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty MultiCameraInfo multicamera_info [readonly,nolock]\nproperty string{int32} camera_names [readonly,nolock]\nobjref Camera{int32} cameras\nfunction Image{int32} capture_frame_all()\nfunction void trigger_all()\npipe Image{int32} frame_stream_all [readonly]\npipe CompressedImage{int32} frame_stream_compressed_all [readonly]\npipe CompressedImage{int32} preview_stream_all [readonly,nolock]\nproperty ParameterInfo{list} param_info [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nend\n\nobject ImagePartCamera\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty CameraInfo camera_info [readonly,nolock]\nproperty uint32 capabilities [readonly]\nfunction ImagePart{generator} capture_frame()\nproperty TriggerMode trigger_mode [nolockread]\nfunction void trigger()\nfunction void start_streaming()\nfunction void stop_streaming()\nwire CameraState camera_state [readonly,nolock]\npipe CompressedImage preview_stream [readonly,nolock]\nproperty ParameterInfo{list} param_info [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.imaging";}
+    public CameraState_stub CameraState_stubentry;
     public com__robotraconteur__imagingFactory()
 {
+    CameraState_stubentry=new CameraState_stub(this);
     }
     public override IStructureStub FindStructureStub(string objecttype)
     {
+    if (objecttype=="CameraState")    return CameraState_stubentry;
     throw new DataTypeException("Cannot find appropriate structure stub");
     }
     public override IPodStub FindPodStub(string objecttype)
@@ -12326,7 +12504,37 @@ public class com__robotraconteur__imagingFactory : ServiceFactory
     }
 }
 
-public interface async_Camera : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public class CameraState_stub : IStructureStub {
+    public CameraState_stub(com__robotraconteur__imagingFactory d) {def=d;}
+    private com__robotraconteur__imagingFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    CameraState s = (CameraState)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.datetime.TimeSpec3>("ts",ref s.ts));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<int>("state_flags",s.state_flags));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.imaging.CameraState",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    CameraState s=new CameraState();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.ts =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.datetime.TimeSpec3>(MessageElement.FindElement(mm,"ts"));
+    s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
+    s.state_flags =(MessageElementUtil.UnpackScalar<int>(MessageElement.FindElement(mm,"state_flags")));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public interface async_Camera : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.imaging.camerainfo.CameraInfo> async_get_camera_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -12349,10 +12557,14 @@ public class Camera_stub : ServiceStub , Camera, async_Camera{
     private Pipe<com.robotraconteur.image.Image> rr_frame_stream;
     private Pipe<com.robotraconteur.image.CompressedImage> rr_frame_stream_compressed;
     private Pipe<com.robotraconteur.image.CompressedImage> rr_preview_stream;
+    private Wire<CameraState> rr_camera_state;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public Camera_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_frame_stream=new Pipe<com.robotraconteur.image.Image>(innerstub.GetPipe("frame_stream"));
     rr_frame_stream_compressed=new Pipe<com.robotraconteur.image.CompressedImage>(innerstub.GetPipe("frame_stream_compressed"));
     rr_preview_stream=new Pipe<com.robotraconteur.image.CompressedImage>(innerstub.GetPipe("preview_stream"));
+    rr_camera_state=new Wire<CameraState>(innerstub.GetWire("camera_state"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -12479,6 +12691,14 @@ public class Camera_stub : ServiceStub , Camera, async_Camera{
     }
     public Pipe<com.robotraconteur.image.CompressedImage> preview_stream {
     get { return rr_preview_stream;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<CameraState> camera_state {
+    get { return rr_camera_state;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -12762,7 +12982,7 @@ public class MultiCamera_stub : ServiceStub , MultiCamera, async_MultiCamera{
     return AsyncFindObjRefTyped<Camera>("cameras",ind.ToString(),"com.robotraconteur.imaging.Camera",timeout);
     }
 }
-public interface async_ImagePartCamera : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_ImagePartCamera : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<com.robotraconteur.imaging.camerainfo.CameraInfo> async_get_camera_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -12782,8 +13002,12 @@ public interface async_ImagePartCamera : com.robotraconteur.device.async_Device,
 }
 public class ImagePartCamera_stub : ServiceStub , ImagePartCamera, async_ImagePartCamera{
     private Pipe<com.robotraconteur.image.CompressedImage> rr_preview_stream;
+    private Wire<CameraState> rr_camera_state;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public ImagePartCamera_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_preview_stream=new Pipe<com.robotraconteur.image.CompressedImage>(innerstub.GetPipe("preview_stream"));
+    rr_camera_state=new Wire<CameraState>(innerstub.GetWire("camera_state"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -12891,6 +13115,14 @@ public class ImagePartCamera_stub : ServiceStub , ImagePartCamera, async_ImagePa
     }
     public Pipe<com.robotraconteur.image.CompressedImage> preview_stream {
     get { return rr_preview_stream;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<CameraState> camera_state {
+    get { return rr_camera_state;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -13227,6 +13459,8 @@ public class Camera_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(Camera)rrobj1;
+    obj.camera_state=new Wire<CameraState>(innerskel.GetWire("camera_state"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -13678,6 +13912,8 @@ public class ImagePartCamera_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(ImagePartCamera)rrobj1;
+    obj.camera_state=new Wire<CameraState>(innerskel.GetWire("camera_state"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -13727,6 +13963,8 @@ public class Camera_default_impl : Camera{
     protected PipeBroadcaster<com.robotraconteur.image.Image> rrvar_frame_stream;
     protected PipeBroadcaster<com.robotraconteur.image.CompressedImage> rrvar_frame_stream_compressed;
     protected PipeBroadcaster<com.robotraconteur.image.CompressedImage> rrvar_preview_stream;
+    protected WireBroadcaster<CameraState> rrvar_camera_state;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual com.robotraconteur.imaging.camerainfo.CameraInfo camera_info {get; set;} = default(com.robotraconteur.imaging.camerainfo.CameraInfo);
     public virtual uint capabilities {get; set;} = default(uint);
@@ -13767,6 +14005,20 @@ public class Camera_default_impl : Camera{
     set {
     if (rrvar_preview_stream!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_preview_stream= new PipeBroadcaster<com.robotraconteur.image.CompressedImage>(value);
+    }
+    }
+    public virtual Wire<CameraState> camera_state {
+    get { return rrvar_camera_state.Wire;  }
+    set {
+    if (rrvar_camera_state!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_camera_state= new WireBroadcaster<CameraState>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
     }
     }
 }
@@ -13813,6 +14065,8 @@ public class MultiCamera_default_impl : MultiCamera{
 }
 public class ImagePartCamera_default_impl : ImagePartCamera{
     protected PipeBroadcaster<com.robotraconteur.image.CompressedImage> rrvar_preview_stream;
+    protected WireBroadcaster<CameraState> rrvar_camera_state;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual com.robotraconteur.imaging.camerainfo.CameraInfo camera_info {get; set;} = default(com.robotraconteur.imaging.camerainfo.CameraInfo);
     public virtual uint capabilities {get; set;} = default(uint);
@@ -13837,6 +14091,20 @@ public class ImagePartCamera_default_impl : ImagePartCamera{
     set {
     if (rrvar_preview_stream!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_preview_stream= new PipeBroadcaster<com.robotraconteur.image.CompressedImage>(value);
+    }
+    }
+    public virtual Wire<CameraState> camera_state {
+    get { return rrvar_camera_state.Wire;  }
+    set {
+    if (rrvar_camera_state!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_camera_state= new WireBroadcaster<CameraState>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
     }
     }
 }
@@ -17618,7 +17886,7 @@ public class PointCloud2PartSensorData
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface PointCloudSensor : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface PointCloudSensor : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     PointCloudSensorInfo point_sensor_info { get; 	}
@@ -17629,10 +17897,11 @@ public interface PointCloudSensor : com.robotraconteur.device.Device, com.robotr
     object getf_param(string param_name);
     void setf_param(string param_name, object value_);
     Pipe<PointCloudSensorData> point_cloud_sensor_data{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface PointCloudPartSensor : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface PointCloudPartSensor : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     PointCloudSensorInfo point_sensor_info { get; 	}
@@ -17643,10 +17912,11 @@ public interface PointCloudPartSensor : com.robotraconteur.device.Device, com.ro
     object getf_param(string param_name);
     void setf_param(string param_name, object value_);
     Pipe<PointCloudPartSensorData> point_cloud_sensor_data{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface PointCloud2Sensor : PointCloudSensor, com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface PointCloud2Sensor : PointCloudSensor, com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     PointCloudSensorInfo point_sensor_info { get; 	}
@@ -17659,10 +17929,11 @@ public interface PointCloud2Sensor : PointCloudSensor, com.robotraconteur.device
     void setf_param(string param_name, object value_);
     Pipe<PointCloudSensorData> point_cloud_sensor_data{ get; set; }
     Pipe<PointCloud2SensorData> point_cloud2_sensor_data{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface PointCloud2PartSensor : PointCloudPartSensor, com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface PointCloud2PartSensor : PointCloudPartSensor, com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     PointCloudSensorInfo point_sensor_info { get; 	}
@@ -17675,6 +17946,7 @@ public interface PointCloud2PartSensor : PointCloudPartSensor, com.robotraconteu
     void setf_param(string param_name, object value_);
     Pipe<PointCloudPartSensorData> point_cloud_sensor_data{ get; set; }
     Pipe<PointCloud2PartSensorData> point_cloud2_sensor_data{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 }
@@ -17684,7 +17956,7 @@ public class com__robotraconteur__pointcloud__sensorFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.pointcloud.sensor\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.param\nimport com.robotraconteur.pointcloud\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.pointcloud.PointCloudf as PointCloud\nusing com.robotraconteur.pointcloud.PointCloudPartf as PointCloudPart\nusing com.robotraconteur.pointcloud.PointCloud2f as PointCloud2\nusing com.robotraconteur.pointcloud.PointCloud2Partf as PointCloud2Part\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.sensor.SensorData\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nstruct PointCloudSensorInfo\nfield DeviceInfo device_info\nfield Point range_min\nfield Point range_max\nfield Vector3 resolution\nfield ParameterInfo{list} param_info\nfield varvalue{string} extended\nend\n\nstruct PointCloudSensorData\nfield SensorData sensor_data\nfield PointCloud point_cloud\nend\n\nstruct PointCloudPartSensorData\nfield SensorData sensor_data\nfield PointCloudPart point_cloud\nend\n\nobject PointCloudSensor\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloud capture_point_cloud()\npipe PointCloudSensorData point_cloud_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject PointCloudPartSensor\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloudPart{generator} capture_point_cloud()\npipe PointCloudPartSensorData point_cloud_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\n\nstruct PointCloud2SensorData\nfield SensorData sensor_data\nfield PointCloud2 point_cloud\nend\n\nstruct PointCloud2PartSensorData\nfield SensorData sensor_data\nfield PointCloud2Part point_cloud\nend\n\nobject PointCloud2Sensor\nimplements PointCloudSensor\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloud capture_point_cloud()\nfunction PointCloud2 capture_point_cloud2()\npipe PointCloudSensorData point_cloud_sensor_data [readonly]\npipe PointCloud2SensorData point_cloud2_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject PointCloud2PartSensor\nimplements PointCloudPartSensor\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloudPart{generator} capture_point_cloud()\nfunction PointCloud2Part{generator} capture_point_cloud2()\npipe PointCloudPartSensorData point_cloud_sensor_data [readonly]\npipe PointCloud2PartSensorData point_cloud2_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n";
+    const string s="service com.robotraconteur.pointcloud.sensor\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.param\nimport com.robotraconteur.pointcloud\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.pointcloud.PointCloudf as PointCloud\nusing com.robotraconteur.pointcloud.PointCloudPartf as PointCloudPart\nusing com.robotraconteur.pointcloud.PointCloud2f as PointCloud2\nusing com.robotraconteur.pointcloud.PointCloud2Partf as PointCloud2Part\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.sensor.SensorData\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\n\nstruct PointCloudSensorInfo\nfield DeviceInfo device_info\nfield Point range_min\nfield Point range_max\nfield Vector3 resolution\nfield ParameterInfo{list} param_info\nfield varvalue{string} extended\nend\n\nstruct PointCloudSensorData\nfield SensorData sensor_data\nfield PointCloud point_cloud\nend\n\nstruct PointCloudPartSensorData\nfield SensorData sensor_data\nfield PointCloudPart point_cloud\nend\n\nobject PointCloudSensor\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloud capture_point_cloud()\npipe PointCloudSensorData point_cloud_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\nobject PointCloudPartSensor\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloudPart{generator} capture_point_cloud()\npipe PointCloudPartSensorData point_cloud_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n\nstruct PointCloud2SensorData\nfield SensorData sensor_data\nfield PointCloud2 point_cloud\nend\n\nstruct PointCloud2PartSensorData\nfield SensorData sensor_data\nfield PointCloud2Part point_cloud\nend\n\nobject PointCloud2Sensor\nimplements PointCloudSensor\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloud capture_point_cloud()\nfunction PointCloud2 capture_point_cloud2()\npipe PointCloudSensorData point_cloud_sensor_data [readonly]\npipe PointCloud2SensorData point_cloud2_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\nobject PointCloud2PartSensor\nimplements PointCloudPartSensor\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty PointCloudSensorInfo point_sensor_info [readonly,nolock]\nproperty bool active\nfunction PointCloudPart{generator} capture_point_cloud()\nfunction PointCloud2Part{generator} capture_point_cloud2()\npipe PointCloudPartSensorData point_cloud_sensor_data [readonly]\npipe PointCloud2PartSensorData point_cloud2_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.pointcloud.sensor";}
@@ -17912,7 +18184,7 @@ public class PointCloud2PartSensorData_stub : IStructureStub {
     }
 }
 
-public interface async_PointCloudSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_PointCloudSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<PointCloudSensorInfo> async_get_point_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -17927,8 +18199,10 @@ public interface async_PointCloudSensor : com.robotraconteur.device.async_Device
 }
 public class PointCloudSensor_stub : ServiceStub , PointCloudSensor, async_PointCloudSensor{
     private Pipe<PointCloudSensorData> rr_point_cloud_sensor_data;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public PointCloudSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_point_cloud_sensor_data=new Pipe<PointCloudSensorData>(innerstub.GetPipe("point_cloud_sensor_data"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -18004,6 +18278,10 @@ public class PointCloudSensor_stub : ServiceStub , PointCloudSensor, async_Point
     }
     public Pipe<PointCloudSensorData> point_cloud_sensor_data {
     get { return rr_point_cloud_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -18083,7 +18361,7 @@ public class PointCloudSensor_stub : ServiceStub , PointCloudSensor, async_Point
     using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
     } } }
 }
-public interface async_PointCloudPartSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_PointCloudPartSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<PointCloudSensorInfo> async_get_point_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -18098,8 +18376,10 @@ public interface async_PointCloudPartSensor : com.robotraconteur.device.async_De
 }
 public class PointCloudPartSensor_stub : ServiceStub , PointCloudPartSensor, async_PointCloudPartSensor{
     private Pipe<PointCloudPartSensorData> rr_point_cloud_sensor_data;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public PointCloudPartSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_point_cloud_sensor_data=new Pipe<PointCloudPartSensorData>(innerstub.GetPipe("point_cloud_sensor_data"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -18173,6 +18453,10 @@ public class PointCloudPartSensor_stub : ServiceStub , PointCloudPartSensor, asy
     }
     public Pipe<PointCloudPartSensorData> point_cloud_sensor_data {
     get { return rr_point_cloud_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -18252,7 +18536,7 @@ public class PointCloudPartSensor_stub : ServiceStub , PointCloudPartSensor, asy
     using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
     } } }
 }
-public interface async_PointCloud2Sensor : async_PointCloudSensor, com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_PointCloud2Sensor : async_PointCloudSensor, com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<PointCloudSensorInfo> async_get_point_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -18269,9 +18553,11 @@ public interface async_PointCloud2Sensor : async_PointCloudSensor, com.robotraco
 public class PointCloud2Sensor_stub : ServiceStub , PointCloud2Sensor, async_PointCloud2Sensor{
     private Pipe<PointCloudSensorData> rr_point_cloud_sensor_data;
     private Pipe<PointCloud2SensorData> rr_point_cloud2_sensor_data;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public PointCloud2Sensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_point_cloud_sensor_data=new Pipe<PointCloudSensorData>(innerstub.GetPipe("point_cloud_sensor_data"));
     rr_point_cloud2_sensor_data=new Pipe<PointCloud2SensorData>(innerstub.GetPipe("point_cloud2_sensor_data"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -18362,6 +18648,10 @@ public class PointCloud2Sensor_stub : ServiceStub , PointCloud2Sensor, async_Poi
     get { return rr_point_cloud2_sensor_data;  }
     set { throw new InvalidOperationException();}
     }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
+    set { throw new InvalidOperationException();}
+    }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
     switch (rr_membername) {
     default:
@@ -18447,7 +18737,7 @@ public class PointCloud2Sensor_stub : ServiceStub , PointCloud2Sensor, async_Poi
     using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
     } } }
 }
-public interface async_PointCloud2PartSensor : async_PointCloudPartSensor, com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_PointCloud2PartSensor : async_PointCloudPartSensor, com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<PointCloudSensorInfo> async_get_point_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -18464,9 +18754,11 @@ public interface async_PointCloud2PartSensor : async_PointCloudPartSensor, com.r
 public class PointCloud2PartSensor_stub : ServiceStub , PointCloud2PartSensor, async_PointCloud2PartSensor{
     private Pipe<PointCloudPartSensorData> rr_point_cloud_sensor_data;
     private Pipe<PointCloud2PartSensorData> rr_point_cloud2_sensor_data;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public PointCloud2PartSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_point_cloud_sensor_data=new Pipe<PointCloudPartSensorData>(innerstub.GetPipe("point_cloud_sensor_data"));
     rr_point_cloud2_sensor_data=new Pipe<PointCloud2PartSensorData>(innerstub.GetPipe("point_cloud2_sensor_data"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -18551,6 +18843,10 @@ public class PointCloud2PartSensor_stub : ServiceStub , PointCloud2PartSensor, a
     }
     public Pipe<PointCloud2PartSensorData> point_cloud2_sensor_data {
     get { return rr_point_cloud2_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -18803,6 +19099,7 @@ public class PointCloudSensor_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(PointCloudSensor)rrobj1;
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -19009,6 +19306,7 @@ public class PointCloudPartSensor_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(PointCloudPartSensor)rrobj1;
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -19230,6 +19528,7 @@ public class PointCloud2Sensor_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(PointCloud2Sensor)rrobj1;
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -19443,6 +19742,7 @@ public class PointCloud2PartSensor_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(PointCloud2PartSensor)rrobj1;
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -19490,6 +19790,7 @@ public class PointCloud2PartSensor_skel : ServiceSkel {
 }
 public class PointCloudSensor_default_impl : PointCloudSensor{
     protected PipeBroadcaster<PointCloudSensorData> rrvar_point_cloud_sensor_data;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual PointCloudSensorInfo point_sensor_info {get; set;} = default(PointCloudSensorInfo);
     public virtual bool active {get; set;} = default(bool);
@@ -19508,9 +19809,17 @@ public class PointCloudSensor_default_impl : PointCloudSensor{
     rrvar_point_cloud_sensor_data= new PipeBroadcaster<PointCloudSensorData>(value);
     }
     }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
 }
 public class PointCloudPartSensor_default_impl : PointCloudPartSensor{
     protected PipeBroadcaster<PointCloudPartSensorData> rrvar_point_cloud_sensor_data;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual PointCloudSensorInfo point_sensor_info {get; set;} = default(PointCloudSensorInfo);
     public virtual bool active {get; set;} = default(bool);
@@ -19529,10 +19838,18 @@ public class PointCloudPartSensor_default_impl : PointCloudPartSensor{
     rrvar_point_cloud_sensor_data= new PipeBroadcaster<PointCloudPartSensorData>(value);
     }
     }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
 }
 public class PointCloud2Sensor_default_impl : PointCloud2Sensor{
     protected PipeBroadcaster<PointCloudSensorData> rrvar_point_cloud_sensor_data;
     protected PipeBroadcaster<PointCloud2SensorData> rrvar_point_cloud2_sensor_data;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual PointCloudSensorInfo point_sensor_info {get; set;} = default(PointCloudSensorInfo);
     public virtual bool active {get; set;} = default(bool);
@@ -19560,10 +19877,18 @@ public class PointCloud2Sensor_default_impl : PointCloud2Sensor{
     rrvar_point_cloud2_sensor_data= new PipeBroadcaster<PointCloud2SensorData>(value);
     }
     }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
 }
 public class PointCloud2PartSensor_default_impl : PointCloud2PartSensor{
     protected PipeBroadcaster<PointCloudPartSensorData> rrvar_point_cloud_sensor_data;
     protected PipeBroadcaster<PointCloud2PartSensorData> rrvar_point_cloud2_sensor_data;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual PointCloudSensorInfo point_sensor_info {get; set;} = default(PointCloudSensorInfo);
     public virtual bool active {get; set;} = default(bool);
@@ -19589,6 +19914,13 @@ public class PointCloud2PartSensor_default_impl : PointCloud2PartSensor{
     set {
     if (rrvar_point_cloud2_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_point_cloud2_sensor_data= new PipeBroadcaster<PointCloud2PartSensorData>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
     }
     }
 }
@@ -20778,6 +21110,7 @@ public class ToolInfo
 
 public class ToolState
 {
+    public com.robotraconteur.datetime.TimeSpec3 ts;
     public ulong seqno;
     public uint tool_state_flags;
     public double position;
@@ -20792,7 +21125,7 @@ public class ToolStateSensorData
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Tool : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface Tool : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     ToolInfo tool_info { get; 	}
@@ -20810,6 +21143,7 @@ public interface Tool : com.robotraconteur.device.Device, com.robotraconteur.dev
     void home();
     Pipe<ToolStateSensorData> tool_state_sensor_data{ get; set; }
     Wire<ToolState> tool_state{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 public static class com__robotraconteur__robotics__toolConstants 
@@ -20865,7 +21199,7 @@ public class com__robotraconteur__robotics__toolFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.robotics.tool\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.units\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.sensor.SensorTypeCode\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nenum ToolTypeCode\nunknown = 0,\nbasic_gripper,\nbasic_continuous_gripper,\npneumatic_gripper,\nelectric_gripper,\nvacuum_gripper,\nsoft_gripper,\nwelder,\nhand,\npalletizer,\nother\nend\n\nenum ToolCapabilities\nunknown = 0,\nopen_close_command = 0x1,\ncontinuous_command = 0x2,\nhoming_command = 0x4,\nsoftware_reset_errors = 0x8,\nsoftware_enable = 0x10,\nsensor_feedback = 0x20\nend\n\nenum ToolStateFlags\nunknown = 0,\nerror = 0x1,\nfatal_error = 0x2,\nestop = 0x4,\ncommunication_failure = 0x8,\nenabled = 0x10,\nready = 0x20,\nopened = 0x40,\nclosed = 0x80,\nbetween = 0x100,\nactuating = 0x200,\nhoming = 0x400,\nrequires_homing = 0x800,\nhomed = 0x1000,\ngripping = 0x2000,\nmissed = 0x4000\nend\n\nstruct ToolInfo\nfield DeviceInfo device_info\nfield ToolTypeCode tool_type\nfield uint32 tool_capabilities\nfield Transform tcp\nfield SpatialInertia inertia\nfield double actuation_time\nfield double close_position\nfield double open_position\nfield double command_min\nfield double command_max\nfield double command_close\nfield double command_open\nfield SensorTypeCode{list} sensor_type\nfield double[] sensor_min\nfield double[] sensor_max\nfield SIUnit{list} sensor_units\nfield varvalue{string} extended\nend\n\nstruct ToolState\nfield uint64 seqno\nfield uint32 tool_state_flags\nfield double position\nfield double command\nfield double[] sensor\nend\n\nstruct ToolStateSensorData\nfield SensorDataHeader data_header\nfield ToolState robot_state\nend\n\nobject Tool\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ToolInfo tool_info [readonly,nolock]\nfunction void open()\nfunction void close()\nfunction void halt() [urgent]\nfunction void setf_command(double command)\nwire ToolState tool_state [readonly,nolock]\npipe ToolStateSensorData tool_state_sensor_data [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction void enable()\nfunction void disable() [urgent]\nfunction void reset_errors()\nfunction void home()\nend\n";
+    const string s="service com.robotraconteur.robotics.tool\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.units\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.sensor.SensorTypeCode\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.datetime.TimeSpec3\n\nenum ToolTypeCode\nunknown = 0,\nbasic_gripper,\nbasic_continuous_gripper,\npneumatic_gripper,\nelectric_gripper,\nvacuum_gripper,\nsoft_gripper,\nwelder,\nhand,\npalletizer,\nother\nend\n\nenum ToolCapabilities\nunknown = 0,\nopen_close_command = 0x1,\ncontinuous_command = 0x2,\nhoming_command = 0x4,\nsoftware_reset_errors = 0x8,\nsoftware_enable = 0x10,\nsensor_feedback = 0x20\nend\n\nenum ToolStateFlags\nunknown = 0,\nerror = 0x1,\nfatal_error = 0x2,\nestop = 0x4,\ncommunication_failure = 0x8,\nenabled = 0x10,\nready = 0x20,\nopened = 0x40,\nclosed = 0x80,\nbetween = 0x100,\nactuating = 0x200,\nhoming = 0x400,\nrequires_homing = 0x800,\nhomed = 0x1000,\ngripping = 0x2000,\nmissed = 0x4000\nend\n\nstruct ToolInfo\nfield DeviceInfo device_info\nfield ToolTypeCode tool_type\nfield uint32 tool_capabilities\nfield Transform tcp\nfield SpatialInertia inertia\nfield double actuation_time\nfield double close_position\nfield double open_position\nfield double command_min\nfield double command_max\nfield double command_close\nfield double command_open\nfield SensorTypeCode{list} sensor_type\nfield double[] sensor_min\nfield double[] sensor_max\nfield SIUnit{list} sensor_units\nfield varvalue{string} extended\nend\n\nstruct ToolState\nfield TimeSpec3 ts\nfield uint64 seqno\nfield uint32 tool_state_flags\nfield double position\nfield double command\nfield double[] sensor\nend\n\nstruct ToolStateSensorData\nfield SensorDataHeader data_header\nfield ToolState robot_state\nend\n\nobject Tool\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ToolInfo tool_info [readonly,nolock]\nfunction void open()\nfunction void close()\nfunction void halt() [urgent]\nfunction void setf_command(double command)\nwire ToolState tool_state [readonly,nolock]\npipe ToolStateSensorData tool_state_sensor_data [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction void enable()\nfunction void disable() [urgent]\nfunction void reset_errors()\nfunction void home()\nend\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.robotics.tool";}
@@ -21001,6 +21335,7 @@ public class ToolState_stub : IStructureStub {
     {
     if (s1 ==null) return null;
     ToolState s = (ToolState)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.datetime.TimeSpec3>("ts",ref s.ts));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("tool_state_flags",s.tool_state_flags));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("position",s.position));
@@ -21014,6 +21349,7 @@ public class ToolState_stub : IStructureStub {
     ToolState s=new ToolState();
     using(vectorptr_messageelement mm=m.Elements)
     {
+    s.ts =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.datetime.TimeSpec3>(MessageElement.FindElement(mm,"ts"));
     s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
     s.tool_state_flags =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"tool_state_flags")));
     s.position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"position")));
@@ -21051,7 +21387,7 @@ public class ToolStateSensorData_stub : IStructureStub {
     }
 }
 
-public interface async_Tool : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_Tool : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<ToolInfo> async_get_tool_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -21072,9 +21408,11 @@ public interface async_Tool : com.robotraconteur.device.async_Device, com.robotr
 public class Tool_stub : ServiceStub , Tool, async_Tool{
     private Pipe<ToolStateSensorData> rr_tool_state_sensor_data;
     private Wire<ToolState> rr_tool_state;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public Tool_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_tool_state_sensor_data=new Pipe<ToolStateSensorData>(innerstub.GetPipe("tool_state_sensor_data"));
     rr_tool_state=new Wire<ToolState>(innerstub.GetWire("tool_state"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -21199,6 +21537,10 @@ public class Tool_stub : ServiceStub , Tool, async_Tool{
     }
     public Wire<ToolState> tool_state {
     get { return rr_tool_state;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -21523,6 +21865,7 @@ public class Tool_skel : ServiceSkel {
     public override void InitWireServers(object rrobj1) {
     obj=(Tool)rrobj1;
     obj.tool_state=new Wire<ToolState>(innerskel.GetWire("tool_state"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -21571,6 +21914,7 @@ public class Tool_skel : ServiceSkel {
 public class Tool_default_impl : Tool{
     protected PipeBroadcaster<ToolStateSensorData> rrvar_tool_state_sensor_data;
     protected WireBroadcaster<ToolState> rrvar_tool_state;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual ToolInfo tool_info {get; set;} = default(ToolInfo);
     public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
@@ -21607,6 +21951,13 @@ public class Tool_default_impl : Tool{
     set {
     if (rrvar_tool_state!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_tool_state= new WireBroadcaster<ToolState>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
     }
     }
 }
@@ -25249,6 +25600,7 @@ public class RobotInfo
 
 public class RobotState
 {
+    public com.robotraconteur.datetime.TimeSpec3 ts;
     public ulong seqno;
     public RobotCommandMode command_mode;
     public RobotOperationalMode operational_mode;
@@ -25266,6 +25618,7 @@ public class RobotState
 
 public class AdvancedRobotState
 {
+    public com.robotraconteur.datetime.TimeSpec3 ts;
     public ulong seqno;
     public RobotCommandMode command_mode;
     public RobotOperationalMode operational_mode;
@@ -25302,7 +25655,7 @@ public class RobotJointCommand
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Robot : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface Robot : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     RobotInfo robot_info { get; 	}
@@ -25336,6 +25689,7 @@ public interface Robot : com.robotraconteur.device.Device, com.robotraconteur.de
     Pipe<RobotStateSensorData> robot_state_sensor_data{ get; set; }
     Wire<RobotState> robot_state{ get; set; }
     Wire<AdvancedRobotState> advanced_robot_state{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
     Wire<RobotJointCommand> position_command{ get; set; }
     Wire<RobotJointCommand> velocity_command{ get; set; }
 }
@@ -25433,7 +25787,7 @@ public class com__robotraconteur__robotics__robotFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.robotics.robot\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device\nimport com.robotraconteur.signal\nimport com.robotraconteur.param\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.robotics.tool\nimport com.robotraconteur.robotics.payload\nimport com.robotraconteur.robotics.trajectory\nimport com.robotraconteur.identifier\nimport com.robotraconteur.action\nimport com.robotraconteur.eventlog\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.SpatialVelocity\nusing com.robotraconteur.geometry.SpatialAcceleration\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.signal.SignalInfo\nusing com.robotraconteur.robotics.joints.JointInfo\nusing com.robotraconteur.robotics.tool.ToolInfo\nusing com.robotraconteur.robotics.payload.PayloadInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.robotics.trajectory.TrajectoryStatus\nusing com.robotraconteur.robotics.trajectory.JointTrajectory\nusing com.robotraconteur.robotics.trajectory.InterpolationMode\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.action.ActionStatusCode\nusing com.robotraconteur.eventlog.EventLogMessage\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nenum RobotTypeCode\nunknown = 0,\nserial = 1,\ndual_arm,\ndifferential_drive,\nplanar,\nfloating,\nfreeform,\nother\nend\n\nenum RobotCommandMode\ninvalid_state = -1,\nhalt = 0,\njog,\ntrajectory,\nposition_command,\nvelocity_command,\nhoming\nend\n\nenum RobotOperationalMode\nundefined = 0,\nmanual_reduced_speed,\nmanual_full_speed,\nauto,\ncobot\nend\n\nenum RobotControllerState\nundefined = 0,\ninit = 1,\nmotor_on,\nmotor_off,\nguard_stop,\nemergency_stop,\nemergency_stop_reset\nend\n\nenum RobotCapabilities\nunknown = 0,\njog_command = 0x1,\ntrajectory_command = 0x2,\nposition_command = 0x4,\nvelocity_command = 0x8,\nhoming_command = 0x10,\nsoftware_reset_errors = 0x20,\nsoftware_enable = 0x40,\ninterpolated_trajectory = 0x80,\nraster_trajectory = 0x100,\ntrajectory_queueing = 0x200,\nspeed_ratio = 0x400\nend\n\nenum RobotStateFlags\nunknown = 0,\nerror = 0x1,\nfatal_error = 0x2,\nestop = 0x4,\nestop_button1 = 0x8,\nestop_button2 = 0x10,\nestop_button3 = 0x20,\nestop_button4 = 0x40,\nestop_guard1 = 0x80,\nestop_guard2 = 0x100,\nestop_guard3 = 0x200,\nestop_guard4 = 0x400,\nestop_software = 0x800,\nestop_fault = 0x1000,\nestop_internal = 0x2000,\nestop_other = 0x4000,\nestop_released = 0x8000,\nenabling_switch = 0x10000,\nenabled = 0x20000,\nready = 0x40000,\nhomed = 0x80000,\nhoming_required = 0x100000,\ncommunication_failure = 0x200000,\nvalid_position_command = 0x1000000,\nvalid_velocity_command = 0x2000000,\ntrajectory_running = 0x4000000\nend\n\nstruct RobotKinChainInfo\nfield Identifier kin_chain_identifier\nfield Vector3[] H\nfield Vector3[] P\nfield SpatialInertia[] link_inertias\nfield Identifier{list} link_identifiers\nfield uint32[] joint_numbers\nfield Pose flange_pose\nfield Identifier flange_identifier\nfield ToolInfo current_tool\nfield PayloadInfo current_payload\nfield SpatialVelocity tcp_max_velocity\nfield SpatialAcceleration tcp_max_acceleration\nfield SpatialVelocity tcp_reduced_max_velocity\nfield SpatialAcceleration tcp_reduced_max_acceleration\nfield string description\nfield varvalue{string} extended\nend\n\nstruct RobotInfo\nfield DeviceInfo device_info\nfield RobotTypeCode robot_type\nfield JointInfo{list} joint_info\nfield RobotKinChainInfo{list} chains\nfield uint32 robot_capabilities\nfield SignalInfo{list} signal_info\nfield ParameterInfo{list} parameter_info\nfield uint16 config_seqno\nfield InterpolationMode{list} trajectory_interpolation_modes\nfield varvalue{string} extended\nend\n\nstruct RobotState\nfield uint64 seqno\nfield RobotCommandMode command_mode\nfield RobotOperationalMode operational_mode\nfield RobotControllerState controller_state\nfield uint64 robot_state_flags\nfield double[] joint_position\nfield double[] joint_velocity\nfield double[] joint_effort\nfield double[] joint_position_command\nfield double[] joint_velocity_command\nfield Pose[] kin_chain_tcp\nfield SpatialVelocity[] kin_chain_tcp_vel\nfield bool trajectory_running\nend\n\nstruct AdvancedRobotState\nfield uint64 seqno\nfield RobotCommandMode command_mode\nfield RobotOperationalMode operational_mode\nfield RobotControllerState controller_state\nfield uint64 robot_state_flags\nfield double[] joint_position\nfield double[] joint_velocity\nfield double[] joint_effort\nfield double[] joint_position_command\nfield double[] joint_velocity_command\nfield uint8[] joint_position_units\nfield uint8[] joint_effort_units\nfield Pose[] kin_chain_tcp\nfield SpatialVelocity[] kin_chain_tcp_vel\nfield bool trajectory_running\nfield double trajectory_time\nfield double trajectory_max_time\nfield uint32 trajectory_current_waypoint\nfield uint16 config_seqno\nend\n\nstruct RobotStateSensorData\nfield SensorDataHeader data_header\nfield AdvancedRobotState robot_state\nend\n\nstruct RobotJointCommand\nfield uint64 seqno\nfield uint64 state_seqno\nfield double[] command\n# Use JointUnits values\nfield uint8[] units\nend\n\nobject Robot\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty RobotInfo robot_info [readonly,nolock]\nproperty RobotCommandMode command_mode [nolockread]\nproperty RobotOperationalMode operational_mode [readonly, nolock]\nproperty RobotControllerState controller_state [readonly, nolock]\nproperty EventLogMessage{list} current_errors [readonly, nolock]\nfunction void halt() [urgent]\nfunction void enable()\nfunction void disable() [urgent]\nfunction void reset_errors()\nproperty double speed_ratio\nfunction void jog_freespace(double[] joint_position, double[] max_velocity, bool wait)\nfunction void jog_joint(double[] joint_velocity, double timeout, bool wait)\nfunction void jog_cartesian(SpatialVelocity{int32} max_velocity, double timeout, bool wait)\nfunction TrajectoryStatus{generator} execute_trajectory(JointTrajectory trajectory)\nwire RobotState robot_state [readonly,nolock]\nwire AdvancedRobotState advanced_robot_state [readonly,nolock]\npipe RobotStateSensorData robot_state_sensor_data [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire RobotJointCommand position_command [writeonly]\nwire RobotJointCommand velocity_command [writeonly]\nfunction ActionStatusCode{generator} home()\nfunction double[] getf_signal(string signal_name)\nfunction void setf_signal(string signal_name, double[] value)\nfunction void tool_attached(int32 chain, ToolInfo tool)\nfunction void tool_detached(int32 chain, string tool_name)\nevent tool_changed(int32 chain, string tool_name)\nfunction void payload_attached(int32 chain, PayloadInfo payload, Pose pose)\nfunction void payload_detached(int32 chain, string payload_name)\nevent payload_changed(int32 chain, string payload_name)\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nevent param_changed(string param_name)\nend\n\n\n\n";
+    const string s="service com.robotraconteur.robotics.robot\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device\nimport com.robotraconteur.signal\nimport com.robotraconteur.param\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.robotics.tool\nimport com.robotraconteur.robotics.payload\nimport com.robotraconteur.robotics.trajectory\nimport com.robotraconteur.identifier\nimport com.robotraconteur.action\nimport com.robotraconteur.eventlog\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.SpatialVelocity\nusing com.robotraconteur.geometry.SpatialAcceleration\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.signal.SignalInfo\nusing com.robotraconteur.robotics.joints.JointInfo\nusing com.robotraconteur.robotics.tool.ToolInfo\nusing com.robotraconteur.robotics.payload.PayloadInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.robotics.trajectory.TrajectoryStatus\nusing com.robotraconteur.robotics.trajectory.JointTrajectory\nusing com.robotraconteur.robotics.trajectory.InterpolationMode\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.action.ActionStatusCode\nusing com.robotraconteur.eventlog.EventLogMessage\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.datetime.TimeSpec3\n\n\nenum RobotTypeCode\nunknown = 0,\nserial = 1,\ndual_arm,\ndifferential_drive,\nplanar,\nfloating,\nfreeform,\nother\nend\n\nenum RobotCommandMode\ninvalid_state = -1,\nhalt = 0,\njog,\ntrajectory,\nposition_command,\nvelocity_command,\nhoming\nend\n\nenum RobotOperationalMode\nundefined = 0,\nmanual_reduced_speed,\nmanual_full_speed,\nauto,\ncobot\nend\n\nenum RobotControllerState\nundefined = 0,\ninit = 1,\nmotor_on,\nmotor_off,\nguard_stop,\nemergency_stop,\nemergency_stop_reset\nend\n\nenum RobotCapabilities\nunknown = 0,\njog_command = 0x1,\ntrajectory_command = 0x2,\nposition_command = 0x4,\nvelocity_command = 0x8,\nhoming_command = 0x10,\nsoftware_reset_errors = 0x20,\nsoftware_enable = 0x40,\ninterpolated_trajectory = 0x80,\nraster_trajectory = 0x100,\ntrajectory_queueing = 0x200,\nspeed_ratio = 0x400\nend\n\nenum RobotStateFlags\nunknown = 0,\nerror = 0x1,\nfatal_error = 0x2,\nestop = 0x4,\nestop_button1 = 0x8,\nestop_button2 = 0x10,\nestop_button3 = 0x20,\nestop_button4 = 0x40,\nestop_guard1 = 0x80,\nestop_guard2 = 0x100,\nestop_guard3 = 0x200,\nestop_guard4 = 0x400,\nestop_software = 0x800,\nestop_fault = 0x1000,\nestop_internal = 0x2000,\nestop_other = 0x4000,\nestop_released = 0x8000,\nenabling_switch = 0x10000,\nenabled = 0x20000,\nready = 0x40000,\nhomed = 0x80000,\nhoming_required = 0x100000,\ncommunication_failure = 0x200000,\nvalid_position_command = 0x1000000,\nvalid_velocity_command = 0x2000000,\ntrajectory_running = 0x4000000\nend\n\nstruct RobotKinChainInfo\nfield Identifier kin_chain_identifier\nfield Vector3[] H\nfield Vector3[] P\nfield SpatialInertia[] link_inertias\nfield Identifier{list} link_identifiers\nfield uint32[] joint_numbers\nfield Pose flange_pose\nfield Identifier flange_identifier\nfield ToolInfo current_tool\nfield PayloadInfo current_payload\nfield SpatialVelocity tcp_max_velocity\nfield SpatialAcceleration tcp_max_acceleration\nfield SpatialVelocity tcp_reduced_max_velocity\nfield SpatialAcceleration tcp_reduced_max_acceleration\nfield string description\nfield varvalue{string} extended\nend\n\nstruct RobotInfo\nfield DeviceInfo device_info\nfield RobotTypeCode robot_type\nfield JointInfo{list} joint_info\nfield RobotKinChainInfo{list} chains\nfield uint32 robot_capabilities\nfield SignalInfo{list} signal_info\nfield ParameterInfo{list} parameter_info\nfield uint16 config_seqno\nfield InterpolationMode{list} trajectory_interpolation_modes\nfield varvalue{string} extended\nend\n\nstruct RobotState\nfield TimeSpec3 ts\nfield uint64 seqno\nfield RobotCommandMode command_mode\nfield RobotOperationalMode operational_mode\nfield RobotControllerState controller_state\nfield uint64 robot_state_flags\nfield double[] joint_position\nfield double[] joint_velocity\nfield double[] joint_effort\nfield double[] joint_position_command\nfield double[] joint_velocity_command\nfield Pose[] kin_chain_tcp\nfield SpatialVelocity[] kin_chain_tcp_vel\nfield bool trajectory_running\nend\n\nstruct AdvancedRobotState\nfield TimeSpec3 ts\nfield uint64 seqno\nfield RobotCommandMode command_mode\nfield RobotOperationalMode operational_mode\nfield RobotControllerState controller_state\nfield uint64 robot_state_flags\nfield double[] joint_position\nfield double[] joint_velocity\nfield double[] joint_effort\nfield double[] joint_position_command\nfield double[] joint_velocity_command\nfield uint8[] joint_position_units\nfield uint8[] joint_effort_units\nfield Pose[] kin_chain_tcp\nfield SpatialVelocity[] kin_chain_tcp_vel\nfield bool trajectory_running\nfield double trajectory_time\nfield double trajectory_max_time\nfield uint32 trajectory_current_waypoint\nfield uint16 config_seqno\nend\n\nstruct RobotStateSensorData\nfield SensorDataHeader data_header\nfield AdvancedRobotState robot_state\nend\n\nstruct RobotJointCommand\nfield uint64 seqno\nfield uint64 state_seqno\nfield double[] command\n# Use JointUnits values\nfield uint8[] units\nend\n\nobject Robot\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty RobotInfo robot_info [readonly,nolock]\nproperty RobotCommandMode command_mode [nolockread]\nproperty RobotOperationalMode operational_mode [readonly, nolock]\nproperty RobotControllerState controller_state [readonly, nolock]\nproperty EventLogMessage{list} current_errors [readonly, nolock]\nfunction void halt() [urgent]\nfunction void enable()\nfunction void disable() [urgent]\nfunction void reset_errors()\nproperty double speed_ratio\nfunction void jog_freespace(double[] joint_position, double[] max_velocity, bool wait)\nfunction void jog_joint(double[] joint_velocity, double timeout, bool wait)\nfunction void jog_cartesian(SpatialVelocity{int32} max_velocity, double timeout, bool wait)\nfunction TrajectoryStatus{generator} execute_trajectory(JointTrajectory trajectory)\nwire RobotState robot_state [readonly,nolock]\nwire AdvancedRobotState advanced_robot_state [readonly,nolock]\npipe RobotStateSensorData robot_state_sensor_data [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nwire RobotJointCommand position_command [writeonly]\nwire RobotJointCommand velocity_command [writeonly]\nfunction ActionStatusCode{generator} home()\nfunction double[] getf_signal(string signal_name)\nfunction void setf_signal(string signal_name, double[] value)\nfunction void tool_attached(int32 chain, ToolInfo tool)\nfunction void tool_detached(int32 chain, string tool_name)\nevent tool_changed(int32 chain, string tool_name)\nfunction void payload_attached(int32 chain, PayloadInfo payload, Pose pose)\nfunction void payload_detached(int32 chain, string payload_name)\nevent payload_changed(int32 chain, string payload_name)\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nevent param_changed(string param_name)\nend\n\n\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.robotics.robot";}
@@ -25618,6 +25972,7 @@ public class RobotState_stub : IStructureStub {
     {
     if (s1 ==null) return null;
     RobotState s = (RobotState)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.datetime.TimeSpec3>("ts",ref s.ts));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<RobotCommandMode>("command_mode",s.command_mode));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<RobotOperationalMode>("operational_mode",s.operational_mode));
@@ -25639,6 +25994,7 @@ public class RobotState_stub : IStructureStub {
     RobotState s=new RobotState();
     using(vectorptr_messageelement mm=m.Elements)
     {
+    s.ts =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.datetime.TimeSpec3>(MessageElement.FindElement(mm,"ts"));
     s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
     s.command_mode =MessageElementUtil.UnpackEnum<RobotCommandMode>(MessageElement.FindElement(mm,"command_mode"));
     s.operational_mode =MessageElementUtil.UnpackEnum<RobotOperationalMode>(MessageElement.FindElement(mm,"operational_mode"));
@@ -25666,6 +26022,7 @@ public class AdvancedRobotState_stub : IStructureStub {
     {
     if (s1 ==null) return null;
     AdvancedRobotState s = (AdvancedRobotState)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.datetime.TimeSpec3>("ts",ref s.ts));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<RobotCommandMode>("command_mode",s.command_mode));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<RobotOperationalMode>("operational_mode",s.operational_mode));
@@ -25693,6 +26050,7 @@ public class AdvancedRobotState_stub : IStructureStub {
     AdvancedRobotState s=new AdvancedRobotState();
     using(vectorptr_messageelement mm=m.Elements)
     {
+    s.ts =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.datetime.TimeSpec3>(MessageElement.FindElement(mm,"ts"));
     s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
     s.command_mode =MessageElementUtil.UnpackEnum<RobotCommandMode>(MessageElement.FindElement(mm,"command_mode"));
     s.operational_mode =MessageElementUtil.UnpackEnum<RobotOperationalMode>(MessageElement.FindElement(mm,"operational_mode"));
@@ -25774,7 +26132,7 @@ public class RobotJointCommand_stub : IStructureStub {
     }
 }
 
-public interface async_Robot : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_Robot : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<RobotInfo> async_get_robot_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -25810,12 +26168,14 @@ public class Robot_stub : ServiceStub , Robot, async_Robot{
     private Pipe<RobotStateSensorData> rr_robot_state_sensor_data;
     private Wire<RobotState> rr_robot_state;
     private Wire<AdvancedRobotState> rr_advanced_robot_state;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     private Wire<RobotJointCommand> rr_position_command;
     private Wire<RobotJointCommand> rr_velocity_command;
     public Robot_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_robot_state_sensor_data=new Pipe<RobotStateSensorData>(innerstub.GetPipe("robot_state_sensor_data"));
     rr_robot_state=new Wire<RobotState>(innerstub.GetWire("robot_state"));
     rr_advanced_robot_state=new Wire<AdvancedRobotState>(innerstub.GetWire("advanced_robot_state"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     rr_position_command=new Wire<RobotJointCommand>(innerstub.GetWire("position_command"));
     rr_velocity_command=new Wire<RobotJointCommand>(innerstub.GetWire("velocity_command"));
     }
@@ -26088,6 +26448,10 @@ public class Robot_stub : ServiceStub , Robot, async_Robot{
     }
     public Wire<AdvancedRobotState> advanced_robot_state {
     get { return rr_advanced_robot_state;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public Wire<RobotJointCommand> position_command {
@@ -26713,6 +27077,7 @@ public class Robot_skel : ServiceSkel {
     obj=(Robot)rrobj1;
     obj.robot_state=new Wire<RobotState>(innerskel.GetWire("robot_state"));
     obj.advanced_robot_state=new Wire<AdvancedRobotState>(innerskel.GetWire("advanced_robot_state"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     obj.position_command=new Wire<RobotJointCommand>(innerskel.GetWire("position_command"));
     obj.velocity_command=new Wire<RobotJointCommand>(innerskel.GetWire("velocity_command"));
     }
@@ -26764,6 +27129,7 @@ public class Robot_default_impl : Robot{
     protected PipeBroadcaster<RobotStateSensorData> rrvar_robot_state_sensor_data;
     protected WireBroadcaster<RobotState> rrvar_robot_state;
     protected WireBroadcaster<AdvancedRobotState> rrvar_advanced_robot_state;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     protected WireUnicastReceiver<RobotJointCommand> rrvar_position_command;
     protected WireUnicastReceiver<RobotJointCommand> rrvar_velocity_command;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
@@ -26842,6 +27208,13 @@ public class Robot_default_impl : Robot{
     rrvar_advanced_robot_state= new WireBroadcaster<AdvancedRobotState>(value);
     }
     }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
     public virtual Wire<RobotJointCommand> position_command {
     get { return rrvar_position_command.Wire;  }
     set {
@@ -26878,6 +27251,7 @@ public class SensorInfo
 public class SensorData
 {
     public com.robotraconteur.sensordata.SensorDataHeader data_header;
+    public int data_flags;
     public double[] data;
     public com.robotraconteur.datatype.DataType data_type;
     public List<com.robotraconteur.units.SIUnit> data_units;
@@ -27008,6 +27382,20 @@ public static class com__robotraconteur__sensorConstants
     altitude = 38,
     other = 39
     };
+    public enum SensorDataFlags
+    {
+    unknown = 0,
+    enabled = 0x1,
+    streaming = 0x2,
+    calibrated = 0x4,
+    calibration_error = 0x8,
+    out_of_range = 0x10,
+    out_of_range_high = 0x20,
+    out_of_range_low = 0x40,
+    warning = 0x80,
+    error = 0x100,
+    fatal_error = 0x200
+    };
 }
 namespace com.robotraconteur.sensor
 {
@@ -27015,7 +27403,7 @@ public class com__robotraconteur__sensorFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.sensor\n\nstdver 0.10\n\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device\nimport com.robotraconteur.param\nimport com.robotraconteur.geometry\nimport com.robotraconteur.units\nimport com.robotraconteur.datatype\n\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.geometry.Vector2\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Vector6\nusing com.robotraconteur.geometry.Wrench\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.datatype.DataType\n\nenum SensorTypeCode\nunknown = 0,\ngeneric_digital,\ngeneric_analog,\npushbutton,\ndial,\nlimitswitch,\ninfrared,\npressure,\nvacuum,\ntemperature,\nhumidity,\nlevel,\ncontact,\nultrasonic,\nmagnetic,\nencoder,\npotentiometer,\nresolver,\nlinear_encoder,\nlinear_potentiometer,\nlvds,\naccelerometer,\ngyroscopic,\nvelocity,\nangular_velocity,\nspatial_velocity,\ntorque,\nforce,\nproximity,\nvoltage,\ncurrent,\nlaser,\nflow,\npyrometer,\nforcetorque,\nlight_color,\nlight_intensity,\nobject_color,\naltitude,\nother\nend\n\nstruct SensorInfo\nfield DeviceInfo device_info\nfield SensorTypeCode sensor_type\nfield SIUnit{list} units\nfield DataType data_type\nfield double[] sensor_resolution\nfield bool analog_sensor\nfield double update_frequency\nfield ParameterInfo{list} parameter_info\nfield varvalue{string} extended\nend\n\nstruct SensorData\nfield SensorDataHeader data_header\nfield double[] data\nfield DataType data_type\nfield SIUnit{list} data_units\nfield varvalue{string} parameters\nfield varvalue{string} extended\nend\n\nobject Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nend\n\nobject Vector2Sensor\nimplements Device\nimplements Sensor\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Vector2 vector2_sensor_value [readonly,nolock]\nend\n\nobject Vector3Sensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Vector3 vector3_sensor_value [readonly,nolock]\nend\n\nobject Vector6Sensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Vector6 vector6_sensor_value [readonly,nolock]\nend\n\nobject WrenchSensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Wrench wrench_sensor_value [readonly,nolock]\nend\n\nobject FreeformSensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire varvalue freeform_sensor_value [readonly,nolock]\nend\n\n";
+    const string s="service com.robotraconteur.sensor\n\nstdver 0.10\n\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device\nimport com.robotraconteur.param\nimport com.robotraconteur.geometry\nimport com.robotraconteur.units\nimport com.robotraconteur.datatype\n\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.geometry.Vector2\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.Vector6\nusing com.robotraconteur.geometry.Wrench\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.datatype.DataType\n\nenum SensorTypeCode\nunknown = 0,\ngeneric_digital,\ngeneric_analog,\npushbutton,\ndial,\nlimitswitch,\ninfrared,\npressure,\nvacuum,\ntemperature,\nhumidity,\nlevel,\ncontact,\nultrasonic,\nmagnetic,\nencoder,\npotentiometer,\nresolver,\nlinear_encoder,\nlinear_potentiometer,\nlvds,\naccelerometer,\ngyroscopic,\nvelocity,\nangular_velocity,\nspatial_velocity,\ntorque,\nforce,\nproximity,\nvoltage,\ncurrent,\nlaser,\nflow,\npyrometer,\nforcetorque,\nlight_color,\nlight_intensity,\nobject_color,\naltitude,\nother\nend\n\nenum SensorDataFlags\nunknown = 0,\nenabled = 0x1,\nstreaming = 0x2,\ncalibrated = 0x4,\ncalibration_error = 0x8,\nout_of_range = 0x10,\nout_of_range_high = 0x20,\nout_of_range_low = 0x40,\nwarning = 0x80,\nerror = 0x100,\nfatal_error = 0x200\nend\n\nstruct SensorInfo\nfield DeviceInfo device_info\nfield SensorTypeCode sensor_type\nfield SIUnit{list} units\nfield DataType data_type\nfield double[] sensor_resolution\nfield bool analog_sensor\nfield double update_frequency\nfield ParameterInfo{list} parameter_info\nfield varvalue{string} extended\nend\n\nstruct SensorData\nfield SensorDataHeader data_header\nfield int32 data_flags\nfield double[] data\nfield DataType data_type\nfield SIUnit{list} data_units\nfield varvalue{string} parameters\nfield varvalue{string} extended\nend\n\nobject Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nend\n\nobject Vector2Sensor\nimplements Device\nimplements Sensor\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Vector2 vector2_sensor_value [readonly,nolock]\nend\n\nobject Vector3Sensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Vector3 vector3_sensor_value [readonly,nolock]\nend\n\nobject Vector6Sensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Vector6 vector6_sensor_value [readonly,nolock]\nend\n\nobject WrenchSensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire Wrench wrench_sensor_value [readonly,nolock]\nend\n\nobject FreeformSensor\nimplements Sensor\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty bool active\nproperty SensorInfo sensor_info [readonly,nolock]\nwire double[] sensor_value [readonly,nolock]\npipe SensorData sensor_data [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nwire varvalue freeform_sensor_value [readonly,nolock]\nend\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.sensor";}
@@ -27153,6 +27541,7 @@ public class SensorData_stub : IStructureStub {
     if (s1 ==null) return null;
     SensorData s = (SensorData)s1;
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("data_header",s.data_header));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<int>("data_flags",s.data_flags));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("data",s.data));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("data_type",s.data_type));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.units.SIUnit>("data_units",s.data_units));
@@ -27167,6 +27556,7 @@ public class SensorData_stub : IStructureStub {
     using(vectorptr_messageelement mm=m.Elements)
     {
     s.data_header =MessageElementUtil.UnpackStructure<com.robotraconteur.sensordata.SensorDataHeader>(MessageElement.FindElement(mm,"data_header"));
+    s.data_flags =(MessageElementUtil.UnpackScalar<int>(MessageElement.FindElement(mm,"data_flags")));
     s.data =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"data"));
     s.data_type =MessageElementUtil.UnpackStructure<com.robotraconteur.datatype.DataType>(MessageElement.FindElement(mm,"data_type"));
     s.data_units =MessageElementUtil.UnpackList<com.robotraconteur.units.SIUnit>(MessageElement.FindElement(mm,"data_units"));
@@ -29162,7 +29552,7 @@ namespace com.robotraconteur.sensordata
 {
 public class SensorDataHeader
 {
-    public com.robotraconteur.datetime.DateTimeUTC ts;
+    public com.robotraconteur.datetime.TimeSpec2 ts;
     public ulong seqno;
     public SensorDataSourceInfo source_info;
 }
@@ -29183,7 +29573,7 @@ public class com__robotraconteur__sensordataFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.sensordata\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\nimport com.robotraconteur.identifier\nimport com.robotraconteur.geometry\n\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.geometry.Pose\n\nstruct SensorDataHeader\nfield DateTimeUTC ts\nfield uint64 seqno\nfield SensorDataSourceInfo source_info\nend\n\nstruct SensorDataSourceInfo\nfield Identifier source\nfield Pose source_world_pose\nfield string source_config_nonce\nfield varvalue{string} source_params\nfield varvalue{string} extended\nend\n";
+    const string s="service com.robotraconteur.sensordata\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\nimport com.robotraconteur.identifier\nimport com.robotraconteur.geometry\n\nusing com.robotraconteur.datetime.TimeSpec2\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.geometry.Pose\n\nstruct SensorDataHeader\nfield TimeSpec2 ts\nfield uint64 seqno\nfield SensorDataSourceInfo source_info\nend\n\nstruct SensorDataSourceInfo\nfield Identifier source\nfield Pose source_world_pose\nfield string source_config_nonce\nfield varvalue{string} source_params\nfield varvalue{string} extended\nend\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.sensordata";}
@@ -29256,7 +29646,7 @@ public class SensorDataHeader_stub : IStructureStub {
     {
     if (s1 ==null) return null;
     SensorDataHeader s = (SensorDataHeader)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.DateTimeUTC>("ts",ref s.ts));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.TimeSpec2>("ts",ref s.ts));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("source_info",s.source_info));
     return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.sensordata.SensorDataHeader",m);
@@ -29267,7 +29657,7 @@ public class SensorDataHeader_stub : IStructureStub {
     SensorDataHeader s=new SensorDataHeader();
     using(vectorptr_messageelement mm=m.Elements)
     {
-    s.ts =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.DateTimeUTC>(MessageElement.FindElement(mm,"ts"));
+    s.ts =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.TimeSpec2>(MessageElement.FindElement(mm,"ts"));
     s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
     s.source_info =MessageElementUtil.UnpackStructure<SensorDataSourceInfo>(MessageElement.FindElement(mm,"source_info"));
     T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
@@ -29339,6 +29729,7 @@ public class ServoInfo
 
 public class ServoState
 {
+    public com.robotraconteur.datetime.TimeSpec3 ts;
     public ulong seqno;
     public ServoMode mode;
     public double[] position;
@@ -29365,7 +29756,7 @@ public class ServoCommand
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Servo : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface Servo : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     ServoInfo servo_info { get; 	}
@@ -29385,6 +29776,7 @@ public interface Servo : com.robotraconteur.device.Device, com.robotraconteur.de
     Wire<ServoCommand> position_command{ get; set; }
     Wire<ServoCommand> velocity_command{ get; set; }
     Wire<ServoCommand> effort_command{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 public static class com__robotraconteur__servoConstants 
@@ -29425,7 +29817,7 @@ public class com__robotraconteur__servoFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.servo\n\nstdver 0.10\n\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device\nimport com.robotraconteur.signal\nimport com.robotraconteur.param\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.signal.SignalInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.robotics.joints.JointEffortUnits\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nenum ServoTypeCode\nunknown = 0,\ngeneric_revolute,\ngeneric_prismatic,\nrevolute_electric,\nrevolute_linear,\nrc_servo\nend\n\nenum ServoCapabilities\nunknown = 0,\nposition_command = 0x1,\nvelocity_command = 0x2,\neffort_command = 0x4,\ntrapezoidal_command = 0x8,\nsignals = 0x1000\nend\n\nenum ServoMode\nerror = -2,\ndisabled = -1,\nhalt = 0,\nposition_command,\nvelocity_command,\neffort_command,\ntrapezoidal_command\nend\n\nstruct ServoInfo\nfield DeviceInfo device_info\nfield ServoTypeCode servo_type\nfield uint32 capabilities\nfield uint32 axis_count\nfield JointPositionUnits{list} position_units\nfield JointEffortUnits{list} effort_units\nfield double[] position_min\nfield double[] position_max\nfield double[] velocity_min\nfield double[] velocity_max\nfield double[] acceleration_min\nfield double[] acceleration_max\nfield double[] torque_min\nfield double[] torque_max\nfield double[] gear_ratio\nfield double[] sensor_resolution\nfield double[] effort_command_resolution\nfield ParameterInfo{list} parameter_info\nfield SignalInfo{list} signal_info\nfield varvalue{string} extended\nend\n\nstruct ServoState\nfield uint64 seqno\nfield ServoMode mode\nfield double[] position\nfield double[] velocity\nfield double[] acceleration\nfield double[] effort\nfield double[] position_command\nfield double[] velocity_command\nfield double[] effort_command\nend\n\nstruct ServoStateSensorData\nfield SensorDataHeader data_header\nfield ServoState servo_state\nfield varvalue{string} extended\nend\n\nstruct ServoCommand\nfield uint64 seqno\nfield uint64 status_seqno\nfield double[] command\nend\n\nobject Servo\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nfunction void halt() [urgent,nolock]\nproperty ServoInfo servo_info [readonly,nolock]\nproperty ServoMode mode [nolockread]\nwire double[] position [readonly,nolock]\nwire double[] velocity [readonly, nolock]\nwire ServoState servo_state [readonly,nolock]\npipe ServoStateSensorData servo_state_sensor_data [readonly,nolock]\nwire ServoCommand position_command [writeonly]\nwire ServoCommand velocity_command [writeonly]\nwire ServoCommand effort_command [writeonly]\nfunction void trapezoidal_move(double[] target_pos, double[] target_vel, double[] vel, double[] accel)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nfunction varvalue getf_signal(string signal_name)\nfunction void setf_signal(string signal_name, varvalue value)\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nend\n\n\n";
+    const string s="service com.robotraconteur.servo\n\nstdver 0.10\n\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device\nimport com.robotraconteur.signal\nimport com.robotraconteur.param\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.signal.SignalInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.robotics.joints.JointEffortUnits\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.datetime.TimeSpec3\n\nenum ServoTypeCode\nunknown = 0,\ngeneric_revolute,\ngeneric_prismatic,\nrevolute_electric,\nrevolute_linear,\nrc_servo\nend\n\nenum ServoCapabilities\nunknown = 0,\nposition_command = 0x1,\nvelocity_command = 0x2,\neffort_command = 0x4,\ntrapezoidal_command = 0x8,\nsignals = 0x1000\nend\n\nenum ServoMode\nerror = -2,\ndisabled = -1,\nhalt = 0,\nposition_command,\nvelocity_command,\neffort_command,\ntrapezoidal_command\nend\n\nstruct ServoInfo\nfield DeviceInfo device_info\nfield ServoTypeCode servo_type\nfield uint32 capabilities\nfield uint32 axis_count\nfield JointPositionUnits{list} position_units\nfield JointEffortUnits{list} effort_units\nfield double[] position_min\nfield double[] position_max\nfield double[] velocity_min\nfield double[] velocity_max\nfield double[] acceleration_min\nfield double[] acceleration_max\nfield double[] torque_min\nfield double[] torque_max\nfield double[] gear_ratio\nfield double[] sensor_resolution\nfield double[] effort_command_resolution\nfield ParameterInfo{list} parameter_info\nfield SignalInfo{list} signal_info\nfield varvalue{string} extended\nend\n\nstruct ServoState\nfield TimeSpec3 ts\nfield uint64 seqno\nfield ServoMode mode\nfield double[] position\nfield double[] velocity\nfield double[] acceleration\nfield double[] effort\nfield double[] position_command\nfield double[] velocity_command\nfield double[] effort_command\nend\n\nstruct ServoStateSensorData\nfield SensorDataHeader data_header\nfield ServoState servo_state\nfield varvalue{string} extended\nend\n\nstruct ServoCommand\nfield uint64 seqno\nfield uint64 status_seqno\nfield double[] command\nend\n\nobject Servo\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nfunction void halt() [urgent,nolock]\nproperty ServoInfo servo_info [readonly,nolock]\nproperty ServoMode mode [nolockread]\nwire double[] position [readonly,nolock]\nwire double[] velocity [readonly, nolock]\nwire ServoState servo_state [readonly,nolock]\npipe ServoStateSensorData servo_state_sensor_data [readonly,nolock]\nwire ServoCommand position_command [writeonly]\nwire ServoCommand velocity_command [writeonly]\nwire ServoCommand effort_command [writeonly]\nfunction void trapezoidal_move(double[] target_pos, double[] target_vel, double[] vel, double[] accel)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nfunction varvalue getf_signal(string signal_name)\nfunction void setf_signal(string signal_name, varvalue value)\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nend\n\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.servo";}
@@ -29570,6 +29962,7 @@ public class ServoState_stub : IStructureStub {
     {
     if (s1 ==null) return null;
     ServoState s = (ServoState)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.datetime.TimeSpec3>("ts",ref s.ts));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<ServoMode>("mode",s.mode));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("position",s.position));
@@ -29587,6 +29980,7 @@ public class ServoState_stub : IStructureStub {
     ServoState s=new ServoState();
     using(vectorptr_messageelement mm=m.Elements)
     {
+    s.ts =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.datetime.TimeSpec3>(MessageElement.FindElement(mm,"ts"));
     s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
     s.mode =MessageElementUtil.UnpackEnum<ServoMode>(MessageElement.FindElement(mm,"mode"));
     s.position =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"position"));
@@ -29658,7 +30052,7 @@ public class ServoCommand_stub : IStructureStub {
     }
 }
 
-public interface async_Servo : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_Servo : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<ServoInfo> async_get_servo_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -29682,6 +30076,7 @@ public class Servo_stub : ServiceStub , Servo, async_Servo{
     private Wire<ServoCommand> rr_position_command;
     private Wire<ServoCommand> rr_velocity_command;
     private Wire<ServoCommand> rr_effort_command;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public Servo_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_servo_state_sensor_data=new Pipe<ServoStateSensorData>(innerstub.GetPipe("servo_state_sensor_data"));
     rr_position=new Wire<double[]>(innerstub.GetWire("position"));
@@ -29690,6 +30085,7 @@ public class Servo_stub : ServiceStub , Servo, async_Servo{
     rr_position_command=new Wire<ServoCommand>(innerstub.GetWire("position_command"));
     rr_velocity_command=new Wire<ServoCommand>(innerstub.GetWire("velocity_command"));
     rr_effort_command=new Wire<ServoCommand>(innerstub.GetWire("effort_command"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -29820,6 +30216,10 @@ public class Servo_stub : ServiceStub , Servo, async_Servo{
     }
     public Wire<ServoCommand> effort_command {
     get { return rr_effort_command;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -30132,6 +30532,7 @@ public class Servo_skel : ServiceSkel {
     obj.position_command=new Wire<ServoCommand>(innerskel.GetWire("position_command"));
     obj.velocity_command=new Wire<ServoCommand>(innerskel.GetWire("velocity_command"));
     obj.effort_command=new Wire<ServoCommand>(innerskel.GetWire("effort_command"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -30185,6 +30586,7 @@ public class Servo_default_impl : Servo{
     protected WireUnicastReceiver<ServoCommand> rrvar_position_command;
     protected WireUnicastReceiver<ServoCommand> rrvar_velocity_command;
     protected WireUnicastReceiver<ServoCommand> rrvar_effort_command;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual ServoInfo servo_info {get; set;} = default(ServoInfo);
     public virtual ServoMode mode {get; set;} = default(ServoMode);
@@ -30251,6 +30653,13 @@ public class Servo_default_impl : Servo{
     rrvar_effort_command= new WireUnicastReceiver<ServoCommand>(value);
     }
     }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
 }
 public static class RRExtensions{
 }
@@ -30298,7 +30707,7 @@ public interface SignalGroup
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface SignalDevice
+public interface SignalDevice : com.robotraconteur.device.Device
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     List<SignalGroupInfo> signal_group_info { get; 	}
@@ -30337,7 +30746,7 @@ public class com__robotraconteur__signalFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.signal\n\nstdver 0.10\n\nimport com.robotraconteur.identifier\nimport com.robotraconteur.datatype\nimport com.robotraconteur.device\nimport com.robotraconteur.units\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.datatype.DataType\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.DeviceClass\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nenum SignalType\nunknown = 0,\ndigital = 1,\nanalog,\ndigital_port,\nanalog_port,\nvector3,\nvector6,\nwrench,\npose,\ntransform,\nother\nend\n\nenum SignalAccessLevel\nundefined = 0,\ninternal,\nrestricted,\nreadonly,\nall\nend\n\nstruct SignalInfo\nfield Identifier signal_identifier\nfield DeviceClass signal_class\nfield SIUnit{list} units\nfield DataType data_type\nfield SignalType signal_type\nfield SignalAccessLevel access_level\nfield uint32[] address\nfield string user_description\nfield varvalue min_value\nfield varvalue max_value\nfield varvalue{string} extended\nend\n\nstruct SignalGroupInfo\nfield Identifier signal_group_identifier\nfield string description\nend\n\nobject Signal\nimplements IsochDevice\nproperty SignalInfo signal_info [readonly,nolock]\nwire varvalue signal_value [readonly]\nwire varvalue signal_command [writeonly]\nwire double[] signal_value_vec [readonly]\nwire double[] signal_command_vec [writeonly]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject SignalGroup\nproperty SignalInfo{list} signal_info [readonly,nolock]\nobjref Signal{int32} signals\nend\n\nobject SignalDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty SignalGroupInfo{list} signal_group_info [readonly,nolock]\nobjref SignalGroup{string} signal_groups\nend\n\n";
+    const string s="service com.robotraconteur.signal\n\nstdver 0.10\n\nimport com.robotraconteur.identifier\nimport com.robotraconteur.datatype\nimport com.robotraconteur.device\nimport com.robotraconteur.units\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.datatype.DataType\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.DeviceClass\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\n\nenum SignalType\nunknown = 0,\ndigital = 1,\nanalog,\ndigital_port,\nanalog_port,\nvector3,\nvector6,\nwrench,\npose,\ntransform,\nother\nend\n\nenum SignalAccessLevel\nundefined = 0,\ninternal,\nrestricted,\nreadonly,\nall\nend\n\nstruct SignalInfo\nfield Identifier signal_identifier\nfield DeviceClass signal_class\nfield SIUnit{list} units\nfield DataType data_type\nfield SignalType signal_type\nfield SignalAccessLevel access_level\nfield uint32[] address\nfield string user_description\nfield varvalue min_value\nfield varvalue max_value\nfield varvalue{string} extended\nend\n\nstruct SignalGroupInfo\nfield Identifier signal_group_identifier\nfield string description\nend\n\nobject Signal\nimplements IsochDevice\nproperty SignalInfo signal_info [readonly,nolock]\nwire varvalue signal_value [readonly]\nwire varvalue signal_command [writeonly]\nwire double[] signal_value_vec [readonly]\nwire double[] signal_command_vec [writeonly]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\nobject SignalGroup\nproperty SignalInfo{list} signal_info [readonly,nolock]\nobjref Signal{int32} signals\nend\n\nobject SignalDevice\nimplements Device\nproperty DeviceInfo device_info [readonly,nolock]\nproperty SignalGroupInfo{list} signal_group_info [readonly,nolock]\nobjref SignalGroup{string} signal_groups\nend\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.signal";}
@@ -30618,7 +31027,7 @@ public class SignalGroup_stub : ServiceStub , SignalGroup, async_SignalGroup{
     return AsyncFindObjRefTyped<Signal>("signals",ind.ToString(),"com.robotraconteur.signal.Signal",timeout);
     }
 }
-public interface async_SignalDevice
+public interface async_SignalDevice : com.robotraconteur.device.async_Device
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<List<SignalGroupInfo>> async_get_signal_group_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -31375,7 +31784,7 @@ namespace com.robotraconteur.device.isoch
 public class IsochInfo
 {
     public double update_rate;
-    public com.robotraconteur.datetime.DateTimeUTC isoch_epoch;
+    public com.robotraconteur.datetime.TimeSpec2 isoch_epoch;
     public uint max_downsample;
 }
 
@@ -31393,7 +31802,7 @@ public class com__robotraconteur__device__isochFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.device.isoch\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.datetime.DateTimeUTC\n\nstruct IsochInfo\nfield double update_rate\nfield DateTimeUTC isoch_epoch\nfield uint32 max_downsample\nend\n\nobject IsochDevice\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n";
+    const string s="service com.robotraconteur.device.isoch\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.datetime.TimeSpec2\n\nstruct IsochInfo\nfield double update_rate\nfield TimeSpec2 isoch_epoch\nfield uint32 max_downsample\nend\n\nobject IsochDevice\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.device.isoch";}
@@ -31468,7 +31877,7 @@ public class IsochInfo_stub : IStructureStub {
     if (s1 ==null) return null;
     IsochInfo s = (IsochInfo)s1;
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("update_rate",s.update_rate));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.DateTimeUTC>("isoch_epoch",ref s.isoch_epoch));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.TimeSpec2>("isoch_epoch",ref s.isoch_epoch));
     MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("max_downsample",s.max_downsample));
     return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.device.isoch.IsochInfo",m);
     }
@@ -31479,7 +31888,7 @@ public class IsochInfo_stub : IStructureStub {
     using(vectorptr_messageelement mm=m.Elements)
     {
     s.update_rate =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"update_rate")));
-    s.isoch_epoch =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.DateTimeUTC>(MessageElement.FindElement(mm,"isoch_epoch"));
+    s.isoch_epoch =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.TimeSpec2>(MessageElement.FindElement(mm,"isoch_epoch"));
     s.max_downsample =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"max_downsample")));
     T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
     return st;
@@ -31733,7 +32142,7 @@ public class ObjectRecognitionSensorData
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface ObjectRecognitionSensor : com.robotraconteur.device.Device, com.robotraconteur.device.isoch.IsochDevice
+public interface ObjectRecognitionSensor : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
 {
     com.robotraconteur.device.DeviceInfo device_info { get; 	}
     ObjectRecognitionSensorInfo object_recognition_sensor_info { get; 	}
@@ -31746,6 +32155,7 @@ public interface ObjectRecognitionSensor : com.robotraconteur.device.Device, com
     ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier);
     ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class);
     Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
 }
 
 }
@@ -31755,7 +32165,7 @@ public class com__robotraconteur__objectrecognitionFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.objectrecognition\n\nstdver 0.10\n\nimport com.robotraconteur.identifier\nimport com.robotraconteur.geometry\nimport com.robotraconteur.geometry.shapes\nimport com.robotraconteur.param\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.sensordata\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.DeviceClass\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.geometry.shapes.ShapeObject\nusing com.robotraconteur.geometry.NamedPoseWithCovariance\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.sensordata.SensorDataHeader\n\nstruct ObjectRecognitionTemplate\nfield Identifier object_identifier\nfield DeviceClass object_class\nfield ShapeObject object_shape\nfield varvalue{string} extended\nend\n\nstruct RecognizedObject\nfield Identifier recognized_object\nfield DeviceClass recognized_object_class\nfield NamedPoseWithCovariance pose\nfield double confidence\nfield varvalue{string} extended\nend\n\nstruct RecognizedObjects\nfield RecognizedObject{list} recognized_objects\nfield varvalue source_data\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorInfo\nfield DeviceInfo device_info\nfield Point range_min\nfield Point range_max\nfield Vector3 resolution\nfield ParameterInfo{list} param_info\nfield Identifier{list} object_template_identifiers\nfield DeviceClass{list} object_template_classes\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorData\nfield SensorDataHeader sensor_data\nfield RecognizedObjects recognized_objects\nend\n\nobject ObjectRecognitionSensor\nimplements Device\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ObjectRecognitionSensorInfo object_recognition_sensor_info [readonly,nolock]\nproperty bool active\nfunction RecognizedObjects capture_recognized_objects()\npipe ObjectRecognitionSensorData object_recognition_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction ObjectRecognitionTemplate getf_object_template(Identifier object_identifier)\nfunction ObjectRecognitionTemplate getf_object_class_template(Identifier object_class)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\n\n\n\n\n";
+    const string s="service com.robotraconteur.objectrecognition\n\nstdver 0.10\n\nimport com.robotraconteur.identifier\nimport com.robotraconteur.geometry\nimport com.robotraconteur.geometry.shapes\nimport com.robotraconteur.param\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device.clock\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.DeviceClass\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.geometry.shapes.ShapeObject\nusing com.robotraconteur.geometry.NamedPoseWithCovariance\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\n\nstruct ObjectRecognitionTemplate\nfield Identifier object_identifier\nfield DeviceClass object_class\nfield ShapeObject object_shape\nfield varvalue{string} extended\nend\n\nstruct RecognizedObject\nfield Identifier recognized_object\nfield DeviceClass recognized_object_class\nfield NamedPoseWithCovariance pose\nfield double confidence\nfield varvalue{string} extended\nend\n\nstruct RecognizedObjects\nfield RecognizedObject{list} recognized_objects\nfield varvalue source_data\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorInfo\nfield DeviceInfo device_info\nfield Point range_min\nfield Point range_max\nfield Vector3 resolution\nfield ParameterInfo{list} param_info\nfield Identifier{list} object_template_identifiers\nfield DeviceClass{list} object_template_classes\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorData\nfield SensorDataHeader sensor_data\nfield RecognizedObjects recognized_objects\nend\n\nobject ObjectRecognitionSensor\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ObjectRecognitionSensorInfo object_recognition_sensor_info [readonly,nolock]\nproperty bool active\nfunction RecognizedObjects capture_recognized_objects()\npipe ObjectRecognitionSensorData object_recognition_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction ObjectRecognitionTemplate getf_object_template(Identifier object_identifier)\nfunction ObjectRecognitionTemplate getf_object_class_template(Identifier object_class)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n\n\n\n\n";
     return s;
     }
     public override string GetServiceName() {return "com.robotraconteur.objectrecognition";}
@@ -31987,7 +32397,7 @@ public class ObjectRecognitionSensorData_stub : IStructureStub {
     }
 }
 
-public interface async_ObjectRecognitionSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.isoch.async_IsochDevice
+public interface async_ObjectRecognitionSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
 {
     Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
     Task<ObjectRecognitionSensorInfo> async_get_object_recognition_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
@@ -32004,8 +32414,10 @@ public interface async_ObjectRecognitionSensor : com.robotraconteur.device.async
 }
 public class ObjectRecognitionSensor_stub : ServiceStub , ObjectRecognitionSensor, async_ObjectRecognitionSensor{
     private Pipe<ObjectRecognitionSensorData> rr_object_recognition_sensor_data;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
     public ObjectRecognitionSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
     rr_object_recognition_sensor_data=new Pipe<ObjectRecognitionSensorData>(innerstub.GetPipe("object_recognition_sensor_data"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public com.robotraconteur.device.DeviceInfo device_info {
     get {
@@ -32101,6 +32513,10 @@ public class ObjectRecognitionSensor_stub : ServiceStub , ObjectRecognitionSenso
     }
     public Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data {
     get { return rr_object_recognition_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
     public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
@@ -32385,6 +32801,7 @@ public class ObjectRecognitionSensor_skel : ServiceSkel {
     }
     public override void InitWireServers(object rrobj1) {
     obj=(ObjectRecognitionSensor)rrobj1;
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -32432,6 +32849,7 @@ public class ObjectRecognitionSensor_skel : ServiceSkel {
 }
 public class ObjectRecognitionSensor_default_impl : ObjectRecognitionSensor{
     protected PipeBroadcaster<ObjectRecognitionSensorData> rrvar_object_recognition_sensor_data;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
     public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
     public virtual ObjectRecognitionSensorInfo object_recognition_sensor_info {get; set;} = default(ObjectRecognitionSensorInfo);
     public virtual bool active {get; set;} = default(bool);
@@ -32452,6 +32870,273 @@ public class ObjectRecognitionSensor_default_impl : ObjectRecognitionSensor{
     set {
     if (rrvar_object_recognition_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
     rrvar_object_recognition_sensor_data= new PipeBroadcaster<ObjectRecognitionSensorData>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
+}
+public static class RRExtensions{
+}
+}
+namespace com.robotraconteur.device.clock
+{
+public struct DeviceTime
+{
+    public com.robotraconteur.datetime.TimeSpec2 device_ts;
+    public com.robotraconteur.datetime.DateTimeUTC device_utc;
+    public ulong device_seqno;
+}
+
+[RobotRaconteurServiceObjectInterface()]
+public interface DeviceClock
+{
+    Wire<DeviceTime> device_clock_now{ get; set; }
+}
+
+}
+namespace com.robotraconteur.device.clock
+{
+public class com__robotraconteur__device__clockFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.device.clock\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.datetime.TimeSpec2\nusing com.robotraconteur.datetime.DateTimeUTC\n\npod DeviceTime\nfield TimeSpec2 device_ts\nfield DateTimeUTC device_utc\nfield uint64 device_seqno\nend\n\nobject DeviceClock\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.device.clock";}
+    public DeviceTime_stub DeviceTime_stubentry;
+    public com__robotraconteur__device__clockFactory()
+{
+    DeviceTime_stubentry=new DeviceTime_stub(this);
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    if (objecttype=="DeviceTime")    return DeviceTime_stubentry;
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    case "DeviceClock":
+    return new DeviceClock_stub(innerstub);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    case "DeviceClock":
+    return new DeviceClock_skel((DeviceClock)obj);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class DeviceTime_stub : PodStub<DeviceTime> {
+    public DeviceTime_stub(com__robotraconteur__device__clockFactory d) {def=d;}
+    private com__robotraconteur__device__clockFactory def;
+    public override MessageElementNestedElementList PackPod(ref DeviceTime s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    DeviceTime s = (DeviceTime)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.TimeSpec2>("device_ts",ref s.device_ts));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.DateTimeUTC>("device_utc",ref s.device_utc));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("device_seqno",s.device_seqno));
+    return new MessageElementNestedElementList(DataTypes.pod_t,"",m);
+    }
+    }
+    public override DeviceTime UnpackPod(MessageElementNestedElementList m) {
+    if (m == null ) throw new NullReferenceException("Pod must not be null");
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    DeviceTime s = new DeviceTime();
+    s.device_ts =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.TimeSpec2>(MessageElement.FindElement(mm,"device_ts"));
+    s.device_utc =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.DateTimeUTC>(MessageElement.FindElement(mm,"device_utc"));
+    s.device_seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"device_seqno")));
+    return s;
+    }
+    }
+    public override string TypeName { get { return "com.robotraconteur.device.clock.DeviceTime"; } }}
+
+public interface async_DeviceClock
+{
+}
+public class DeviceClock_stub : ServiceStub , DeviceClock, async_DeviceClock{
+    private Wire<DeviceTime> rr_device_clock_now;
+    public DeviceClock_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    rr_device_clock_now=new Wire<DeviceTime>(innerstub.GetWire("device_clock_now"));
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public Wire<DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
+    set { throw new InvalidOperationException();}
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+}
+public class DeviceClock_skel : ServiceSkel {
+    protected DeviceClock obj;
+    protected async_DeviceClock async_obj;
+    public DeviceClock_skel(object o) : base(o)    {
+    obj=(DeviceClock)o;
+    async_obj = o as async_DeviceClock;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(DeviceClock)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(DeviceClock)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(DeviceClock)rrobj1;
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(DeviceClock)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(DeviceClock)rrobj1;
+    obj.device_clock_now=new Wire<DeviceTime>(innerskel.GetWire("device_clock_now"));
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "com.robotraconteur.device.clock.DeviceClock"; } }
+}
+public class DeviceClock_default_impl : DeviceClock{
+    protected WireBroadcaster<DeviceTime> rrvar_device_clock_now;
+    public virtual Wire<DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<DeviceTime>(value);
     }
     }
 }

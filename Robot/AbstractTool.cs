@@ -21,7 +21,7 @@ namespace RobotRaconteur.Companion.Robot
         protected double _command;
         protected double[] _sensor;
         protected Stopwatch _stopwatch;
-        protected DateTimeUTC _stopwatch_epoch;
+        protected TimeSpec2 _stopwatch_epoch;
         protected BroadcastDownsampler _broadcast_downsampler;
         private bool _keep_going;
         private Thread _loop_thread;
@@ -44,6 +44,7 @@ namespace RobotRaconteur.Companion.Robot
             _broadcast_downsampler = new BroadcastDownsampler(context, 0);
             _broadcast_downsampler.AddWireBroadcaster(rrvar_tool_state);
             _broadcast_downsampler.AddPipeBroadcaster(rrvar_tool_state_sensor_data);
+            _broadcast_downsampler.AddWireBroadcaster(rrvar_device_clock_now);
         }
 
         public virtual void _start_tool()
@@ -53,7 +54,7 @@ namespace RobotRaconteur.Companion.Robot
                 Debug.WriteLine("warning: not using high resolution timer");
             }
             _stopwatch = Stopwatch.StartNew();
-            _stopwatch_epoch = DateTimeUtil.UtcNow;
+            _stopwatch_epoch = DateTimeUtil.TimeSpec2Now(RobotRaconteurNode.s);
 
             _keep_going = true;
             _loop_thread = new Thread(_loop_thread_func);
@@ -140,7 +141,7 @@ namespace RobotRaconteur.Companion.Robot
 
 
 
-            var sensor_data_header = SensorDataUtil.FillSensorDataHeader(_tool_info?.device_info, _state_seqno);
+            var sensor_data_header = SensorDataUtil.FillSensorDataHeader(RobotRaconteurNode.s,_tool_info?.device_info, _state_seqno);
             
             var sensor_data = new ToolStateSensorData();
             sensor_data.data_header = sensor_data_header;
@@ -157,6 +158,11 @@ namespace RobotRaconteur.Companion.Robot
             }
 
             rrvar_tool_state_sensor_data?.AsyncSendPacket(rr_state_sensor_data).ContinueWith(t => { var ignore = t.Exception; }, System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
+
+            if (rrvar_device_clock_now != null)
+            {
+                rrvar_device_clock_now.OutValue = DateTimeUtil.FillDeviceTime(RobotRaconteurNode.s, tool_info?.device_info, _state_seqno);
+            }
         }
 
         public virtual IsochInfo get_isoch_info
