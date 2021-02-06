@@ -33,6 +33,11 @@ namespace RobotRaconteur.Companion.Robot
         {
             _tool_info = tool_info;
             _tool_uuid = tool_info.device_info.device.uuid;
+            this.tool_info = tool_info;
+            if (tool_info != null)
+            {
+                this.device_info = tool_info.device_info;
+            }
         }
         public virtual void Dispose()
         {
@@ -165,7 +170,7 @@ namespace RobotRaconteur.Companion.Robot
             }
         }
 
-        public virtual IsochInfo get_isoch_info
+        public override IsochInfo isoch_info
         {
             get
             {
