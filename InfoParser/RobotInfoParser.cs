@@ -238,30 +238,36 @@ namespace RobotRaconteur.Companion.InfoParser
 
     public static class RobotInfoParser
     {
-        public static Tuple<RobotInfo, LocalIdentifierLocks> LoadRobotInfoYamlWithIdentifierLocks(string filename)
+        public static Tuple<RobotInfo, LocalIdentifierLocks> LoadRobotInfoYamlWithIdentifierLocks(string filename, string device_name_override = null)
         {
             using (var f = new StreamReader(filename))
             {
                 var deserializer = new YamlDotNet.Serialization.Deserializer();
                 var yaml_robot_info = deserializer.Deserialize<YamlRobotInfo>(f);
-                return LoadRobotInfoYamlWithIdentifierLocks(yaml_robot_info);
+                return LoadRobotInfoYamlWithIdentifierLocks(yaml_robot_info, device_name_override);
             }
         }
 
-        public static Tuple<RobotInfo, LocalIdentifierLocks> ParseRobotInfoYamlWithIdentifierLocks(string data)
+        public static Tuple<RobotInfo, LocalIdentifierLocks> ParseRobotInfoYamlWithIdentifierLocks(string data, string device_name_override = null)
         {
             using (var f = new StringReader(data))
             {
                 var deserializer = new YamlDotNet.Serialization.Deserializer();
                 var yaml_robot_info = deserializer.Deserialize<YamlRobotInfo>(f);
-                return LoadRobotInfoYamlWithIdentifierLocks(yaml_robot_info);
+                return LoadRobotInfoYamlWithIdentifierLocks(yaml_robot_info, device_name_override);
             }
         }
 
         
-        public static Tuple<RobotInfo, LocalIdentifierLocks> LoadRobotInfoYamlWithIdentifierLocks(YamlRobotInfo yaml_robot_info)
+        public static Tuple<RobotInfo, LocalIdentifierLocks> LoadRobotInfoYamlWithIdentifierLocks(YamlRobotInfo yaml_robot_info, string device_name_override = null)
         {
             var robot_info = yaml_robot_info.ToRRInfo();
+
+            if (robot_info.device_info != null && device_name_override != null)
+            {
+                robot_info.device_info.device = IdentifierUtil.CreateIdentifierFromName(device_name_override);
+            }
+
             LocalIdentifierLocks ident_locks = null;
             if (robot_info.device_info != null && robot_info.device_info.device != null 
                 && !String.IsNullOrEmpty(robot_info.device_info.device.name)

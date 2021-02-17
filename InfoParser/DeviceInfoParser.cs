@@ -170,27 +170,27 @@ namespace RobotRaconteur.Companion.InfoParser
 
     public static class DeviceInfoParser
     {
-        public static Tuple<DeviceInfo, LocalIdentifierLocks> LoadDeviceInfoYamlWithIdentifierLocks(string filename)
+        public static Tuple<DeviceInfo, LocalIdentifierLocks> LoadDeviceInfoYamlWithIdentifierLocks(string filename, string device_name_override=null)
         {
             using (var f = new StreamReader(filename))
             {
                 var deserializer = new YamlDotNet.Serialization.Deserializer();
                 var yaml_device_info = deserializer.Deserialize<YamlDeviceInfo>(f);
-                return LoadDeviceInfoYamlWithIdentifierLocks(yaml_device_info);
+                return LoadDeviceInfoYamlWithIdentifierLocks(yaml_device_info, device_name_override);
             }
         }
 
-        public static Tuple<DeviceInfo, LocalIdentifierLocks> ParseDeviceInfoYamlWithIdentifierLocks(string data)
+        public static Tuple<DeviceInfo, LocalIdentifierLocks> ParseDeviceInfoYamlWithIdentifierLocks(string data, string device_name_override = null)
         {
             using (var f = new StringReader(data))
             {
                 var deserializer = new YamlDotNet.Serialization.Deserializer();
                 var yaml_device_info = deserializer.Deserialize<YamlDeviceInfo>(f);
-                return LoadDeviceInfoYamlWithIdentifierLocks(yaml_device_info);
+                return LoadDeviceInfoYamlWithIdentifierLocks(yaml_device_info, device_name_override);
             }
         }
 
-        public static Tuple<DeviceInfo, LocalIdentifierLocks> LoadDeviceInfoYamlWithIdentifierLocks(YamlDeviceInfo yaml_device_info)
+        public static Tuple<DeviceInfo, LocalIdentifierLocks> LoadDeviceInfoYamlWithIdentifierLocks(YamlDeviceInfo yaml_device_info, string device_name_override = null)
         {
             throw new NotImplementedException();
         }        

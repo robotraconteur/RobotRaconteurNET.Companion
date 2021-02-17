@@ -78,30 +78,34 @@ namespace RobotRaconteur.Companion.InfoParser
 
     public static class ToolInfoParser
     {
-        public static Tuple<ToolInfo, LocalIdentifierLocks> LoadToolInfoYamlWithIdentifierLocks(string filename)
+        public static Tuple<ToolInfo, LocalIdentifierLocks> LoadToolInfoYamlWithIdentifierLocks(string filename, string device_name_override = null)
         {
             using (var f = new StreamReader(filename))
             {
                 var deserializer = new YamlDotNet.Serialization.Deserializer();
                 var yaml_tool_info = deserializer.Deserialize<YamlToolInfo>(f);
-                return LoadToolInfoYamlWithIdentifierLocks(yaml_tool_info);
+                return LoadToolInfoYamlWithIdentifierLocks(yaml_tool_info, device_name_override);
             }
         }
 
-        public static Tuple<ToolInfo, LocalIdentifierLocks> ParseToolInfoYamlWithIdentifierLocks(string data)
+        public static Tuple<ToolInfo, LocalIdentifierLocks> ParseToolInfoYamlWithIdentifierLocks(string data, string device_name_override = null)
         {
             using (var f = new StringReader(data))
             {
                 var deserializer = new YamlDotNet.Serialization.Deserializer();
                 var yaml_tool_info = deserializer.Deserialize<YamlToolInfo>(f);
-                return LoadToolInfoYamlWithIdentifierLocks(yaml_tool_info);
+                return LoadToolInfoYamlWithIdentifierLocks(yaml_tool_info, device_name_override);
             }
         }
 
 
-        public static Tuple<ToolInfo, LocalIdentifierLocks> LoadToolInfoYamlWithIdentifierLocks(YamlToolInfo yaml_tool_info)
+        public static Tuple<ToolInfo, LocalIdentifierLocks> LoadToolInfoYamlWithIdentifierLocks(YamlToolInfo yaml_tool_info, string device_name_override = null)
         {
             var tool_info = yaml_tool_info.ToRRInfo();
+            if (tool_info.device_info != null && device_name_override != null)
+            {
+                tool_info.device_info.device = IdentifierUtil.CreateIdentifierFromName(device_name_override);
+            }
             LocalIdentifierLocks ident_locks = null;
             if (tool_info.device_info != null && tool_info.device_info.device != null
                 && !String.IsNullOrEmpty(tool_info.device_info.device.name)

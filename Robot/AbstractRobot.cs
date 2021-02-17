@@ -156,6 +156,43 @@ namespace RobotRaconteur.Companion.Robot
 
             _current_tool = new ToolInfo[robot_info.chains.Count];
             _current_payload = new PayloadInfo[robot_info.chains.Count];
+
+            for (int i=0; i<robot_info.chains.Count; i++)
+            {
+                if (robot_info.chains[i].current_tool != null)
+                {
+                    _current_tool[i] = robot_info.chains[i].current_tool;
+                }
+
+                if (robot_info.chains[i].current_payload != null)
+                {
+                    _current_payload[i] = robot_info.chains[i].current_payload;
+                }
+            }
+
+
+
+            for (int i = 0; i < _joint_count; i++)
+            {
+                var limits = robot_info.joint_info[i].joint_limits;
+                if (limits.velocity <= 0)
+                {
+                    throw new ArgumentException($"Invalid joint velocity for joint {i}");
+                }
+                if (limits.reduced_velocity <= 0)
+                {
+                    limits.reduced_velocity = limits.velocity;
+                }
+
+                if (limits.acceleration <= 0)
+                {
+                    throw new ArgumentException($"Invalid joint acceleration for joint {i}");
+                }
+                if (limits.reduced_acceleration <= 0)
+                {
+                    limits.reduced_acceleration = limits.acceleration;
+                }
+            }
         }
 
         protected bool _keep_going = false;
