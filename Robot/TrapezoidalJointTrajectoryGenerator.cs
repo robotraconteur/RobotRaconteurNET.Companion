@@ -149,7 +149,7 @@ namespace RobotRaconteur.Companion.Robot
             Debug.Assert(request.desired_time == null);
 
             double[] a_max = (double[])limits.a_max.Clone();
-            double[] v_max = (double[])limits.a_max.Clone();
+            double[] v_max = (double[])limits.v_max.Clone();
             if (request.speed_ratio != 0.0)
             {
                 for (int i = 0; i < joint_count; i++)
@@ -387,7 +387,7 @@ namespace RobotRaconteur.Companion.Robot
         public static TrapezoidalJointTrajectoryGeneraterExec InitializeVelExec(uint joint_count, JointTrajectoryLimits limits, JointTrajectoryVelocityRequest request)
         {
             double[] a_max = (double[])limits.a_max.Clone();
-            double[] v_max = (double[])limits.a_max.Clone();
+            double[] v_max = (double[])limits.v_max.Clone();
             if (request.speed_ratio != 0.0)
             {
                 for (int i = 0; i < joint_count; i++)
