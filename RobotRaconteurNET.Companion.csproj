@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.8</Version>
+    <Version>0.1.9</Version>
     <Authors>John Wason</Authors>
     <Company>Wason Technology, LLC</Company>
     <Description>Companion Library for RobotRaconteurNET. Contains standard service definition types, Abstract Robot, parsers, and converters</Description>
@@ -22,7 +22,7 @@
     <PackageReference Include="GeneralRoboticsToolboxNET" Version="0.1.0" />
     <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
     <PackageReference Include="Mono.Posix.NETStandard" Version="5.20.1-preview" />
-    <PackageReference Include="RobotRaconteurNET" Version="0.14.3" />
+    <PackageReference Include="RobotRaconteurNET" Version="0.15.0" />
     <PackageReference Include="YamlDotNet" Version="9.1.5-issue-templates-0002" />
   </ItemGroup>
 
