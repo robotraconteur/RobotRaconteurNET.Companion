@@ -701,11 +701,6 @@ namespace RobotRaconteur.Companion.Robot
                             
                             double jog_time = (now - _jog_start_time)/1000.0;
 
-                            if (!_jog_trajectory_generator.GetCommand(jog_time, out var jog_command))
-                            {                                
-                                return false;
-                            }
-                            joint_pos_cmd = jog_command.command_position;
                             if (jog_time > _jog_trajectory_generator.T_Final)
                             {
                                 if (_jog_completion_source != null)
@@ -713,8 +708,15 @@ namespace RobotRaconteur.Companion.Robot
                                     _jog_completion_source.TrySetResult(0);
                                     _jog_completion_source = null;
                                 }
-                                _jog_trajectory_generator = null;                                
+                                _jog_trajectory_generator = null;
+                                return false;
                             }
+
+                            if (!_jog_trajectory_generator.GetCommand(jog_time, out var jog_command))
+                            {                                
+                                return false;
+                            }
+                            joint_pos_cmd = jog_command.command_position;
                             return true;
                         }
                         else
