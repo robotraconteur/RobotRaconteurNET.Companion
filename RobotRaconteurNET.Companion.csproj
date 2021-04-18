@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.13</Version>
+    <Version>0.1.14</Version>
     <Authors>John Wason</Authors>
     <Company>Wason Technology, LLC</Company>
     <Description>Companion Library for RobotRaconteurNET. Contains standard service definition types, Abstract Robot, parsers, and converters</Description>

@@ -88,7 +88,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public double y { get; set; }
         public double z { get; set; }
 
-        public void CopyTo(com.robotraconteur.geometry.Quaternion q)
+        public void CopyTo(ref com.robotraconteur.geometry.Quaternion q)
         {
             q.w = w;
             q.x = x;
@@ -99,7 +99,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public com.robotraconteur.geometry.Quaternion ToRRInfo()
         {
             var q = new com.robotraconteur.geometry.Quaternion();
-            CopyTo(q);
+            CopyTo(ref q);
             return q;
         }
     }
@@ -193,7 +193,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public YamlVector3 angular { get; set; }
         public YamlVector3 linear { get; set; }
 
-        public void CopyTo(com.robotraconteur.geometry.SpatialVelocity info)
+        public void CopyTo(ref com.robotraconteur.geometry.SpatialVelocity info)
         {
             info.angular = angular?.ToRRInfo() ?? default;
             info.linear = linear?.ToRRInfo() ?? default;
@@ -202,7 +202,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public com.robotraconteur.geometry.SpatialVelocity ToRRInfo()
         {
             var info = new com.robotraconteur.geometry.SpatialVelocity();
-            CopyTo(info);
+            CopyTo(ref info);
             return info;
         }
     }
@@ -212,7 +212,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public YamlVector3 angular { get; set; }
         public YamlVector3 linear { get; set; }
 
-        public void CopyTo(com.robotraconteur.geometry.SpatialAcceleration info)
+        public void CopyTo(ref com.robotraconteur.geometry.SpatialAcceleration info)
         {
             info.angular = angular?.ToRRInfo() ?? default;
             info.linear = linear?.ToRRInfo() ?? default;
@@ -221,7 +221,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public com.robotraconteur.geometry.SpatialAcceleration ToRRInfo()
         {
             var info = new com.robotraconteur.geometry.SpatialAcceleration();
-            CopyTo(info);
+            CopyTo(ref info);
             return info;
         }
     }
