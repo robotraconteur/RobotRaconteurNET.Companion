@@ -405,7 +405,7 @@ namespace RobotRaconteur.Companion.Util
 
             try
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     var h = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 4096, file_options);
                     f = h;
@@ -418,7 +418,7 @@ namespace RobotRaconteur.Companion.Util
                     {
                         h.Lock(0, 0);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         h.Dispose();
                         throw;
