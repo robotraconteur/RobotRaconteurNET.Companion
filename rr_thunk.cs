@@ -1693,6 +1693,354 @@ public class DataType_stub : IStructureStub {
 public static class RRExtensions{
 }
 }
+namespace com.robotraconteur.datetime.clock
+{
+public class ClockDeviceInfo
+{
+    public com.robotraconteur.device.DeviceInfo device_info;
+    public com.robotraconteur.datetime.ClockTypeCode clock_type;
+    public int timezone_utc_offset_seconds;
+    public string timezone_name;
+    public Dictionary<string,object> extended;
+}
+
+[RobotRaconteurServiceObjectInterface()]
+public interface Clock : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock
+{
+    com.robotraconteur.device.DeviceInfo device_info { get; 	}
+    ClockDeviceInfo clock_info { get; 	}
+    Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc{ get; set; }
+    Wire<com.robotraconteur.datetime.DateTimeLocal> time_local{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
+}
+
+}
+namespace com.robotraconteur.datetime.clock
+{
+public class com__robotraconteur__datetime__clockFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.datetime.clock\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\nimport com.robotraconteur.device\nimport com.robotraconteur.device.clock\n\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.DateTimeLocal\nusing com.robotraconteur.datetime.ClockTypeCode\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\n\nstruct ClockDeviceInfo\nfield DeviceInfo device_info\nfield ClockTypeCode clock_type\nfield int32 timezone_utc_offset_seconds\nfield string timezone_name\nfield varvalue{string} extended\nend\n\nobject Clock\nimplements Device\nimplements DeviceClock\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ClockDeviceInfo clock_info [readonly,nolock]\nwire DateTimeUTC time_utc [readonly]\nwire DateTimeLocal time_local [readonly]\n# Optional device clock\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.datetime.clock";}
+    public ClockDeviceInfo_stub ClockDeviceInfo_stubentry;
+    public com__robotraconteur__datetime__clockFactory()
+{
+    ClockDeviceInfo_stubentry=new ClockDeviceInfo_stub(this);
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    if (objecttype=="ClockDeviceInfo")    return ClockDeviceInfo_stubentry;
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    case "Clock":
+    return new Clock_stub(innerstub);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    case "Clock":
+    return new Clock_skel((Clock)obj);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class ClockDeviceInfo_stub : IStructureStub {
+    public ClockDeviceInfo_stub(com__robotraconteur__datetime__clockFactory d) {def=d;}
+    private com__robotraconteur__datetime__clockFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ClockDeviceInfo s = (ClockDeviceInfo)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<com.robotraconteur.datetime.ClockTypeCode>("clock_type",s.clock_type));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<int>("timezone_utc_offset_seconds",s.timezone_utc_offset_seconds));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackString("timezone_name",s.timezone_name));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.datetime.clock.ClockDeviceInfo",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ClockDeviceInfo s=new ClockDeviceInfo();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
+    s.clock_type =MessageElementUtil.UnpackEnum<com.robotraconteur.datetime.ClockTypeCode>(MessageElement.FindElement(mm,"clock_type"));
+    s.timezone_utc_offset_seconds =(MessageElementUtil.UnpackScalar<int>(MessageElement.FindElement(mm,"timezone_utc_offset_seconds")));
+    s.timezone_name =MessageElementUtil.UnpackString(MessageElement.FindElement(mm,"timezone_name"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public interface async_Clock : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock
+{
+    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ClockDeviceInfo> async_get_clock_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+}
+public class Clock_stub : ServiceStub , Clock, async_Clock{
+    private Wire<com.robotraconteur.datetime.DateTimeUTC> rr_time_utc;
+    private Wire<com.robotraconteur.datetime.DateTimeLocal> rr_time_local;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
+    public Clock_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    rr_time_utc=new Wire<com.robotraconteur.datetime.DateTimeUTC>(innerstub.GetWire("time_utc"));
+    rr_time_local=new Wire<com.robotraconteur.datetime.DateTimeLocal>(innerstub.GetWire("time_local"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
+    }
+    public com.robotraconteur.device.DeviceInfo device_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
+    }
+    }
+    public ClockDeviceInfo clock_info {
+    get {
+    return MessageElementUtil.UnpackStructure<ClockDeviceInfo>(rr_innerstub.PropertyGet("clock_info"));
+    }
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc {
+    get { return rr_time_utc;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.datetime.DateTimeLocal> time_local {
+    get { return rr_time_local;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
+    set { throw new InvalidOperationException();}
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<ClockDeviceInfo> async_get_clock_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("clock_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ClockDeviceInfo>(rr_value);
+    return rr_ret;
+    } }
+}
+public class Clock_skel : ServiceSkel {
+    protected Clock obj;
+    protected async_Clock async_obj;
+    public Clock_skel(object o) : base(o)    {
+    obj=(Clock)o;
+    async_obj = o as async_Clock;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "device_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "clock_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_clock_info().ContinueWith(t => async_adapter.EndTask<ClockDeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ClockDeviceInfo ret=obj.clock_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(Clock)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(Clock)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(Clock)rrobj1;
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(Clock)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(Clock)rrobj1;
+    obj.time_utc=new Wire<com.robotraconteur.datetime.DateTimeUTC>(innerskel.GetWire("time_utc"));
+    obj.time_local=new Wire<com.robotraconteur.datetime.DateTimeLocal>(innerskel.GetWire("time_local"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "com.robotraconteur.datetime.clock.Clock"; } }
+}
+public class Clock_default_impl : Clock{
+    protected WireBroadcaster<com.robotraconteur.datetime.DateTimeUTC> rrvar_time_utc;
+    protected WireBroadcaster<com.robotraconteur.datetime.DateTimeLocal> rrvar_time_local;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
+    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
+    public virtual ClockDeviceInfo clock_info {get; set;} = default(ClockDeviceInfo);
+    public virtual Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc {
+    get { return rrvar_time_utc.Wire;  }
+    set {
+    if (rrvar_time_utc!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_time_utc= new WireBroadcaster<com.robotraconteur.datetime.DateTimeUTC>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.datetime.DateTimeLocal> time_local {
+    get { return rrvar_time_local.Wire;  }
+    set {
+    if (rrvar_time_local!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_time_local= new WireBroadcaster<com.robotraconteur.datetime.DateTimeLocal>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
+}
+public static class RRExtensions{
+}
+}
 namespace com.robotraconteur.datetime
 {
 public class DateTimeLocal
@@ -2058,50 +2406,44 @@ public static class RRExtensions{
     }
 }
 }
-namespace com.robotraconteur.datetime.clock
+namespace com.robotraconteur.device.clock
 {
-public class ClockDeviceInfo
+public struct DeviceTime
 {
-    public com.robotraconteur.device.DeviceInfo device_info;
-    public com.robotraconteur.datetime.ClockTypeCode clock_type;
-    public int timezone_utc_offset_seconds;
-    public string timezone_name;
-    public Dictionary<string,object> extended;
+    public com.robotraconteur.datetime.TimeSpec2 device_ts;
+    public com.robotraconteur.datetime.DateTimeUTC device_utc;
+    public ulong device_seqno;
 }
 
 [RobotRaconteurServiceObjectInterface()]
-public interface Clock : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock
+public interface DeviceClock
 {
-    com.robotraconteur.device.DeviceInfo device_info { get; 	}
-    ClockDeviceInfo clock_info { get; 	}
-    Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc{ get; set; }
-    Wire<com.robotraconteur.datetime.DateTimeLocal> time_local{ get; set; }
-    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
+    Wire<DeviceTime> device_clock_now{ get; set; }
 }
 
 }
-namespace com.robotraconteur.datetime.clock
+namespace com.robotraconteur.device.clock
 {
-public class com__robotraconteur__datetime__clockFactory : ServiceFactory
+public class com__robotraconteur__device__clockFactory : ServiceFactory
 {
     public override string DefString()
 {
-    const string s="service com.robotraconteur.datetime.clock\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\nimport com.robotraconteur.device\nimport com.robotraconteur.device.clock\n\nusing com.robotraconteur.datetime.DateTimeUTC\nusing com.robotraconteur.datetime.DateTimeLocal\nusing com.robotraconteur.datetime.ClockTypeCode\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\n\nstruct ClockDeviceInfo\nfield DeviceInfo device_info\nfield ClockTypeCode clock_type\nfield int32 timezone_utc_offset_seconds\nfield string timezone_name\nfield varvalue{string} extended\nend\n\nobject Clock\nimplements Device\nimplements DeviceClock\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ClockDeviceInfo clock_info [readonly,nolock]\nwire DateTimeUTC time_utc [readonly]\nwire DateTimeLocal time_local [readonly]\n# Optional device clock\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n";
+    const string s="service com.robotraconteur.device.clock\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.datetime.TimeSpec2\nusing com.robotraconteur.datetime.DateTimeUTC\n\npod DeviceTime\nfield TimeSpec2 device_ts\nfield DateTimeUTC device_utc\nfield uint64 device_seqno\nend\n\nobject DeviceClock\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n";
     return s;
     }
-    public override string GetServiceName() {return "com.robotraconteur.datetime.clock";}
-    public ClockDeviceInfo_stub ClockDeviceInfo_stubentry;
-    public com__robotraconteur__datetime__clockFactory()
+    public override string GetServiceName() {return "com.robotraconteur.device.clock";}
+    public DeviceTime_stub DeviceTime_stubentry;
+    public com__robotraconteur__device__clockFactory()
 {
-    ClockDeviceInfo_stubentry=new ClockDeviceInfo_stub(this);
+    DeviceTime_stubentry=new DeviceTime_stub(this);
     }
     public override IStructureStub FindStructureStub(string objecttype)
     {
-    if (objecttype=="ClockDeviceInfo")    return ClockDeviceInfo_stubentry;
     throw new DataTypeException("Cannot find appropriate structure stub");
     }
     public override IPodStub FindPodStub(string objecttype)
     {
+    if (objecttype=="DeviceTime")    return DeviceTime_stubentry;
     throw new DataTypeException("Cannot find appropriate pod stub");
     }
     public override INamedArrayStub FindNamedArrayStub(string objecttype)
@@ -2112,8 +2454,8 @@ public class com__robotraconteur__datetime__clockFactory : ServiceFactory
     string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
     if (CompareNamespace(objecttype, out objshort)) {
     switch (objshort) {
-    case "Clock":
-    return new Clock_stub(innerstub);
+    case "DeviceClock":
+    return new DeviceClock_stub(innerstub);
     default:
     break;
     }
@@ -2128,8 +2470,8 @@ public class com__robotraconteur__datetime__clockFactory : ServiceFactory
     string objshort;
     if (CompareNamespace(objtype, out objshort)) {
     switch(objshort) {
-    case "Clock":
-    return new Clock_skel((Clock)obj);
+    case "DeviceClock":
+    return new DeviceClock_skel((DeviceClock)obj);
     default:
     break;
     }
@@ -2152,61 +2494,39 @@ public class com__robotraconteur__datetime__clockFactory : ServiceFactory
     }
 }
 
-public class ClockDeviceInfo_stub : IStructureStub {
-    public ClockDeviceInfo_stub(com__robotraconteur__datetime__clockFactory d) {def=d;}
-    private com__robotraconteur__datetime__clockFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
+public class DeviceTime_stub : PodStub<DeviceTime> {
+    public DeviceTime_stub(com__robotraconteur__device__clockFactory d) {def=d;}
+    private com__robotraconteur__device__clockFactory def;
+    public override MessageElementNestedElementList PackPod(ref DeviceTime s1) {
     using(vectorptr_messageelement m=new vectorptr_messageelement())
     {
-    if (s1 ==null) return null;
-    ClockDeviceInfo s = (ClockDeviceInfo)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<com.robotraconteur.datetime.ClockTypeCode>("clock_type",s.clock_type));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<int>("timezone_utc_offset_seconds",s.timezone_utc_offset_seconds));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackString("timezone_name",s.timezone_name));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.datetime.clock.ClockDeviceInfo",m);
+    DeviceTime s = (DeviceTime)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.TimeSpec2>("device_ts",ref s.device_ts));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.DateTimeUTC>("device_utc",ref s.device_utc));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("device_seqno",s.device_seqno));
+    return new MessageElementNestedElementList(DataTypes.pod_t,"",m);
     }
     }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ClockDeviceInfo s=new ClockDeviceInfo();
+    public override DeviceTime UnpackPod(MessageElementNestedElementList m) {
+    if (m == null ) throw new NullReferenceException("Pod must not be null");
     using(vectorptr_messageelement mm=m.Elements)
     {
-    s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
-    s.clock_type =MessageElementUtil.UnpackEnum<com.robotraconteur.datetime.ClockTypeCode>(MessageElement.FindElement(mm,"clock_type"));
-    s.timezone_utc_offset_seconds =(MessageElementUtil.UnpackScalar<int>(MessageElement.FindElement(mm,"timezone_utc_offset_seconds")));
-    s.timezone_name =MessageElementUtil.UnpackString(MessageElement.FindElement(mm,"timezone_name"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
+    DeviceTime s = new DeviceTime();
+    s.device_ts =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.TimeSpec2>(MessageElement.FindElement(mm,"device_ts"));
+    s.device_utc =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.DateTimeUTC>(MessageElement.FindElement(mm,"device_utc"));
+    s.device_seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"device_seqno")));
+    return s;
     }
     }
-}
+    public override string TypeName { get { return "com.robotraconteur.device.clock.DeviceTime"; } }}
 
-public interface async_Clock : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock
+public interface async_DeviceClock
 {
-    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<ClockDeviceInfo> async_get_clock_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
 }
-public class Clock_stub : ServiceStub , Clock, async_Clock{
-    private Wire<com.robotraconteur.datetime.DateTimeUTC> rr_time_utc;
-    private Wire<com.robotraconteur.datetime.DateTimeLocal> rr_time_local;
-    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
-    public Clock_stub(WrappedServiceStub innerstub) : base(innerstub) {
-    rr_time_utc=new Wire<com.robotraconteur.datetime.DateTimeUTC>(innerstub.GetWire("time_utc"));
-    rr_time_local=new Wire<com.robotraconteur.datetime.DateTimeLocal>(innerstub.GetWire("time_local"));
-    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
-    }
-    public com.robotraconteur.device.DeviceInfo device_info {
-    get {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
-    }
-    }
-    public ClockDeviceInfo clock_info {
-    get {
-    return MessageElementUtil.UnpackStructure<ClockDeviceInfo>(rr_innerstub.PropertyGet("clock_info"));
-    }
+public class DeviceClock_stub : ServiceStub , DeviceClock, async_DeviceClock{
+    private Wire<DeviceTime> rr_device_clock_now;
+    public DeviceClock_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    rr_device_clock_now=new Wire<DeviceTime>(innerstub.GetWire("device_clock_now"));
     }
     public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
     switch (rr_membername) {
@@ -2214,15 +2534,7 @@ public class Clock_stub : ServiceStub , Clock, async_Clock{
     break;
     }
     }
-    public Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc {
-    get { return rr_time_utc;  }
-    set { throw new InvalidOperationException();}
-    }
-    public Wire<com.robotraconteur.datetime.DateTimeLocal> time_local {
-    get { return rr_time_local;  }
-    set { throw new InvalidOperationException();}
-    }
-    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    public Wire<DeviceTime> device_clock_now {
     get { return rr_device_clock_now;  }
     set { throw new InvalidOperationException();}
     }
@@ -2233,25 +2545,13 @@ public class Clock_stub : ServiceStub , Clock, async_Clock{
     }
     throw new MemberNotFoundException("Member not found");
     }
-    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<ClockDeviceInfo> async_get_clock_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("clock_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<ClockDeviceInfo>(rr_value);
-    return rr_ret;
-    } }
 }
-public class Clock_skel : ServiceSkel {
-    protected Clock obj;
-    protected async_Clock async_obj;
-    public Clock_skel(object o) : base(o)    {
-    obj=(Clock)o;
-    async_obj = o as async_Clock;
+public class DeviceClock_skel : ServiceSkel {
+    protected DeviceClock obj;
+    protected async_DeviceClock async_obj;
+    public DeviceClock_skel(object o) : base(o)    {
+    obj=(DeviceClock)o;
+    async_obj = o as async_DeviceClock;
     }
     public override void ReleaseCastObject() { 
     obj=null;
@@ -2260,26 +2560,6 @@ public class Clock_skel : ServiceSkel {
     }
     public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
     switch (membername) {
-    case "device_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "clock_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_clock_info().ContinueWith(t => async_adapter.EndTask<ClockDeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    ClockDeviceInfo ret=obj.clock_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
     default:
     break;
     }
@@ -2307,10 +2587,10 @@ public class Clock_skel : ServiceSkel {
     throw new MemberNotFoundException("");
     }
     public override void RegisterEvents(object rrobj1) {
-    obj=(Clock)rrobj1;
+    obj=(DeviceClock)rrobj1;
     }
     public override void UnregisterEvents(object rrobj1) {
-    obj=(Clock)rrobj1;
+    obj=(DeviceClock)rrobj1;
     }
     public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
     switch (rr_membername) {
@@ -2320,16 +2600,14 @@ public class Clock_skel : ServiceSkel {
     throw new MemberNotFoundException("Member not found");
     }
     public override void InitPipeServers(object rrobj1) {
-    obj=(Clock)rrobj1;
+    obj=(DeviceClock)rrobj1;
     }
     public override void InitCallbackServers(object rrobj1) {
-    obj=(Clock)rrobj1;
+    obj=(DeviceClock)rrobj1;
     }
     public override void InitWireServers(object rrobj1) {
-    obj=(Clock)rrobj1;
-    obj.time_utc=new Wire<com.robotraconteur.datetime.DateTimeUTC>(innerskel.GetWire("time_utc"));
-    obj.time_local=new Wire<com.robotraconteur.datetime.DateTimeLocal>(innerskel.GetWire("time_local"));
-    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
+    obj=(DeviceClock)rrobj1;
+    obj.device_clock_now=new Wire<DeviceTime>(innerskel.GetWire("device_clock_now"));
     }
     public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
     switch (name) {
@@ -2373,35 +2651,335 @@ public class Clock_skel : ServiceSkel {
     }
     throw new MemberNotFoundException("Member Not Found");
     }
-    public override string RRType { get { return "com.robotraconteur.datetime.clock.Clock"; } }
+    public override string RRType { get { return "com.robotraconteur.device.clock.DeviceClock"; } }
 }
-public class Clock_default_impl : Clock{
-    protected WireBroadcaster<com.robotraconteur.datetime.DateTimeUTC> rrvar_time_utc;
-    protected WireBroadcaster<com.robotraconteur.datetime.DateTimeLocal> rrvar_time_local;
-    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
-    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
-    public virtual ClockDeviceInfo clock_info {get; set;} = default(ClockDeviceInfo);
-    public virtual Wire<com.robotraconteur.datetime.DateTimeUTC> time_utc {
-    get { return rrvar_time_utc.Wire;  }
-    set {
-    if (rrvar_time_utc!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_time_utc= new WireBroadcaster<com.robotraconteur.datetime.DateTimeUTC>(value);
-    }
-    }
-    public virtual Wire<com.robotraconteur.datetime.DateTimeLocal> time_local {
-    get { return rrvar_time_local.Wire;  }
-    set {
-    if (rrvar_time_local!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_time_local= new WireBroadcaster<com.robotraconteur.datetime.DateTimeLocal>(value);
-    }
-    }
-    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+public class DeviceClock_default_impl : DeviceClock{
+    protected WireBroadcaster<DeviceTime> rrvar_device_clock_now;
+    public virtual Wire<DeviceTime> device_clock_now {
     get { return rrvar_device_clock_now.Wire;  }
     set {
     if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    rrvar_device_clock_now= new WireBroadcaster<DeviceTime>(value);
     }
     }
+}
+public static class RRExtensions{
+}
+}
+namespace com.robotraconteur.device.isoch
+{
+public class IsochInfo
+{
+    public double update_rate;
+    public com.robotraconteur.datetime.TimeSpec2 isoch_epoch;
+    public uint max_downsample;
+}
+
+[RobotRaconteurServiceObjectInterface()]
+public interface IsochDevice
+{
+    IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
+}
+
+}
+namespace com.robotraconteur.device.isoch
+{
+public class com__robotraconteur__device__isochFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.device.isoch\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.datetime.TimeSpec2\n\nstruct IsochInfo\nfield double update_rate\nfield TimeSpec2 isoch_epoch\nfield uint32 max_downsample\nend\n\nobject IsochDevice\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.device.isoch";}
+    public IsochInfo_stub IsochInfo_stubentry;
+    public com__robotraconteur__device__isochFactory()
+{
+    IsochInfo_stubentry=new IsochInfo_stub(this);
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    if (objecttype=="IsochInfo")    return IsochInfo_stubentry;
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    case "IsochDevice":
+    return new IsochDevice_stub(innerstub);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    case "IsochDevice":
+    return new IsochDevice_skel((IsochDevice)obj);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class IsochInfo_stub : IStructureStub {
+    public IsochInfo_stub(com__robotraconteur__device__isochFactory d) {def=d;}
+    private com__robotraconteur__device__isochFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    IsochInfo s = (IsochInfo)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("update_rate",s.update_rate));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.TimeSpec2>("isoch_epoch",ref s.isoch_epoch));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("max_downsample",s.max_downsample));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.device.isoch.IsochInfo",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    IsochInfo s=new IsochInfo();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.update_rate =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"update_rate")));
+    s.isoch_epoch =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.TimeSpec2>(MessageElement.FindElement(mm,"isoch_epoch"));
+    s.max_downsample =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"max_downsample")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public interface async_IsochDevice
+{
+    Task<IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+}
+public class IsochDevice_stub : ServiceStub , IsochDevice, async_IsochDevice{
+    public IsochDevice_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    }
+    public IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
+    }
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public virtual async Task<IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
+}
+public class IsochDevice_skel : ServiceSkel {
+    protected IsochDevice obj;
+    protected async_IsochDevice async_obj;
+    public IsochDevice_skel(object o) : base(o)    {
+    obj=(IsochDevice)o;
+    async_obj = o as async_IsochDevice;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(IsochDevice)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(IsochDevice)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(IsochDevice)rrobj1;
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(IsochDevice)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(IsochDevice)rrobj1;
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "com.robotraconteur.device.isoch.IsochDevice"; } }
+}
+public class IsochDevice_default_impl : IsochDevice{
+    public virtual IsochInfo isoch_info {get; set;} = default(IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
 }
 public static class RRExtensions{
 }
@@ -6435,6 +7013,556 @@ public static class RRExtensions{
     }
 }
 }
+namespace com.robotraconteur.geometry.shapes
+{
+public class Box
+{
+    public double x;
+    public double y;
+    public double z;
+}
+
+public class Sphere
+{
+    public double radius;
+}
+
+public class Cylinder
+{
+    public double height;
+    public double radius;
+}
+
+public class Cone
+{
+    public double height;
+    public double radius;
+}
+
+public class Capsule
+{
+    public double height;
+    public double radius;
+}
+
+public class Plane
+{
+    public double a;
+    public double b;
+    public double c;
+    public double d;
+}
+
+public class MeshTexture
+{
+    public com.robotraconteur.image.CompressedImage image;
+    public com.robotraconteur.geometry.Vector2[] uvs;
+}
+
+public class Mesh
+{
+    public MeshTriangle[] triangles;
+    public com.robotraconteur.geometry.Point[] vertices;
+    public com.robotraconteur.geometry.Vector3[] normals;
+    public com.robotraconteur.color.ColorRGB[] colors;
+    public List<MeshTexture> textures;
+    public MeshType mesh_type;
+}
+
+public class Material
+{
+    public com.robotraconteur.color.ColorRGBA base_color_factor;
+    public double metallic_factor;
+    public double roughness_factor;
+    public com.robotraconteur.color.ColorRGBA emissive_factor;
+    public Dictionary<string,object> extended;
+}
+
+public class ShapeObject
+{
+    public com.robotraconteur.identifier.Identifier name;
+    public List<object> shapes;
+    public List<com.robotraconteur.geometry.Pose> shape_poses;
+    public List<Material> shape_materials;
+    public com.robotraconteur.geometry.SpatialInertia inertia;
+    public List<com.robotraconteur.fiducial.Fiducial> fiducials;
+    public Dictionary<string,object> extended;
+}
+
+[NamedArrayElementTypeAndCount(typeof(uint), 3)]
+public struct MeshTriangle
+{
+    public uint v1;
+    public uint v2;
+    public uint v3;
+    public uint[] GetNumericArray()
+    {
+    var a=new ArraySegment<uint>(new uint[3]);
+    GetNumericArray(ref a);
+    return a.Array;
+    }
+    public void GetNumericArray(ref ArraySegment<uint> rr_a)
+    {
+    if(rr_a.Count < 3) throw new ArgumentException("ArraySegment invalid length");
+    rr_a.Array[rr_a.Offset + 0] = v1;
+    rr_a.Array[rr_a.Offset + 1] = v2;
+    rr_a.Array[rr_a.Offset + 2] = v3;
+    }
+    public void AssignFromNumericArray(ref ArraySegment<uint> rr_a)
+    {
+    if(rr_a.Count < 3) throw new ArgumentException("ArraySegment invalid length");
+    v1 = rr_a.Array[rr_a.Offset + 0];
+    v2 = rr_a.Array[rr_a.Offset + 1];
+    v3 = rr_a.Array[rr_a.Offset + 2];
+    }
+}
+
+public static class com__robotraconteur__geometry__shapesConstants 
+{
+}
+    public enum MeshType
+    {
+    mesh = 0,
+    convex_mesh = 1,
+    sdf_mesh = 2
+    };
+}
+namespace com.robotraconteur.geometry.shapes
+{
+public class com__robotraconteur__geometry__shapesFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.geometry.shapes\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.identifier\nimport com.robotraconteur.color\nimport com.robotraconteur.resource\nimport com.robotraconteur.image\nimport com.robotraconteur.fiducial\n\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.Vector2\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.NamedPose\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.color.ColorRGB\nusing com.robotraconteur.color.ColorRGBA\nusing com.robotraconteur.resource.ResourceIdentifier\nusing com.robotraconteur.image.CompressedImage\nusing com.robotraconteur.fiducial.Fiducial\n\nenum MeshType\nmesh = 0,\nconvex_mesh,\nsdf_mesh\nend\n\nstruct Box\nfield double x\nfield double y\nfield double z\nend\n\nstruct Sphere\nfield double radius\nend\n\nstruct Cylinder\nfield double height\nfield double radius\nend\n\nstruct Cone\nfield double height\nfield double radius\nend\n\nstruct Capsule\nfield double height\nfield double radius\nend\n\nstruct Plane\nfield double a\nfield double b\nfield double c\nfield double d\nend\n\nnamedarray MeshTriangle\nfield uint32 v1\nfield uint32 v2\nfield uint32 v3\nend\n\nstruct MeshTexture\nfield CompressedImage image\nfield Vector2[] uvs\nend\n\nstruct Mesh\nfield MeshTriangle[] triangles\nfield Point[] vertices\nfield Vector3[] normals\nfield ColorRGB[] colors\nfield MeshTexture{list} textures\nfield MeshType mesh_type\nend\n\nstruct Material\nfield ColorRGBA base_color_factor\nfield double metallic_factor\nfield double roughness_factor\nfield ColorRGBA emissive_factor\nfield varvalue{string} extended\nend\n\nstruct ShapeObject\nfield Identifier name\nfield varvalue{list} shapes\nfield Pose{list} shape_poses\nfield Material{list} shape_materials\nfield SpatialInertia inertia\nfield Fiducial{list} fiducials\nfield varvalue{string} extended\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.geometry.shapes";}
+    public Box_stub Box_stubentry;
+    public Sphere_stub Sphere_stubentry;
+    public Cylinder_stub Cylinder_stubentry;
+    public Cone_stub Cone_stubentry;
+    public Capsule_stub Capsule_stubentry;
+    public Plane_stub Plane_stubentry;
+    public MeshTexture_stub MeshTexture_stubentry;
+    public Mesh_stub Mesh_stubentry;
+    public Material_stub Material_stubentry;
+    public ShapeObject_stub ShapeObject_stubentry;
+    public MeshTriangle_stub MeshTriangle_stubentry;
+    public com__robotraconteur__geometry__shapesFactory()
+{
+    Box_stubentry=new Box_stub(this);
+    Sphere_stubentry=new Sphere_stub(this);
+    Cylinder_stubentry=new Cylinder_stub(this);
+    Cone_stubentry=new Cone_stub(this);
+    Capsule_stubentry=new Capsule_stub(this);
+    Plane_stubentry=new Plane_stub(this);
+    MeshTexture_stubentry=new MeshTexture_stub(this);
+    Mesh_stubentry=new Mesh_stub(this);
+    Material_stubentry=new Material_stub(this);
+    ShapeObject_stubentry=new ShapeObject_stub(this);
+    MeshTriangle_stubentry=new MeshTriangle_stub();
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    if (objecttype=="Box")    return Box_stubentry;
+    if (objecttype=="Sphere")    return Sphere_stubentry;
+    if (objecttype=="Cylinder")    return Cylinder_stubentry;
+    if (objecttype=="Cone")    return Cone_stubentry;
+    if (objecttype=="Capsule")    return Capsule_stubentry;
+    if (objecttype=="Plane")    return Plane_stubentry;
+    if (objecttype=="MeshTexture")    return MeshTexture_stubentry;
+    if (objecttype=="Mesh")    return Mesh_stubentry;
+    if (objecttype=="Material")    return Material_stubentry;
+    if (objecttype=="ShapeObject")    return ShapeObject_stubentry;
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    if (objecttype=="MeshTriangle")    return MeshTriangle_stubentry;
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class Box_stub : IStructureStub {
+    public Box_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Box s = (Box)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("x",s.x));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("y",s.y));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("z",s.z));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Box",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Box s=new Box();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.x =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"x")));
+    s.y =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"y")));
+    s.z =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"z")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class Sphere_stub : IStructureStub {
+    public Sphere_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Sphere s = (Sphere)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Sphere",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Sphere s=new Sphere();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class Cylinder_stub : IStructureStub {
+    public Cylinder_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Cylinder s = (Cylinder)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("height",s.height));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Cylinder",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Cylinder s=new Cylinder();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.height =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"height")));
+    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class Cone_stub : IStructureStub {
+    public Cone_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Cone s = (Cone)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("height",s.height));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Cone",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Cone s=new Cone();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.height =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"height")));
+    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class Capsule_stub : IStructureStub {
+    public Capsule_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Capsule s = (Capsule)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("height",s.height));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Capsule",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Capsule s=new Capsule();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.height =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"height")));
+    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class Plane_stub : IStructureStub {
+    public Plane_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Plane s = (Plane)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("a",s.a));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("b",s.b));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("c",s.c));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("d",s.d));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Plane",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Plane s=new Plane();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.a =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"a")));
+    s.b =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"b")));
+    s.c =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"c")));
+    s.d =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"d")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class MeshTexture_stub : IStructureStub {
+    public MeshTexture_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    MeshTexture s = (MeshTexture)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("image",s.image));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.geometry.Vector2>("uvs",s.uvs));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.MeshTexture",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    MeshTexture s=new MeshTexture();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.image =MessageElementUtil.UnpackStructure<com.robotraconteur.image.CompressedImage>(MessageElement.FindElement(mm,"image"));
+    s.uvs =MessageElementUtil.UnpackNamedArray<com.robotraconteur.geometry.Vector2>(MessageElement.FindElement(mm,"uvs"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class Mesh_stub : IStructureStub {
+    public Mesh_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Mesh s = (Mesh)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<MeshTriangle>("triangles",s.triangles));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.geometry.Point>("vertices",s.vertices));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.geometry.Vector3>("normals",s.normals));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.color.ColorRGB>("colors",s.colors));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<MeshTexture>("textures",s.textures));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<MeshType>("mesh_type",s.mesh_type));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Mesh",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Mesh s=new Mesh();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.triangles =MessageElementUtil.UnpackNamedArray<MeshTriangle>(MessageElement.FindElement(mm,"triangles"));
+    s.vertices =MessageElementUtil.UnpackNamedArray<com.robotraconteur.geometry.Point>(MessageElement.FindElement(mm,"vertices"));
+    s.normals =MessageElementUtil.UnpackNamedArray<com.robotraconteur.geometry.Vector3>(MessageElement.FindElement(mm,"normals"));
+    s.colors =MessageElementUtil.UnpackNamedArray<com.robotraconteur.color.ColorRGB>(MessageElement.FindElement(mm,"colors"));
+    s.textures =MessageElementUtil.UnpackList<MeshTexture>(MessageElement.FindElement(mm,"textures"));
+    s.mesh_type =MessageElementUtil.UnpackEnum<MeshType>(MessageElement.FindElement(mm,"mesh_type"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class Material_stub : IStructureStub {
+    public Material_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    Material s = (Material)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.color.ColorRGBA>("base_color_factor",ref s.base_color_factor));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("metallic_factor",s.metallic_factor));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("roughness_factor",s.roughness_factor));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.color.ColorRGBA>("emissive_factor",ref s.emissive_factor));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Material",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    Material s=new Material();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.base_color_factor =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.color.ColorRGBA>(MessageElement.FindElement(mm,"base_color_factor"));
+    s.metallic_factor =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"metallic_factor")));
+    s.roughness_factor =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"roughness_factor")));
+    s.emissive_factor =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.color.ColorRGBA>(MessageElement.FindElement(mm,"emissive_factor"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class ShapeObject_stub : IStructureStub {
+    public ShapeObject_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
+    private com__robotraconteur__geometry__shapesFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ShapeObject s = (ShapeObject)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("name",s.name));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("shapes",s.shapes));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.geometry.Pose>("shape_poses",s.shape_poses));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<Material>("shape_materials",s.shape_materials));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.SpatialInertia>("inertia",ref s.inertia));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.fiducial.Fiducial>("fiducials",s.fiducials));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.ShapeObject",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ShapeObject s=new ShapeObject();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.name =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"name"));
+    s.shapes =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"shapes"));
+    s.shape_poses =MessageElementUtil.UnpackList<com.robotraconteur.geometry.Pose>(MessageElement.FindElement(mm,"shape_poses"));
+    s.shape_materials =MessageElementUtil.UnpackList<Material>(MessageElement.FindElement(mm,"shape_materials"));
+    s.inertia =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.SpatialInertia>(MessageElement.FindElement(mm,"inertia"));
+    s.fiducials =MessageElementUtil.UnpackList<com.robotraconteur.fiducial.Fiducial>(MessageElement.FindElement(mm,"fiducials"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class MeshTriangle_stub : NamedArrayStub<MeshTriangle,uint> {
+    public override uint[] GetNumericArrayFromNamedArrayStruct(ref MeshTriangle s) {
+    return s.GetNumericArray();
+    }
+    public override MeshTriangle GetNamedArrayStructFromNumericArray(uint[] m) {
+    if (m.Length != 3) throw new DataTypeException("Invalid namedarray array");
+    var s = new MeshTriangle();
+    var a = new ArraySegment<uint>(m);
+    s.AssignFromNumericArray(ref a);
+    return s;
+    }
+    public override uint[] GetNumericArrayFromNamedArray(MeshTriangle[] s) {
+    return s.GetNumericArray();
+    }
+    public override MeshTriangle[] GetNamedArrayFromNumericArray(uint[] m) {
+    if (m.Length % 3 != 0) throw new DataTypeException("Invalid namedarray array");
+    MeshTriangle[] s = new MeshTriangle[m.Length / 3];
+    var a = new ArraySegment<uint>(m);
+    s.AssignFromNumericArray(ref a);
+    return s;
+    }
+    public override string TypeName { get { return "com.robotraconteur.geometry.shapes.MeshTriangle"; } }}
+
+public static class RRExtensions{
+    public static uint[] GetNumericArray(this MeshTriangle[] s)
+    {
+    var a=new ArraySegment<uint>(new uint[3 * s.Length]);
+    s.GetNumericArray(ref a);
+    return a.Array;
+    }
+    public static void GetNumericArray(this MeshTriangle[] s, ref ArraySegment<uint> a)
+    {
+    if(a.Count < 3 * s.Length) throw new ArgumentException("ArraySegment invalid length");
+    for (int i=0; i<s.Length; i++)
+    {
+    var a1 = new ArraySegment<uint>(a.Array, a.Offset + 3*i,3);
+    s[i].GetNumericArray(ref a1);
+    }
+    }
+    public static void AssignFromNumericArray(this MeshTriangle[] s, ref ArraySegment<uint> a)
+    {
+    if(a.Count < 3 * s.Length) throw new ArgumentException("ArraySegment invalid length");
+    for (int i=0; i<s.Length; i++)
+    {
+    var a1 = new ArraySegment<uint>(a.Array, a.Offset + 3*i,3);
+    s[i].AssignFromNumericArray(ref a1);
+    }
+    }
+}
+}
 namespace com.robotraconteur.geometryf
 {
 public class NamedTransform
@@ -10236,556 +11364,6 @@ public static class RRExtensions{
     for (int i=0; i<s.Length; i++)
     {
     var a1 = new ArraySegment<int>(a.Array, a.Offset + 10*i,10);
-    s[i].AssignFromNumericArray(ref a1);
-    }
-    }
-}
-}
-namespace com.robotraconteur.geometry.shapes
-{
-public class Box
-{
-    public double x;
-    public double y;
-    public double z;
-}
-
-public class Sphere
-{
-    public double radius;
-}
-
-public class Cylinder
-{
-    public double height;
-    public double radius;
-}
-
-public class Cone
-{
-    public double height;
-    public double radius;
-}
-
-public class Capsule
-{
-    public double height;
-    public double radius;
-}
-
-public class Plane
-{
-    public double a;
-    public double b;
-    public double c;
-    public double d;
-}
-
-public class MeshTexture
-{
-    public com.robotraconteur.image.CompressedImage image;
-    public com.robotraconteur.geometry.Vector2[] uvs;
-}
-
-public class Mesh
-{
-    public MeshTriangle[] triangles;
-    public com.robotraconteur.geometry.Point[] vertices;
-    public com.robotraconteur.geometry.Vector3[] normals;
-    public com.robotraconteur.color.ColorRGB[] colors;
-    public List<MeshTexture> textures;
-    public MeshType mesh_type;
-}
-
-public class Material
-{
-    public com.robotraconteur.color.ColorRGBA base_color_factor;
-    public double metallic_factor;
-    public double roughness_factor;
-    public com.robotraconteur.color.ColorRGBA emissive_factor;
-    public Dictionary<string,object> extended;
-}
-
-public class ShapeObject
-{
-    public com.robotraconteur.identifier.Identifier name;
-    public List<object> shapes;
-    public List<com.robotraconteur.geometry.Pose> shape_poses;
-    public List<Material> shape_materials;
-    public com.robotraconteur.geometry.SpatialInertia inertia;
-    public List<com.robotraconteur.fiducial.Fiducial> fiducials;
-    public Dictionary<string,object> extended;
-}
-
-[NamedArrayElementTypeAndCount(typeof(uint), 3)]
-public struct MeshTriangle
-{
-    public uint v1;
-    public uint v2;
-    public uint v3;
-    public uint[] GetNumericArray()
-    {
-    var a=new ArraySegment<uint>(new uint[3]);
-    GetNumericArray(ref a);
-    return a.Array;
-    }
-    public void GetNumericArray(ref ArraySegment<uint> rr_a)
-    {
-    if(rr_a.Count < 3) throw new ArgumentException("ArraySegment invalid length");
-    rr_a.Array[rr_a.Offset + 0] = v1;
-    rr_a.Array[rr_a.Offset + 1] = v2;
-    rr_a.Array[rr_a.Offset + 2] = v3;
-    }
-    public void AssignFromNumericArray(ref ArraySegment<uint> rr_a)
-    {
-    if(rr_a.Count < 3) throw new ArgumentException("ArraySegment invalid length");
-    v1 = rr_a.Array[rr_a.Offset + 0];
-    v2 = rr_a.Array[rr_a.Offset + 1];
-    v3 = rr_a.Array[rr_a.Offset + 2];
-    }
-}
-
-public static class com__robotraconteur__geometry__shapesConstants 
-{
-}
-    public enum MeshType
-    {
-    mesh = 0,
-    convex_mesh = 1,
-    sdf_mesh = 2
-    };
-}
-namespace com.robotraconteur.geometry.shapes
-{
-public class com__robotraconteur__geometry__shapesFactory : ServiceFactory
-{
-    public override string DefString()
-{
-    const string s="service com.robotraconteur.geometry.shapes\n\nstdver 0.10\n\nimport com.robotraconteur.geometry\nimport com.robotraconteur.identifier\nimport com.robotraconteur.color\nimport com.robotraconteur.resource\nimport com.robotraconteur.image\nimport com.robotraconteur.fiducial\n\nusing com.robotraconteur.geometry.Point\nusing com.robotraconteur.geometry.Pose\nusing com.robotraconteur.geometry.Vector2\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.geometry.NamedPose\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.color.ColorRGB\nusing com.robotraconteur.color.ColorRGBA\nusing com.robotraconteur.resource.ResourceIdentifier\nusing com.robotraconteur.image.CompressedImage\nusing com.robotraconteur.fiducial.Fiducial\n\nenum MeshType\nmesh = 0,\nconvex_mesh,\nsdf_mesh\nend\n\nstruct Box\nfield double x\nfield double y\nfield double z\nend\n\nstruct Sphere\nfield double radius\nend\n\nstruct Cylinder\nfield double height\nfield double radius\nend\n\nstruct Cone\nfield double height\nfield double radius\nend\n\nstruct Capsule\nfield double height\nfield double radius\nend\n\nstruct Plane\nfield double a\nfield double b\nfield double c\nfield double d\nend\n\nnamedarray MeshTriangle\nfield uint32 v1\nfield uint32 v2\nfield uint32 v3\nend\n\nstruct MeshTexture\nfield CompressedImage image\nfield Vector2[] uvs\nend\n\nstruct Mesh\nfield MeshTriangle[] triangles\nfield Point[] vertices\nfield Vector3[] normals\nfield ColorRGB[] colors\nfield MeshTexture{list} textures\nfield MeshType mesh_type\nend\n\nstruct Material\nfield ColorRGBA base_color_factor\nfield double metallic_factor\nfield double roughness_factor\nfield ColorRGBA emissive_factor\nfield varvalue{string} extended\nend\n\nstruct ShapeObject\nfield Identifier name\nfield varvalue{list} shapes\nfield Pose{list} shape_poses\nfield Material{list} shape_materials\nfield SpatialInertia inertia\nfield Fiducial{list} fiducials\nfield varvalue{string} extended\nend\n\n";
-    return s;
-    }
-    public override string GetServiceName() {return "com.robotraconteur.geometry.shapes";}
-    public Box_stub Box_stubentry;
-    public Sphere_stub Sphere_stubentry;
-    public Cylinder_stub Cylinder_stubentry;
-    public Cone_stub Cone_stubentry;
-    public Capsule_stub Capsule_stubentry;
-    public Plane_stub Plane_stubentry;
-    public MeshTexture_stub MeshTexture_stubentry;
-    public Mesh_stub Mesh_stubentry;
-    public Material_stub Material_stubentry;
-    public ShapeObject_stub ShapeObject_stubentry;
-    public MeshTriangle_stub MeshTriangle_stubentry;
-    public com__robotraconteur__geometry__shapesFactory()
-{
-    Box_stubentry=new Box_stub(this);
-    Sphere_stubentry=new Sphere_stub(this);
-    Cylinder_stubentry=new Cylinder_stub(this);
-    Cone_stubentry=new Cone_stub(this);
-    Capsule_stubentry=new Capsule_stub(this);
-    Plane_stubentry=new Plane_stub(this);
-    MeshTexture_stubentry=new MeshTexture_stub(this);
-    Mesh_stubentry=new Mesh_stub(this);
-    Material_stubentry=new Material_stub(this);
-    ShapeObject_stubentry=new ShapeObject_stub(this);
-    MeshTriangle_stubentry=new MeshTriangle_stub();
-    }
-    public override IStructureStub FindStructureStub(string objecttype)
-    {
-    if (objecttype=="Box")    return Box_stubentry;
-    if (objecttype=="Sphere")    return Sphere_stubentry;
-    if (objecttype=="Cylinder")    return Cylinder_stubentry;
-    if (objecttype=="Cone")    return Cone_stubentry;
-    if (objecttype=="Capsule")    return Capsule_stubentry;
-    if (objecttype=="Plane")    return Plane_stubentry;
-    if (objecttype=="MeshTexture")    return MeshTexture_stubentry;
-    if (objecttype=="Mesh")    return Mesh_stubentry;
-    if (objecttype=="Material")    return Material_stubentry;
-    if (objecttype=="ShapeObject")    return ShapeObject_stubentry;
-    throw new DataTypeException("Cannot find appropriate structure stub");
-    }
-    public override IPodStub FindPodStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override INamedArrayStub FindNamedArrayStub(string objecttype)
-    {
-    if (objecttype=="MeshTriangle")    return MeshTriangle_stubentry;
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
-    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
-    if (CompareNamespace(objecttype, out objshort)) {
-    switch (objshort) {
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
-    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
-    }
-    throw new ServiceException("Could not create stub");
-    }
-    public override ServiceSkel CreateSkel(object obj) {
-    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
-    string objshort;
-    if (CompareNamespace(objtype, out objshort)) {
-    switch(objshort) {
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
-    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
-    }
-    throw new ServiceException("Could not create skel");
-    }
-    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
-    if (rr_exp==null) return rr_exp;
-    string rr_type=rr_exp.Error;
-    if (!rr_type.Contains(".")) return rr_exp;
-    string rr_stype;
-    if (CompareNamespace(rr_type, out rr_stype)) {
-    } else {
-    return RobotRaconteurNode.s.DownCastException(rr_exp); 
-    }
-    return rr_exp;
-    }
-}
-
-public class Box_stub : IStructureStub {
-    public Box_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Box s = (Box)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("x",s.x));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("y",s.y));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("z",s.z));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Box",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Box s=new Box();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.x =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"x")));
-    s.y =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"y")));
-    s.z =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"z")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class Sphere_stub : IStructureStub {
-    public Sphere_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Sphere s = (Sphere)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Sphere",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Sphere s=new Sphere();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class Cylinder_stub : IStructureStub {
-    public Cylinder_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Cylinder s = (Cylinder)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("height",s.height));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Cylinder",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Cylinder s=new Cylinder();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.height =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"height")));
-    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class Cone_stub : IStructureStub {
-    public Cone_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Cone s = (Cone)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("height",s.height));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Cone",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Cone s=new Cone();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.height =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"height")));
-    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class Capsule_stub : IStructureStub {
-    public Capsule_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Capsule s = (Capsule)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("height",s.height));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("radius",s.radius));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Capsule",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Capsule s=new Capsule();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.height =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"height")));
-    s.radius =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"radius")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class Plane_stub : IStructureStub {
-    public Plane_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Plane s = (Plane)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("a",s.a));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("b",s.b));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("c",s.c));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("d",s.d));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Plane",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Plane s=new Plane();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.a =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"a")));
-    s.b =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"b")));
-    s.c =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"c")));
-    s.d =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"d")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class MeshTexture_stub : IStructureStub {
-    public MeshTexture_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    MeshTexture s = (MeshTexture)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("image",s.image));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.geometry.Vector2>("uvs",s.uvs));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.MeshTexture",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    MeshTexture s=new MeshTexture();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.image =MessageElementUtil.UnpackStructure<com.robotraconteur.image.CompressedImage>(MessageElement.FindElement(mm,"image"));
-    s.uvs =MessageElementUtil.UnpackNamedArray<com.robotraconteur.geometry.Vector2>(MessageElement.FindElement(mm,"uvs"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class Mesh_stub : IStructureStub {
-    public Mesh_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Mesh s = (Mesh)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<MeshTriangle>("triangles",s.triangles));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.geometry.Point>("vertices",s.vertices));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.geometry.Vector3>("normals",s.normals));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArray<com.robotraconteur.color.ColorRGB>("colors",s.colors));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<MeshTexture>("textures",s.textures));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<MeshType>("mesh_type",s.mesh_type));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Mesh",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Mesh s=new Mesh();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.triangles =MessageElementUtil.UnpackNamedArray<MeshTriangle>(MessageElement.FindElement(mm,"triangles"));
-    s.vertices =MessageElementUtil.UnpackNamedArray<com.robotraconteur.geometry.Point>(MessageElement.FindElement(mm,"vertices"));
-    s.normals =MessageElementUtil.UnpackNamedArray<com.robotraconteur.geometry.Vector3>(MessageElement.FindElement(mm,"normals"));
-    s.colors =MessageElementUtil.UnpackNamedArray<com.robotraconteur.color.ColorRGB>(MessageElement.FindElement(mm,"colors"));
-    s.textures =MessageElementUtil.UnpackList<MeshTexture>(MessageElement.FindElement(mm,"textures"));
-    s.mesh_type =MessageElementUtil.UnpackEnum<MeshType>(MessageElement.FindElement(mm,"mesh_type"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class Material_stub : IStructureStub {
-    public Material_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    Material s = (Material)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.color.ColorRGBA>("base_color_factor",ref s.base_color_factor));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("metallic_factor",s.metallic_factor));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("roughness_factor",s.roughness_factor));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.color.ColorRGBA>("emissive_factor",ref s.emissive_factor));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.Material",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    Material s=new Material();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.base_color_factor =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.color.ColorRGBA>(MessageElement.FindElement(mm,"base_color_factor"));
-    s.metallic_factor =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"metallic_factor")));
-    s.roughness_factor =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"roughness_factor")));
-    s.emissive_factor =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.color.ColorRGBA>(MessageElement.FindElement(mm,"emissive_factor"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class ShapeObject_stub : IStructureStub {
-    public ShapeObject_stub(com__robotraconteur__geometry__shapesFactory d) {def=d;}
-    private com__robotraconteur__geometry__shapesFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    ShapeObject s = (ShapeObject)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("name",s.name));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("shapes",s.shapes));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.geometry.Pose>("shape_poses",s.shape_poses));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<Material>("shape_materials",s.shape_materials));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.SpatialInertia>("inertia",ref s.inertia));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.fiducial.Fiducial>("fiducials",s.fiducials));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.geometry.shapes.ShapeObject",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ShapeObject s=new ShapeObject();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.name =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"name"));
-    s.shapes =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"shapes"));
-    s.shape_poses =MessageElementUtil.UnpackList<com.robotraconteur.geometry.Pose>(MessageElement.FindElement(mm,"shape_poses"));
-    s.shape_materials =MessageElementUtil.UnpackList<Material>(MessageElement.FindElement(mm,"shape_materials"));
-    s.inertia =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.SpatialInertia>(MessageElement.FindElement(mm,"inertia"));
-    s.fiducials =MessageElementUtil.UnpackList<com.robotraconteur.fiducial.Fiducial>(MessageElement.FindElement(mm,"fiducials"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class MeshTriangle_stub : NamedArrayStub<MeshTriangle,uint> {
-    public override uint[] GetNumericArrayFromNamedArrayStruct(ref MeshTriangle s) {
-    return s.GetNumericArray();
-    }
-    public override MeshTriangle GetNamedArrayStructFromNumericArray(uint[] m) {
-    if (m.Length != 3) throw new DataTypeException("Invalid namedarray array");
-    var s = new MeshTriangle();
-    var a = new ArraySegment<uint>(m);
-    s.AssignFromNumericArray(ref a);
-    return s;
-    }
-    public override uint[] GetNumericArrayFromNamedArray(MeshTriangle[] s) {
-    return s.GetNumericArray();
-    }
-    public override MeshTriangle[] GetNamedArrayFromNumericArray(uint[] m) {
-    if (m.Length % 3 != 0) throw new DataTypeException("Invalid namedarray array");
-    MeshTriangle[] s = new MeshTriangle[m.Length / 3];
-    var a = new ArraySegment<uint>(m);
-    s.AssignFromNumericArray(ref a);
-    return s;
-    }
-    public override string TypeName { get { return "com.robotraconteur.geometry.shapes.MeshTriangle"; } }}
-
-public static class RRExtensions{
-    public static uint[] GetNumericArray(this MeshTriangle[] s)
-    {
-    var a=new ArraySegment<uint>(new uint[3 * s.Length]);
-    s.GetNumericArray(ref a);
-    return a.Array;
-    }
-    public static void GetNumericArray(this MeshTriangle[] s, ref ArraySegment<uint> a)
-    {
-    if(a.Count < 3 * s.Length) throw new ArgumentException("ArraySegment invalid length");
-    for (int i=0; i<s.Length; i++)
-    {
-    var a1 = new ArraySegment<uint>(a.Array, a.Offset + 3*i,3);
-    s[i].GetNumericArray(ref a1);
-    }
-    }
-    public static void AssignFromNumericArray(this MeshTriangle[] s, ref ArraySegment<uint> a)
-    {
-    if(a.Count < 3 * s.Length) throw new ArgumentException("ArraySegment invalid length");
-    for (int i=0; i<s.Length; i++)
-    {
-    var a1 = new ArraySegment<uint>(a.Array, a.Offset + 3*i,3);
     s[i].AssignFromNumericArray(ref a1);
     }
     }
@@ -17363,6 +17941,744 @@ public class ColorTunableLight_default_impl : ColorTunableLight{
 public static class RRExtensions{
 }
 }
+namespace com.robotraconteur.objectrecognition
+{
+public class ObjectRecognitionTemplate
+{
+    public com.robotraconteur.identifier.Identifier object_identifier;
+    public com.robotraconteur.device.DeviceClass object_class;
+    public com.robotraconteur.geometry.shapes.ShapeObject object_shape;
+    public List<com.robotraconteur.fiducial.Fiducial> object_fiducials;
+    public Dictionary<string,object> extended;
+}
+
+public class RecognizedObject
+{
+    public com.robotraconteur.identifier.Identifier recognized_object;
+    public com.robotraconteur.device.DeviceClass recognized_object_class;
+    public com.robotraconteur.geometry.NamedPoseWithCovariance pose;
+    public double confidence;
+    public Dictionary<string,object> extended;
+}
+
+public class RecognizedObjects
+{
+    public List<RecognizedObject> recognized_objects;
+    public object source_data;
+    public Dictionary<string,object> extended;
+}
+
+public class ObjectRecognitionSensorInfo
+{
+    public com.robotraconteur.device.DeviceInfo device_info;
+    public com.robotraconteur.geometry.BoundingBox range;
+    public com.robotraconteur.geometry.Vector3 resolution;
+    public List<com.robotraconteur.param.ParameterInfo> param_info;
+    public List<com.robotraconteur.identifier.Identifier> object_template_identifiers;
+    public List<com.robotraconteur.device.DeviceClass> object_template_classes;
+    public Dictionary<string,object> extended;
+}
+
+public class ObjectRecognitionSensorData
+{
+    public com.robotraconteur.sensordata.SensorDataHeader sensor_data;
+    public RecognizedObjects recognized_objects;
+}
+
+[RobotRaconteurServiceObjectInterface()]
+public interface ObjectRecognitionSensor : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
+{
+    com.robotraconteur.device.DeviceInfo device_info { get; 	}
+    ObjectRecognitionSensorInfo object_recognition_sensor_info { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
+    RecognizedObjects capture_recognized_objects();
+    object getf_param(string param_name);
+    void setf_param(string param_name, object value_);
+    ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier);
+    ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class);
+    Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
+}
+
+}
+namespace com.robotraconteur.objectrecognition
+{
+public class com__robotraconteur__objectrecognitionFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.objectrecognition\n\nstdver 0.10\n\nimport com.robotraconteur.identifier\nimport com.robotraconteur.geometry\nimport com.robotraconteur.geometry.shapes\nimport com.robotraconteur.param\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.fiducial\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.DeviceClass\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.geometry.shapes.ShapeObject\nusing com.robotraconteur.geometry.NamedPoseWithCovariance\nusing com.robotraconteur.geometry.BoundingBox\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.fiducial.Fiducial\n\nstruct ObjectRecognitionTemplate\nfield Identifier object_identifier\nfield DeviceClass object_class\nfield ShapeObject object_shape\nfield Fiducial{list} object_fiducials\nfield varvalue{string} extended\nend\n\nstruct RecognizedObject\nfield Identifier recognized_object\nfield DeviceClass recognized_object_class\nfield NamedPoseWithCovariance pose\nfield double confidence\nfield varvalue{string} extended\nend\n\nstruct RecognizedObjects\nfield RecognizedObject{list} recognized_objects\nfield varvalue source_data\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorInfo\nfield DeviceInfo device_info\nfield BoundingBox range\nfield Vector3 resolution\nfield ParameterInfo{list} param_info\nfield Identifier{list} object_template_identifiers\nfield DeviceClass{list} object_template_classes\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorData\nfield SensorDataHeader sensor_data\nfield RecognizedObjects recognized_objects\nend\n\nobject ObjectRecognitionSensor\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ObjectRecognitionSensorInfo object_recognition_sensor_info [readonly,nolock]\nfunction RecognizedObjects capture_recognized_objects()\npipe ObjectRecognitionSensorData object_recognition_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction ObjectRecognitionTemplate getf_object_template(Identifier object_identifier)\nfunction ObjectRecognitionTemplate getf_object_class_template(Identifier object_class)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.objectrecognition";}
+    public ObjectRecognitionTemplate_stub ObjectRecognitionTemplate_stubentry;
+    public RecognizedObject_stub RecognizedObject_stubentry;
+    public RecognizedObjects_stub RecognizedObjects_stubentry;
+    public ObjectRecognitionSensorInfo_stub ObjectRecognitionSensorInfo_stubentry;
+    public ObjectRecognitionSensorData_stub ObjectRecognitionSensorData_stubentry;
+    public com__robotraconteur__objectrecognitionFactory()
+{
+    ObjectRecognitionTemplate_stubentry=new ObjectRecognitionTemplate_stub(this);
+    RecognizedObject_stubentry=new RecognizedObject_stub(this);
+    RecognizedObjects_stubentry=new RecognizedObjects_stub(this);
+    ObjectRecognitionSensorInfo_stubentry=new ObjectRecognitionSensorInfo_stub(this);
+    ObjectRecognitionSensorData_stubentry=new ObjectRecognitionSensorData_stub(this);
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    if (objecttype=="ObjectRecognitionTemplate")    return ObjectRecognitionTemplate_stubentry;
+    if (objecttype=="RecognizedObject")    return RecognizedObject_stubentry;
+    if (objecttype=="RecognizedObjects")    return RecognizedObjects_stubentry;
+    if (objecttype=="ObjectRecognitionSensorInfo")    return ObjectRecognitionSensorInfo_stubentry;
+    if (objecttype=="ObjectRecognitionSensorData")    return ObjectRecognitionSensorData_stubentry;
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    case "ObjectRecognitionSensor":
+    return new ObjectRecognitionSensor_stub(innerstub);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    case "ObjectRecognitionSensor":
+    return new ObjectRecognitionSensor_skel((ObjectRecognitionSensor)obj);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class ObjectRecognitionTemplate_stub : IStructureStub {
+    public ObjectRecognitionTemplate_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ObjectRecognitionTemplate s = (ObjectRecognitionTemplate)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_identifier",s.object_identifier));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_class",s.object_class));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_shape",s.object_shape));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.fiducial.Fiducial>("object_fiducials",s.object_fiducials));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionTemplate",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ObjectRecognitionTemplate s=new ObjectRecognitionTemplate();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.object_identifier =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"object_identifier"));
+    s.object_class =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"object_class"));
+    s.object_shape =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.shapes.ShapeObject>(MessageElement.FindElement(mm,"object_shape"));
+    s.object_fiducials =MessageElementUtil.UnpackList<com.robotraconteur.fiducial.Fiducial>(MessageElement.FindElement(mm,"object_fiducials"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class RecognizedObject_stub : IStructureStub {
+    public RecognizedObject_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    RecognizedObject s = (RecognizedObject)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_object",s.recognized_object));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_object_class",s.recognized_object_class));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("pose",s.pose));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("confidence",s.confidence));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.RecognizedObject",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    RecognizedObject s=new RecognizedObject();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.recognized_object =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"recognized_object"));
+    s.recognized_object_class =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"recognized_object_class"));
+    s.pose =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.NamedPoseWithCovariance>(MessageElement.FindElement(mm,"pose"));
+    s.confidence =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"confidence")));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class RecognizedObjects_stub : IStructureStub {
+    public RecognizedObjects_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    RecognizedObjects s = (RecognizedObjects)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<RecognizedObject>("recognized_objects",s.recognized_objects));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackVarType("source_data",s.source_data));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.RecognizedObjects",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    RecognizedObjects s=new RecognizedObjects();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.recognized_objects =MessageElementUtil.UnpackList<RecognizedObject>(MessageElement.FindElement(mm,"recognized_objects"));
+    s.source_data =MessageElementUtil.UnpackVarType(MessageElement.FindElement(mm,"source_data"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class ObjectRecognitionSensorInfo_stub : IStructureStub {
+    public ObjectRecognitionSensorInfo_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ObjectRecognitionSensorInfo s = (ObjectRecognitionSensorInfo)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("range",s.range));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Vector3>("resolution",ref s.resolution));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.param.ParameterInfo>("param_info",s.param_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.identifier.Identifier>("object_template_identifiers",s.object_template_identifiers));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.device.DeviceClass>("object_template_classes",s.object_template_classes));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionSensorInfo",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ObjectRecognitionSensorInfo s=new ObjectRecognitionSensorInfo();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
+    s.range =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.BoundingBox>(MessageElement.FindElement(mm,"range"));
+    s.resolution =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Vector3>(MessageElement.FindElement(mm,"resolution"));
+    s.param_info =MessageElementUtil.UnpackList<com.robotraconteur.param.ParameterInfo>(MessageElement.FindElement(mm,"param_info"));
+    s.object_template_identifiers =MessageElementUtil.UnpackList<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"object_template_identifiers"));
+    s.object_template_classes =MessageElementUtil.UnpackList<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"object_template_classes"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class ObjectRecognitionSensorData_stub : IStructureStub {
+    public ObjectRecognitionSensorData_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
+    private com__robotraconteur__objectrecognitionFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ObjectRecognitionSensorData s = (ObjectRecognitionSensorData)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("sensor_data",s.sensor_data));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_objects",s.recognized_objects));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionSensorData",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ObjectRecognitionSensorData s=new ObjectRecognitionSensorData();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.sensor_data =MessageElementUtil.UnpackStructure<com.robotraconteur.sensordata.SensorDataHeader>(MessageElement.FindElement(mm,"sensor_data"));
+    s.recognized_objects =MessageElementUtil.UnpackStructure<RecognizedObjects>(MessageElement.FindElement(mm,"recognized_objects"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public interface async_ObjectRecognitionSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
+{
+    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ObjectRecognitionSensorInfo> async_get_object_recognition_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<RecognizedObjects> async_capture_recognized_objects(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ObjectRecognitionTemplate> async_getf_object_template(com.robotraconteur.identifier.Identifier object_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ObjectRecognitionTemplate> async_getf_object_class_template(com.robotraconteur.identifier.Identifier object_class,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+}
+public class ObjectRecognitionSensor_stub : ServiceStub , ObjectRecognitionSensor, async_ObjectRecognitionSensor{
+    private Pipe<ObjectRecognitionSensorData> rr_object_recognition_sensor_data;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
+    public ObjectRecognitionSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    rr_object_recognition_sensor_data=new Pipe<ObjectRecognitionSensorData>(innerstub.GetPipe("object_recognition_sensor_data"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
+    }
+    public com.robotraconteur.device.DeviceInfo device_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
+    }
+    }
+    public ObjectRecognitionSensorInfo object_recognition_sensor_info {
+    get {
+    return MessageElementUtil.UnpackStructure<ObjectRecognitionSensorInfo>(rr_innerstub.PropertyGet("object_recognition_sensor_info"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
+    }
+    }
+    public RecognizedObjects capture_recognized_objects() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("capture_recognized_objects",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<RecognizedObjects>(rr_me);
+    }
+    }
+    }
+    public object getf_param(string param_name) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_param",rr_param))
+    {
+    return MessageElementUtil.UnpackVarType(rr_me);
+    }
+    }
+    }
+    public void setf_param(string param_name, object value_) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_param",rr_param))
+    {
+    }
+    }
+    }
+    public ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_identifier",object_identifier));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_object_template",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_me);
+    }
+    }
+    }
+    public ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_class",object_class));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_object_class_template",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_me);
+    }
+    }
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data {
+    get { return rr_object_recognition_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
+    set { throw new InvalidOperationException();}
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<ObjectRecognitionSensorInfo> async_get_object_recognition_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("object_recognition_sensor_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionSensorInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
+    public virtual async Task<RecognizedObjects> async_capture_recognized_objects(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("capture_recognized_objects",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<RecognizedObjects>(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    using(var rr_return = await rr_async_FunctionCall("getf_param",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackVarType(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
+    using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task<ObjectRecognitionTemplate> async_getf_object_template(com.robotraconteur.identifier.Identifier object_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_identifier",object_identifier));
+    using(var rr_return = await rr_async_FunctionCall("getf_object_template",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task<ObjectRecognitionTemplate> async_getf_object_class_template(com.robotraconteur.identifier.Identifier object_class,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_class",object_class));
+    using(var rr_return = await rr_async_FunctionCall("getf_object_class_template",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_return);
+    return rr_ret;
+    } } }
+}
+public class ObjectRecognitionSensor_skel : ServiceSkel {
+    protected ObjectRecognitionSensor obj;
+    protected async_ObjectRecognitionSensor async_obj;
+    public ObjectRecognitionSensor_skel(object o) : base(o)    {
+    obj=(ObjectRecognitionSensor)o;
+    async_obj = o as async_ObjectRecognitionSensor;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "device_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "object_recognition_sensor_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_object_recognition_sensor_info().ContinueWith(t => async_adapter.EndTask<ObjectRecognitionSensorInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ObjectRecognitionSensorInfo ret=obj.object_recognition_sensor_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    case "capture_recognized_objects":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_capture_recognized_objects().ContinueWith(t => rr_async_adapter.EndTask<RecognizedObjects>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    RecognizedObjects rr_ret=this.obj.capture_recognized_objects();
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    case "getf_param":
+    {
+    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_getf_param(param_name).ContinueWith(t => rr_async_adapter.EndTask<object>(t,async_ret => MessageElementUtil.PackVarType("return",async_ret)));
+    return null;
+    }
+    object rr_ret=this.obj.getf_param(param_name);
+    return MessageElementUtil.PackVarType("return",rr_ret);
+    }
+    case "setf_param":
+    {
+    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
+    object value_=MessageElementUtil.UnpackVarType(vectorptr_messageelement_util.FindElement(rr_m,"value"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_setf_param(param_name, value_).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.setf_param(param_name, value_);
+    return new MessageElement("return",(int)0);
+    }
+    case "getf_object_template":
+    {
+    com.robotraconteur.identifier.Identifier object_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"object_identifier"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_getf_object_template(object_identifier).ContinueWith(t => rr_async_adapter.EndTask<ObjectRecognitionTemplate>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ObjectRecognitionTemplate rr_ret=this.obj.getf_object_template(object_identifier);
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    case "getf_object_class_template":
+    {
+    com.robotraconteur.identifier.Identifier object_class=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"object_class"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_getf_object_class_template(object_class).ContinueWith(t => rr_async_adapter.EndTask<ObjectRecognitionTemplate>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ObjectRecognitionTemplate rr_ret=this.obj.getf_object_class_template(object_class);
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    obj.object_recognition_sensor_data=new Pipe<ObjectRecognitionSensorData>(innerskel.GetPipe("object_recognition_sensor_data"));
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(ObjectRecognitionSensor)rrobj1;
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "com.robotraconteur.objectrecognition.ObjectRecognitionSensor"; } }
+}
+public class ObjectRecognitionSensor_default_impl : ObjectRecognitionSensor{
+    protected PipeBroadcaster<ObjectRecognitionSensorData> rrvar_object_recognition_sensor_data;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
+    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
+    public virtual ObjectRecognitionSensorInfo object_recognition_sensor_info {get; set;} = default(ObjectRecognitionSensorInfo);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
+    public virtual RecognizedObjects capture_recognized_objects() {
+    throw new NotImplementedException();    }
+    public virtual object getf_param(string param_name) {
+    throw new NotImplementedException();    }
+    public virtual void setf_param(string param_name, object value_) {
+    throw new NotImplementedException();    }
+    public virtual ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier) {
+    throw new NotImplementedException();    }
+    public virtual ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class) {
+    throw new NotImplementedException();    }
+    public virtual Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data {
+    get { return rrvar_object_recognition_sensor_data.Pipe;  }
+    set {
+    if (rrvar_object_recognition_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_object_recognition_sensor_data= new PipeBroadcaster<ObjectRecognitionSensorData>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
+}
+public static class RRExtensions{
+}
+}
 namespace com.robotraconteur.octree
 {
 public class OcTreeInfo
@@ -20436,6 +21752,513 @@ public class PointCloud2PartSensor_default_impl : PointCloud2PartSensor{
 public static class RRExtensions{
 }
 }
+namespace com.robotraconteur.resource.device
+{
+[RobotRaconteurServiceObjectInterface()]
+public interface ResourceStorageDevice : com.robotraconteur.device.Device, com.robotraconteur.resource.ResourceReadOnlyStorage, com.robotraconteur.resource.ResourceStorage
+{
+    com.robotraconteur.device.DeviceInfo device_info { get; 	}
+    List<com.robotraconteur.resource.BucketInfo> resource_bucket_info { get; 	}
+    com.robotraconteur.resource.ResourceInfo resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier);
+    Generator2<com.robotraconteur.resource.ResourcePart> resource_get(com.robotraconteur.resource.ResourceIdentifier identifier);
+    Generator2<com.robotraconteur.resource.ResourcePart> resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier);
+    void resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier);
+    void resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier);
+    Generator3<com.robotraconteur.resource.ResourcePart> resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite);
+    void resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier);
+    void resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy);
+}
+
+}
+namespace com.robotraconteur.resource.device
+{
+public class com__robotraconteur__resource__deviceFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.resource.device\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.resource\nimport com.robotraconteur.identifier\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.resource.BucketInfo\nusing com.robotraconteur.resource.ResourceIdentifier\nusing com.robotraconteur.resource.ResourcePart\nusing com.robotraconteur.resource.ResourceInfo\nusing com.robotraconteur.resource.ResourceReadOnlyStorage\nusing com.robotraconteur.resource.ResourceStorage\n\nobject ResourceStorageDevice\nimplements Device\nimplements ResourceReadOnlyStorage\nimplements ResourceStorage\nproperty DeviceInfo device_info [readonly,nolock]\nproperty BucketInfo{list} resource_bucket_info [readonly,nolock]\nfunction ResourceInfo resource_get_info(ResourceIdentifier identifier)\nfunction ResourcePart{generator} resource_get(ResourceIdentifier identifier)\nfunction ResourcePart{generator} resource_get_all(Identifier bucket_identifier)\nfunction void resource_bucket_add(Identifier bucket_identifier)\nfunction void resource_bucket_delete(Identifier bucket_identifier)\nfunction void resource_set(ResourceIdentifier identifier, bool overwrite, ResourcePart{generator} resource)\nfunction void resource_delete(ResourceIdentifier identifier)\nfunction void resource_copy(ResourceIdentifier identifier, ResourceIdentifier new_identifier, bool copy)\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.resource.device";}
+    public com__robotraconteur__resource__deviceFactory()
+{
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    case "ResourceStorageDevice":
+    return new ResourceStorageDevice_stub(innerstub);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    case "ResourceStorageDevice":
+    return new ResourceStorageDevice_skel((ResourceStorageDevice)obj);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public interface async_ResourceStorageDevice : com.robotraconteur.device.async_Device, com.robotraconteur.resource.async_ResourceReadOnlyStorage, com.robotraconteur.resource.async_ResourceStorage
+{
+    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<List<com.robotraconteur.resource.BucketInfo>> async_get_resource_bucket_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.resource.ResourceInfo> async_resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<Generator3<com.robotraconteur.resource.ResourcePart>> async_resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+}
+public class ResourceStorageDevice_stub : ServiceStub , ResourceStorageDevice, async_ResourceStorageDevice{
+    public ResourceStorageDevice_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    }
+    public com.robotraconteur.device.DeviceInfo device_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
+    }
+    }
+    public List<com.robotraconteur.resource.BucketInfo> resource_bucket_info {
+    get {
+    return MessageElementUtil.UnpackList<com.robotraconteur.resource.BucketInfo>(rr_innerstub.PropertyGet("resource_bucket_info"));
+    }
+    }
+    public com.robotraconteur.resource.ResourceInfo resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_get_info",rr_param))
+    {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceInfo>(rr_me);
+    }
+    }
+    }
+    public Generator2<com.robotraconteur.resource.ResourcePart> resource_get(com.robotraconteur.resource.ResourceIdentifier identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    WrappedGeneratorClient generator_client = rr_innerstub.GeneratorFunctionCall("resource_get",rr_param);
+    return new Generator2Client<com.robotraconteur.resource.ResourcePart>(generator_client);
+    }
+    }
+    public Generator2<com.robotraconteur.resource.ResourcePart> resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
+    WrappedGeneratorClient generator_client = rr_innerstub.GeneratorFunctionCall("resource_get_all",rr_param);
+    return new Generator2Client<com.robotraconteur.resource.ResourcePart>(generator_client);
+    }
+    }
+    public void resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_bucket_add",rr_param))
+    {
+    }
+    }
+    }
+    public void resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_bucket_delete",rr_param))
+    {
+    }
+    }
+    }
+    public Generator3<com.robotraconteur.resource.ResourcePart> resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("overwrite",overwrite));
+    WrappedGeneratorClient generator_client = rr_innerstub.GeneratorFunctionCall("resource_set",rr_param);
+    return new Generator3Client<com.robotraconteur.resource.ResourcePart>(generator_client);
+    }
+    }
+    public void resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_delete",rr_param))
+    {
+    }
+    }
+    }
+    public void resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("new_identifier",new_identifier));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("copy",copy));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_copy",rr_param))
+    {
+    }
+    }
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<List<com.robotraconteur.resource.BucketInfo>> async_get_resource_bucket_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("resource_bucket_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackList<com.robotraconteur.resource.BucketInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<com.robotraconteur.resource.ResourceInfo> async_resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    using(var rr_return = await rr_async_FunctionCall("resource_get_info",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceInfo>(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    var rr_return = await rr_async_GeneratorFunctionCall("resource_get",rr_param,rr_timeout);
+    Generator2Client< com.robotraconteur.resource.ResourcePart> rr_ret=new Generator2Client< com.robotraconteur.resource.ResourcePart>(rr_return);
+    return rr_ret;
+    } }
+    public virtual async Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
+    var rr_return = await rr_async_GeneratorFunctionCall("resource_get_all",rr_param,rr_timeout);
+    Generator2Client< com.robotraconteur.resource.ResourcePart> rr_ret=new Generator2Client< com.robotraconteur.resource.ResourcePart>(rr_return);
+    return rr_ret;
+    } }
+    public virtual async Task async_resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
+    using(var rr_return = await rr_async_FunctionCall("resource_bucket_add",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
+    using(var rr_return = await rr_async_FunctionCall("resource_bucket_delete",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task<Generator3<com.robotraconteur.resource.ResourcePart>> async_resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("overwrite",overwrite));
+    var rr_return = await rr_async_GeneratorFunctionCall("resource_set",rr_param,rr_timeout);
+    Generator3Client< com.robotraconteur.resource.ResourcePart> rr_ret=new Generator3Client< com.robotraconteur.resource.ResourcePart>(rr_return);
+    return rr_ret;
+    } }
+    public virtual async Task async_resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    using(var rr_return = await rr_async_FunctionCall("resource_delete",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("new_identifier",new_identifier));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("copy",copy));
+    using(var rr_return = await rr_async_FunctionCall("resource_copy",rr_param,rr_timeout)) {
+    } } }
+}
+public class ResourceStorageDevice_skel : ServiceSkel {
+    protected ResourceStorageDevice obj;
+    protected async_ResourceStorageDevice async_obj;
+    public ResourceStorageDevice_skel(object o) : base(o)    {
+    obj=(ResourceStorageDevice)o;
+    async_obj = o as async_ResourceStorageDevice;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "device_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "resource_bucket_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_resource_bucket_info().ContinueWith(t => async_adapter.EndTask<List<com.robotraconteur.resource.BucketInfo>>(t,async_ret => MessageElementUtil.PackListType<com.robotraconteur.resource.BucketInfo>("return",async_ret)));
+    return null;
+    }
+    List<com.robotraconteur.resource.BucketInfo> ret=obj.resource_bucket_info;
+    return MessageElementUtil.PackListType<com.robotraconteur.resource.BucketInfo>("return",ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    case "resource_get_info":
+    {
+    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_resource_get_info(identifier).ContinueWith(t => rr_async_adapter.EndTask<com.robotraconteur.resource.ResourceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.resource.ResourceInfo rr_ret=this.obj.resource_get_info(identifier);
+    return MessageElementUtil.PackStructure("return",rr_ret);
+    }
+    case "resource_get":
+    {
+    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
+    Generator2<com.robotraconteur.resource.ResourcePart> rr_ret=this.obj.resource_get(identifier);
+    int generator_index = innerskel.RegisterGeneratorServer("resource_get", new WrappedGenerator2ServerDirectorNET<com.robotraconteur.resource.ResourcePart>(rr_ret));
+    return new MessageElement("index",generator_index);
+    }
+    case "resource_get_all":
+    {
+    com.robotraconteur.identifier.Identifier bucket_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"bucket_identifier"));
+    Generator2<com.robotraconteur.resource.ResourcePart> rr_ret=this.obj.resource_get_all(bucket_identifier);
+    int generator_index = innerskel.RegisterGeneratorServer("resource_get_all", new WrappedGenerator2ServerDirectorNET<com.robotraconteur.resource.ResourcePart>(rr_ret));
+    return new MessageElement("index",generator_index);
+    }
+    case "resource_bucket_add":
+    {
+    com.robotraconteur.identifier.Identifier bucket_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"bucket_identifier"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_resource_bucket_add(bucket_identifier).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.resource_bucket_add(bucket_identifier);
+    return new MessageElement("return",(int)0);
+    }
+    case "resource_bucket_delete":
+    {
+    com.robotraconteur.identifier.Identifier bucket_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"bucket_identifier"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_resource_bucket_delete(bucket_identifier).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.resource_bucket_delete(bucket_identifier);
+    return new MessageElement("return",(int)0);
+    }
+    case "resource_set":
+    {
+    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
+    bool overwrite=(MessageElementUtil.UnpackScalar<bool>(vectorptr_messageelement_util.FindElement(rr_m,"overwrite")));
+    Generator3<com.robotraconteur.resource.ResourcePart> rr_ret=this.obj.resource_set(identifier, overwrite);
+    int generator_index = innerskel.RegisterGeneratorServer("resource_set", new WrappedGenerator3ServerDirectorNET<com.robotraconteur.resource.ResourcePart>(rr_ret));
+    return new MessageElement("index",generator_index);
+    }
+    case "resource_delete":
+    {
+    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_resource_delete(identifier).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.resource_delete(identifier);
+    return new MessageElement("return",(int)0);
+    }
+    case "resource_copy":
+    {
+    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
+    com.robotraconteur.resource.ResourceIdentifier new_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"new_identifier"));
+    bool copy=(MessageElementUtil.UnpackScalar<bool>(vectorptr_messageelement_util.FindElement(rr_m,"copy")));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_resource_copy(identifier, new_identifier, copy).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.resource_copy(identifier, new_identifier, copy);
+    return new MessageElement("return",(int)0);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(ResourceStorageDevice)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(ResourceStorageDevice)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(ResourceStorageDevice)rrobj1;
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(ResourceStorageDevice)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(ResourceStorageDevice)rrobj1;
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "com.robotraconteur.resource.device.ResourceStorageDevice"; } }
+}
+public class ResourceStorageDevice_default_impl : ResourceStorageDevice{
+    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
+    public virtual List<com.robotraconteur.resource.BucketInfo> resource_bucket_info {get; set;} = default(List<com.robotraconteur.resource.BucketInfo>);
+    public virtual com.robotraconteur.resource.ResourceInfo resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier) {
+    throw new NotImplementedException();    }
+    public virtual Generator2<com.robotraconteur.resource.ResourcePart> resource_get(com.robotraconteur.resource.ResourceIdentifier identifier) {
+    throw new NotImplementedException();    }
+    public virtual Generator2<com.robotraconteur.resource.ResourcePart> resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier) {
+    throw new NotImplementedException();    }
+    public virtual void resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier) {
+    throw new NotImplementedException();    }
+    public virtual void resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier) {
+    throw new NotImplementedException();    }
+    public virtual Generator3<com.robotraconteur.resource.ResourcePart> resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite) {
+    throw new NotImplementedException();    }
+    public virtual void resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier) {
+    throw new NotImplementedException();    }
+    public virtual void resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy) {
+    throw new NotImplementedException();    }
+}
+public static class RRExtensions{
+}
+}
 namespace com.robotraconteur.resource
 {
 public class ResourceIdentifier
@@ -21369,513 +23192,6 @@ public class ResourceStorage_default_impl : ResourceStorage{
 public static class RRExtensions{
 }
 }
-namespace com.robotraconteur.resource.device
-{
-[RobotRaconteurServiceObjectInterface()]
-public interface ResourceStorageDevice : com.robotraconteur.device.Device, com.robotraconteur.resource.ResourceReadOnlyStorage, com.robotraconteur.resource.ResourceStorage
-{
-    com.robotraconteur.device.DeviceInfo device_info { get; 	}
-    List<com.robotraconteur.resource.BucketInfo> resource_bucket_info { get; 	}
-    com.robotraconteur.resource.ResourceInfo resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier);
-    Generator2<com.robotraconteur.resource.ResourcePart> resource_get(com.robotraconteur.resource.ResourceIdentifier identifier);
-    Generator2<com.robotraconteur.resource.ResourcePart> resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier);
-    void resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier);
-    void resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier);
-    Generator3<com.robotraconteur.resource.ResourcePart> resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite);
-    void resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier);
-    void resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy);
-}
-
-}
-namespace com.robotraconteur.resource.device
-{
-public class com__robotraconteur__resource__deviceFactory : ServiceFactory
-{
-    public override string DefString()
-{
-    const string s="service com.robotraconteur.resource.device\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.resource\nimport com.robotraconteur.identifier\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.resource.BucketInfo\nusing com.robotraconteur.resource.ResourceIdentifier\nusing com.robotraconteur.resource.ResourcePart\nusing com.robotraconteur.resource.ResourceInfo\nusing com.robotraconteur.resource.ResourceReadOnlyStorage\nusing com.robotraconteur.resource.ResourceStorage\n\nobject ResourceStorageDevice\nimplements Device\nimplements ResourceReadOnlyStorage\nimplements ResourceStorage\nproperty DeviceInfo device_info [readonly,nolock]\nproperty BucketInfo{list} resource_bucket_info [readonly,nolock]\nfunction ResourceInfo resource_get_info(ResourceIdentifier identifier)\nfunction ResourcePart{generator} resource_get(ResourceIdentifier identifier)\nfunction ResourcePart{generator} resource_get_all(Identifier bucket_identifier)\nfunction void resource_bucket_add(Identifier bucket_identifier)\nfunction void resource_bucket_delete(Identifier bucket_identifier)\nfunction void resource_set(ResourceIdentifier identifier, bool overwrite, ResourcePart{generator} resource)\nfunction void resource_delete(ResourceIdentifier identifier)\nfunction void resource_copy(ResourceIdentifier identifier, ResourceIdentifier new_identifier, bool copy)\nend\n\n";
-    return s;
-    }
-    public override string GetServiceName() {return "com.robotraconteur.resource.device";}
-    public com__robotraconteur__resource__deviceFactory()
-{
-    }
-    public override IStructureStub FindStructureStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate structure stub");
-    }
-    public override IPodStub FindPodStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override INamedArrayStub FindNamedArrayStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
-    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
-    if (CompareNamespace(objecttype, out objshort)) {
-    switch (objshort) {
-    case "ResourceStorageDevice":
-    return new ResourceStorageDevice_stub(innerstub);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
-    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
-    }
-    throw new ServiceException("Could not create stub");
-    }
-    public override ServiceSkel CreateSkel(object obj) {
-    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
-    string objshort;
-    if (CompareNamespace(objtype, out objshort)) {
-    switch(objshort) {
-    case "ResourceStorageDevice":
-    return new ResourceStorageDevice_skel((ResourceStorageDevice)obj);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
-    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
-    }
-    throw new ServiceException("Could not create skel");
-    }
-    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
-    if (rr_exp==null) return rr_exp;
-    string rr_type=rr_exp.Error;
-    if (!rr_type.Contains(".")) return rr_exp;
-    string rr_stype;
-    if (CompareNamespace(rr_type, out rr_stype)) {
-    } else {
-    return RobotRaconteurNode.s.DownCastException(rr_exp); 
-    }
-    return rr_exp;
-    }
-}
-
-public interface async_ResourceStorageDevice : com.robotraconteur.device.async_Device, com.robotraconteur.resource.async_ResourceReadOnlyStorage, com.robotraconteur.resource.async_ResourceStorage
-{
-    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<List<com.robotraconteur.resource.BucketInfo>> async_get_resource_bucket_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<com.robotraconteur.resource.ResourceInfo> async_resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<Generator3<com.robotraconteur.resource.ResourcePart>> async_resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-}
-public class ResourceStorageDevice_stub : ServiceStub , ResourceStorageDevice, async_ResourceStorageDevice{
-    public ResourceStorageDevice_stub(WrappedServiceStub innerstub) : base(innerstub) {
-    }
-    public com.robotraconteur.device.DeviceInfo device_info {
-    get {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
-    }
-    }
-    public List<com.robotraconteur.resource.BucketInfo> resource_bucket_info {
-    get {
-    return MessageElementUtil.UnpackList<com.robotraconteur.resource.BucketInfo>(rr_innerstub.PropertyGet("resource_bucket_info"));
-    }
-    }
-    public com.robotraconteur.resource.ResourceInfo resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_get_info",rr_param))
-    {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceInfo>(rr_me);
-    }
-    }
-    }
-    public Generator2<com.robotraconteur.resource.ResourcePart> resource_get(com.robotraconteur.resource.ResourceIdentifier identifier) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    WrappedGeneratorClient generator_client = rr_innerstub.GeneratorFunctionCall("resource_get",rr_param);
-    return new Generator2Client<com.robotraconteur.resource.ResourcePart>(generator_client);
-    }
-    }
-    public Generator2<com.robotraconteur.resource.ResourcePart> resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
-    WrappedGeneratorClient generator_client = rr_innerstub.GeneratorFunctionCall("resource_get_all",rr_param);
-    return new Generator2Client<com.robotraconteur.resource.ResourcePart>(generator_client);
-    }
-    }
-    public void resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_bucket_add",rr_param))
-    {
-    }
-    }
-    }
-    public void resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_bucket_delete",rr_param))
-    {
-    }
-    }
-    }
-    public Generator3<com.robotraconteur.resource.ResourcePart> resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("overwrite",overwrite));
-    WrappedGeneratorClient generator_client = rr_innerstub.GeneratorFunctionCall("resource_set",rr_param);
-    return new Generator3Client<com.robotraconteur.resource.ResourcePart>(generator_client);
-    }
-    }
-    public void resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_delete",rr_param))
-    {
-    }
-    }
-    }
-    public void resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("new_identifier",new_identifier));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("copy",copy));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("resource_copy",rr_param))
-    {
-    }
-    }
-    }
-    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    }
-    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<List<com.robotraconteur.resource.BucketInfo>> async_get_resource_bucket_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("resource_bucket_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackList<com.robotraconteur.resource.BucketInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<com.robotraconteur.resource.ResourceInfo> async_resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    using(var rr_return = await rr_async_FunctionCall("resource_get_info",rr_param,rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceInfo>(rr_return);
-    return rr_ret;
-    } } }
-    public virtual async Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    var rr_return = await rr_async_GeneratorFunctionCall("resource_get",rr_param,rr_timeout);
-    Generator2Client< com.robotraconteur.resource.ResourcePart> rr_ret=new Generator2Client< com.robotraconteur.resource.ResourcePart>(rr_return);
-    return rr_ret;
-    } }
-    public virtual async Task<Generator2<com.robotraconteur.resource.ResourcePart>> async_resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
-    var rr_return = await rr_async_GeneratorFunctionCall("resource_get_all",rr_param,rr_timeout);
-    Generator2Client< com.robotraconteur.resource.ResourcePart> rr_ret=new Generator2Client< com.robotraconteur.resource.ResourcePart>(rr_return);
-    return rr_ret;
-    } }
-    public virtual async Task async_resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
-    using(var rr_return = await rr_async_FunctionCall("resource_bucket_add",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("bucket_identifier",bucket_identifier));
-    using(var rr_return = await rr_async_FunctionCall("resource_bucket_delete",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task<Generator3<com.robotraconteur.resource.ResourcePart>> async_resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("overwrite",overwrite));
-    var rr_return = await rr_async_GeneratorFunctionCall("resource_set",rr_param,rr_timeout);
-    Generator3Client< com.robotraconteur.resource.ResourcePart> rr_ret=new Generator3Client< com.robotraconteur.resource.ResourcePart>(rr_return);
-    return rr_ret;
-    } }
-    public virtual async Task async_resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    using(var rr_return = await rr_async_FunctionCall("resource_delete",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("identifier",identifier));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("new_identifier",new_identifier));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<bool>("copy",copy));
-    using(var rr_return = await rr_async_FunctionCall("resource_copy",rr_param,rr_timeout)) {
-    } } }
-}
-public class ResourceStorageDevice_skel : ServiceSkel {
-    protected ResourceStorageDevice obj;
-    protected async_ResourceStorageDevice async_obj;
-    public ResourceStorageDevice_skel(object o) : base(o)    {
-    obj=(ResourceStorageDevice)o;
-    async_obj = o as async_ResourceStorageDevice;
-    }
-    public override void ReleaseCastObject() { 
-    obj=null;
-    async_obj=null;
-    base.ReleaseCastObject();
-    }
-    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    case "device_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "resource_bucket_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_resource_bucket_info().ContinueWith(t => async_adapter.EndTask<List<com.robotraconteur.resource.BucketInfo>>(t,async_ret => MessageElementUtil.PackListType<com.robotraconteur.resource.BucketInfo>("return",async_ret)));
-    return null;
-    }
-    List<com.robotraconteur.resource.BucketInfo> ret=obj.resource_bucket_info;
-    return MessageElementUtil.PackListType<com.robotraconteur.resource.BucketInfo>("return",ret);
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
-    switch (rr_membername) {
-    case "resource_get_info":
-    {
-    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_resource_get_info(identifier).ContinueWith(t => rr_async_adapter.EndTask<com.robotraconteur.resource.ResourceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    com.robotraconteur.resource.ResourceInfo rr_ret=this.obj.resource_get_info(identifier);
-    return MessageElementUtil.PackStructure("return",rr_ret);
-    }
-    case "resource_get":
-    {
-    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
-    Generator2<com.robotraconteur.resource.ResourcePart> rr_ret=this.obj.resource_get(identifier);
-    int generator_index = innerskel.RegisterGeneratorServer("resource_get", new WrappedGenerator2ServerDirectorNET<com.robotraconteur.resource.ResourcePart>(rr_ret));
-    return new MessageElement("index",generator_index);
-    }
-    case "resource_get_all":
-    {
-    com.robotraconteur.identifier.Identifier bucket_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"bucket_identifier"));
-    Generator2<com.robotraconteur.resource.ResourcePart> rr_ret=this.obj.resource_get_all(bucket_identifier);
-    int generator_index = innerskel.RegisterGeneratorServer("resource_get_all", new WrappedGenerator2ServerDirectorNET<com.robotraconteur.resource.ResourcePart>(rr_ret));
-    return new MessageElement("index",generator_index);
-    }
-    case "resource_bucket_add":
-    {
-    com.robotraconteur.identifier.Identifier bucket_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"bucket_identifier"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_resource_bucket_add(bucket_identifier).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.resource_bucket_add(bucket_identifier);
-    return new MessageElement("return",(int)0);
-    }
-    case "resource_bucket_delete":
-    {
-    com.robotraconteur.identifier.Identifier bucket_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"bucket_identifier"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_resource_bucket_delete(bucket_identifier).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.resource_bucket_delete(bucket_identifier);
-    return new MessageElement("return",(int)0);
-    }
-    case "resource_set":
-    {
-    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
-    bool overwrite=(MessageElementUtil.UnpackScalar<bool>(vectorptr_messageelement_util.FindElement(rr_m,"overwrite")));
-    Generator3<com.robotraconteur.resource.ResourcePart> rr_ret=this.obj.resource_set(identifier, overwrite);
-    int generator_index = innerskel.RegisterGeneratorServer("resource_set", new WrappedGenerator3ServerDirectorNET<com.robotraconteur.resource.ResourcePart>(rr_ret));
-    return new MessageElement("index",generator_index);
-    }
-    case "resource_delete":
-    {
-    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_resource_delete(identifier).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.resource_delete(identifier);
-    return new MessageElement("return",(int)0);
-    }
-    case "resource_copy":
-    {
-    com.robotraconteur.resource.ResourceIdentifier identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"identifier"));
-    com.robotraconteur.resource.ResourceIdentifier new_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.resource.ResourceIdentifier>(vectorptr_messageelement_util.FindElement(rr_m,"new_identifier"));
-    bool copy=(MessageElementUtil.UnpackScalar<bool>(vectorptr_messageelement_util.FindElement(rr_m,"copy")));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_resource_copy(identifier, new_identifier, copy).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.resource_copy(identifier, new_identifier, copy);
-    return new MessageElement("return",(int)0);
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override object GetSubObj(string name, string ind) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("");
-    }
-    public override void RegisterEvents(object rrobj1) {
-    obj=(ResourceStorageDevice)rrobj1;
-    }
-    public override void UnregisterEvents(object rrobj1) {
-    obj=(ResourceStorageDevice)rrobj1;
-    }
-    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void InitPipeServers(object rrobj1) {
-    obj=(ResourceStorageDevice)rrobj1;
-    }
-    public override void InitCallbackServers(object rrobj1) {
-    obj=(ResourceStorageDevice)rrobj1;
-    }
-    public override void InitWireServers(object rrobj1) {
-    obj=(ResourceStorageDevice)rrobj1;
-    }
-    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override string RRType { get { return "com.robotraconteur.resource.device.ResourceStorageDevice"; } }
-}
-public class ResourceStorageDevice_default_impl : ResourceStorageDevice{
-    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
-    public virtual List<com.robotraconteur.resource.BucketInfo> resource_bucket_info {get; set;} = default(List<com.robotraconteur.resource.BucketInfo>);
-    public virtual com.robotraconteur.resource.ResourceInfo resource_get_info(com.robotraconteur.resource.ResourceIdentifier identifier) {
-    throw new NotImplementedException();    }
-    public virtual Generator2<com.robotraconteur.resource.ResourcePart> resource_get(com.robotraconteur.resource.ResourceIdentifier identifier) {
-    throw new NotImplementedException();    }
-    public virtual Generator2<com.robotraconteur.resource.ResourcePart> resource_get_all(com.robotraconteur.identifier.Identifier bucket_identifier) {
-    throw new NotImplementedException();    }
-    public virtual void resource_bucket_add(com.robotraconteur.identifier.Identifier bucket_identifier) {
-    throw new NotImplementedException();    }
-    public virtual void resource_bucket_delete(com.robotraconteur.identifier.Identifier bucket_identifier) {
-    throw new NotImplementedException();    }
-    public virtual Generator3<com.robotraconteur.resource.ResourcePart> resource_set(com.robotraconteur.resource.ResourceIdentifier identifier, bool overwrite) {
-    throw new NotImplementedException();    }
-    public virtual void resource_delete(com.robotraconteur.resource.ResourceIdentifier identifier) {
-    throw new NotImplementedException();    }
-    public virtual void resource_copy(com.robotraconteur.resource.ResourceIdentifier identifier, com.robotraconteur.resource.ResourceIdentifier new_identifier, bool copy) {
-    throw new NotImplementedException();    }
-}
-public static class RRExtensions{
-}
-}
 namespace com.robotraconteur.robotics.joints
 {
 public class JointLimits
@@ -22128,1385 +23444,6 @@ public class JointInfo_stub : IStructureStub {
     s.default_units =MessageElementUtil.UnpackEnum<JointPositionUnits>(MessageElement.FindElement(mm,"default_units"));
     s.default_effort_units =MessageElementUtil.UnpackEnum<JointEffortUnits>(MessageElement.FindElement(mm,"default_effort_units"));
     s.passive =(MessageElementUtil.UnpackScalar<bool>(MessageElement.FindElement(mm,"passive")));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public static class RRExtensions{
-}
-}
-namespace com.robotraconteur.robotics.tool
-{
-public class ToolInfo
-{
-    public com.robotraconteur.device.DeviceInfo device_info;
-    public ToolTypeCode tool_type;
-    public uint tool_capabilities;
-    public com.robotraconteur.geometry.Transform tcp;
-    public com.robotraconteur.geometry.SpatialInertia inertia;
-    public List<com.robotraconteur.fiducial.Fiducial> fiducials;
-    public double actuation_time;
-    public double close_position;
-    public double open_position;
-    public double command_min;
-    public double command_max;
-    public double command_close;
-    public double command_open;
-    public List<com.robotraconteur.sensor.SensorTypeCode> sensor_type;
-    public double[] sensor_min;
-    public double[] sensor_max;
-    public List<com.robotraconteur.units.SIUnit> sensor_units;
-    public Dictionary<string,object> extended;
-}
-
-public class ToolState
-{
-    public com.robotraconteur.datetime.TimeSpec3 ts;
-    public ulong seqno;
-    public uint tool_state_flags;
-    public double position;
-    public double command;
-    public double[] sensor;
-}
-
-public class ToolStateSensorData
-{
-    public com.robotraconteur.sensordata.SensorDataHeader data_header;
-    public ToolState robot_state;
-}
-
-[RobotRaconteurServiceObjectInterface()]
-public interface Tool : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
-{
-    com.robotraconteur.device.DeviceInfo device_info { get; 	}
-    ToolInfo tool_info { get; 	}
-    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
-    uint isoch_downsample { get;  set; 	}
-    void open();
-    void close();
-    void halt();
-    void setf_command(double command);
-    object getf_param(string param_name);
-    void setf_param(string param_name, object value_);
-    void enable();
-    void disable();
-    void reset_errors();
-    void home();
-    Pipe<ToolStateSensorData> tool_state_sensor_data{ get; set; }
-    Wire<ToolState> tool_state{ get; set; }
-    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
-}
-
-public static class com__robotraconteur__robotics__toolConstants 
-{
-}
-    public enum ToolTypeCode
-    {
-    unknown = 0,
-    basic_gripper = 1,
-    basic_continuous_gripper = 2,
-    pneumatic_gripper = 3,
-    electric_gripper = 4,
-    vacuum_gripper = 5,
-    soft_gripper = 6,
-    welder = 7,
-    hand = 8,
-    palletizer = 9,
-    other = 10
-    };
-    public enum ToolCapabilities
-    {
-    unknown = 0,
-    open_close_command = 0x1,
-    continuous_command = 0x2,
-    homing_command = 0x4,
-    software_reset_errors = 0x8,
-    software_enable = 0x10,
-    sensor_feedback = 0x20
-    };
-    public enum ToolStateFlags
-    {
-    unknown = 0,
-    error = 0x1,
-    fatal_error = 0x2,
-    estop = 0x4,
-    communication_failure = 0x8,
-    enabled = 0x10,
-    ready = 0x20,
-    opened = 0x40,
-    closed = 0x80,
-    between = 0x100,
-    actuating = 0x200,
-    homing = 0x400,
-    requires_homing = 0x800,
-    homed = 0x1000,
-    gripping = 0x2000,
-    missed = 0x4000
-    };
-}
-namespace com.robotraconteur.robotics.tool
-{
-public class com__robotraconteur__robotics__toolFactory : ServiceFactory
-{
-    public override string DefString()
-{
-    const string s="service com.robotraconteur.robotics.tool\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.units\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.datetime\nimport com.robotraconteur.fiducial\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.sensor.SensorTypeCode\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.datetime.TimeSpec3\nusing com.robotraconteur.fiducial.Fiducial\n\nenum ToolTypeCode\nunknown = 0,\nbasic_gripper,\nbasic_continuous_gripper,\npneumatic_gripper,\nelectric_gripper,\nvacuum_gripper,\nsoft_gripper,\nwelder,\nhand,\npalletizer,\nother\nend\n\nenum ToolCapabilities\nunknown = 0,\nopen_close_command = 0x1,\ncontinuous_command = 0x2,\nhoming_command = 0x4,\nsoftware_reset_errors = 0x8,\nsoftware_enable = 0x10,\nsensor_feedback = 0x20\nend\n\nenum ToolStateFlags\nunknown = 0,\nerror = 0x1,\nfatal_error = 0x2,\nestop = 0x4,\ncommunication_failure = 0x8,\nenabled = 0x10,\nready = 0x20,\nopened = 0x40,\nclosed = 0x80,\nbetween = 0x100,\nactuating = 0x200,\nhoming = 0x400,\nrequires_homing = 0x800,\nhomed = 0x1000,\ngripping = 0x2000,\nmissed = 0x4000\nend\n\nstruct ToolInfo\nfield DeviceInfo device_info\nfield ToolTypeCode tool_type\nfield uint32 tool_capabilities\nfield Transform tcp\nfield SpatialInertia inertia\nfield Fiducial{list} fiducials\nfield double actuation_time\nfield double close_position\nfield double open_position\nfield double command_min\nfield double command_max\nfield double command_close\nfield double command_open\nfield SensorTypeCode{list} sensor_type\nfield double[] sensor_min\nfield double[] sensor_max\nfield SIUnit{list} sensor_units\nfield varvalue{string} extended\nend\n\nstruct ToolState\nfield TimeSpec3 ts\nfield uint64 seqno\nfield uint32 tool_state_flags\nfield double position\nfield double command\nfield double[] sensor\nend\n\nstruct ToolStateSensorData\nfield SensorDataHeader data_header\nfield ToolState robot_state\nend\n\nobject Tool\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ToolInfo tool_info [readonly,nolock]\nfunction void open()\nfunction void close()\nfunction void halt() [urgent]\nfunction void setf_command(double command)\nwire ToolState tool_state [readonly,nolock]\npipe ToolStateSensorData tool_state_sensor_data [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction void enable()\nfunction void disable() [urgent]\nfunction void reset_errors()\nfunction void home()\nend\n\n";
-    return s;
-    }
-    public override string GetServiceName() {return "com.robotraconteur.robotics.tool";}
-    public ToolInfo_stub ToolInfo_stubentry;
-    public ToolState_stub ToolState_stubentry;
-    public ToolStateSensorData_stub ToolStateSensorData_stubentry;
-    public com__robotraconteur__robotics__toolFactory()
-{
-    ToolInfo_stubentry=new ToolInfo_stub(this);
-    ToolState_stubentry=new ToolState_stub(this);
-    ToolStateSensorData_stubentry=new ToolStateSensorData_stub(this);
-    }
-    public override IStructureStub FindStructureStub(string objecttype)
-    {
-    if (objecttype=="ToolInfo")    return ToolInfo_stubentry;
-    if (objecttype=="ToolState")    return ToolState_stubentry;
-    if (objecttype=="ToolStateSensorData")    return ToolStateSensorData_stubentry;
-    throw new DataTypeException("Cannot find appropriate structure stub");
-    }
-    public override IPodStub FindPodStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override INamedArrayStub FindNamedArrayStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
-    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
-    if (CompareNamespace(objecttype, out objshort)) {
-    switch (objshort) {
-    case "Tool":
-    return new Tool_stub(innerstub);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
-    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
-    }
-    throw new ServiceException("Could not create stub");
-    }
-    public override ServiceSkel CreateSkel(object obj) {
-    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
-    string objshort;
-    if (CompareNamespace(objtype, out objshort)) {
-    switch(objshort) {
-    case "Tool":
-    return new Tool_skel((Tool)obj);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
-    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
-    }
-    throw new ServiceException("Could not create skel");
-    }
-    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
-    if (rr_exp==null) return rr_exp;
-    string rr_type=rr_exp.Error;
-    if (!rr_type.Contains(".")) return rr_exp;
-    string rr_stype;
-    if (CompareNamespace(rr_type, out rr_stype)) {
-    } else {
-    return RobotRaconteurNode.s.DownCastException(rr_exp); 
-    }
-    return rr_exp;
-    }
-}
-
-public class ToolInfo_stub : IStructureStub {
-    public ToolInfo_stub(com__robotraconteur__robotics__toolFactory d) {def=d;}
-    private com__robotraconteur__robotics__toolFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    ToolInfo s = (ToolInfo)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<ToolTypeCode>("tool_type",s.tool_type));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("tool_capabilities",s.tool_capabilities));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Transform>("tcp",ref s.tcp));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.SpatialInertia>("inertia",ref s.inertia));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.fiducial.Fiducial>("fiducials",s.fiducials));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("actuation_time",s.actuation_time));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("close_position",s.close_position));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("open_position",s.open_position));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_min",s.command_min));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_max",s.command_max));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_close",s.command_close));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_open",s.command_open));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.sensor.SensorTypeCode>("sensor_type",s.sensor_type));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("sensor_min",s.sensor_min));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("sensor_max",s.sensor_max));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.units.SIUnit>("sensor_units",s.sensor_units));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.tool.ToolInfo",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ToolInfo s=new ToolInfo();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
-    s.tool_type =MessageElementUtil.UnpackEnum<ToolTypeCode>(MessageElement.FindElement(mm,"tool_type"));
-    s.tool_capabilities =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"tool_capabilities")));
-    s.tcp =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Transform>(MessageElement.FindElement(mm,"tcp"));
-    s.inertia =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.SpatialInertia>(MessageElement.FindElement(mm,"inertia"));
-    s.fiducials =MessageElementUtil.UnpackList<com.robotraconteur.fiducial.Fiducial>(MessageElement.FindElement(mm,"fiducials"));
-    s.actuation_time =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"actuation_time")));
-    s.close_position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"close_position")));
-    s.open_position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"open_position")));
-    s.command_min =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_min")));
-    s.command_max =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_max")));
-    s.command_close =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_close")));
-    s.command_open =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_open")));
-    s.sensor_type =MessageElementUtil.UnpackList<com.robotraconteur.sensor.SensorTypeCode>(MessageElement.FindElement(mm,"sensor_type"));
-    s.sensor_min =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"sensor_min"));
-    s.sensor_max =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"sensor_max"));
-    s.sensor_units =MessageElementUtil.UnpackList<com.robotraconteur.units.SIUnit>(MessageElement.FindElement(mm,"sensor_units"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class ToolState_stub : IStructureStub {
-    public ToolState_stub(com__robotraconteur__robotics__toolFactory d) {def=d;}
-    private com__robotraconteur__robotics__toolFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    ToolState s = (ToolState)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.datetime.TimeSpec3>("ts",ref s.ts));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("tool_state_flags",s.tool_state_flags));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("position",s.position));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command",s.command));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("sensor",s.sensor));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.tool.ToolState",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ToolState s=new ToolState();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.ts =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.datetime.TimeSpec3>(MessageElement.FindElement(mm,"ts"));
-    s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
-    s.tool_state_flags =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"tool_state_flags")));
-    s.position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"position")));
-    s.command =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command")));
-    s.sensor =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"sensor"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class ToolStateSensorData_stub : IStructureStub {
-    public ToolStateSensorData_stub(com__robotraconteur__robotics__toolFactory d) {def=d;}
-    private com__robotraconteur__robotics__toolFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    ToolStateSensorData s = (ToolStateSensorData)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("data_header",s.data_header));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("robot_state",s.robot_state));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.tool.ToolStateSensorData",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ToolStateSensorData s=new ToolStateSensorData();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.data_header =MessageElementUtil.UnpackStructure<com.robotraconteur.sensordata.SensorDataHeader>(MessageElement.FindElement(mm,"data_header"));
-    s.robot_state =MessageElementUtil.UnpackStructure<ToolState>(MessageElement.FindElement(mm,"robot_state"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public interface async_Tool : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
-{
-    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<ToolInfo> async_get_tool_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_open(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_close(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_halt(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_setf_command(double command,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_enable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_disable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_reset_errors(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_home(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-}
-public class Tool_stub : ServiceStub , Tool, async_Tool{
-    private Pipe<ToolStateSensorData> rr_tool_state_sensor_data;
-    private Wire<ToolState> rr_tool_state;
-    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
-    public Tool_stub(WrappedServiceStub innerstub) : base(innerstub) {
-    rr_tool_state_sensor_data=new Pipe<ToolStateSensorData>(innerstub.GetPipe("tool_state_sensor_data"));
-    rr_tool_state=new Wire<ToolState>(innerstub.GetWire("tool_state"));
-    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
-    }
-    public com.robotraconteur.device.DeviceInfo device_info {
-    get {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
-    }
-    }
-    public ToolInfo tool_info {
-    get {
-    return MessageElementUtil.UnpackStructure<ToolInfo>(rr_innerstub.PropertyGet("tool_info"));
-    }
-    }
-    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
-    get {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
-    }
-    }
-    public uint isoch_downsample {
-    get {
-    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
-    }
-    set {
-    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
-    {
-    rr_innerstub.PropertySet("isoch_downsample", m);
-    }
-    }
-    }
-    public void open() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("open",rr_param))
-    {
-    }
-    }
-    }
-    public void close() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("close",rr_param))
-    {
-    }
-    }
-    }
-    public void halt() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("halt",rr_param))
-    {
-    }
-    }
-    }
-    public void setf_command(double command) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<double>("command",command));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_command",rr_param))
-    {
-    }
-    }
-    }
-    public object getf_param(string param_name) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_param",rr_param))
-    {
-    return MessageElementUtil.UnpackVarType(rr_me);
-    }
-    }
-    }
-    public void setf_param(string param_name, object value_) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_param",rr_param))
-    {
-    }
-    }
-    }
-    public void enable() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("enable",rr_param))
-    {
-    }
-    }
-    }
-    public void disable() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("disable",rr_param))
-    {
-    }
-    }
-    }
-    public void reset_errors() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("reset_errors",rr_param))
-    {
-    }
-    }
-    }
-    public void home() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("home",rr_param))
-    {
-    }
-    }
-    }
-    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    }
-    public Pipe<ToolStateSensorData> tool_state_sensor_data {
-    get { return rr_tool_state_sensor_data;  }
-    set { throw new InvalidOperationException();}
-    }
-    public Wire<ToolState> tool_state {
-    get { return rr_tool_state;  }
-    set { throw new InvalidOperationException();}
-    }
-    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
-    get { return rr_device_clock_now;  }
-    set { throw new InvalidOperationException();}
-    }
-    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<ToolInfo> async_get_tool_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("tool_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<ToolInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
-    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
-    return rr_ret;
-    } }
-    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
-    {
-    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
-    }
-    }
-    public virtual async Task async_open(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("open",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_close(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("close",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_halt(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("halt",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_setf_command(double command,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<double>("command",command));
-    using(var rr_return = await rr_async_FunctionCall("setf_command",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    using(var rr_return = await rr_async_FunctionCall("getf_param",rr_param,rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackVarType(rr_return);
-    return rr_ret;
-    } } }
-    public virtual async Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
-    using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_enable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("enable",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_disable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("disable",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_reset_errors(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("reset_errors",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task async_home(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("home",rr_param,rr_timeout)) {
-    } } }
-}
-public class Tool_skel : ServiceSkel {
-    protected Tool obj;
-    protected async_Tool async_obj;
-    public Tool_skel(object o) : base(o)    {
-    obj=(Tool)o;
-    async_obj = o as async_Tool;
-    }
-    public override void ReleaseCastObject() { 
-    obj=null;
-    async_obj=null;
-    base.ReleaseCastObject();
-    }
-    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    case "device_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "tool_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_tool_info().ContinueWith(t => async_adapter.EndTask<ToolInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    ToolInfo ret=obj.tool_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "isoch_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "isoch_downsample":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
-    return null;
-    }
-    uint ret=obj.isoch_downsample;
-    return MessageElementUtil.PackScalar<uint>("return",ret);
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    case "isoch_downsample":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
-    return;
-    }
-    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
-    return;
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
-    switch (rr_membername) {
-    case "open":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_open().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.open();
-    return new MessageElement("return",(int)0);
-    }
-    case "close":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_close().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.close();
-    return new MessageElement("return",(int)0);
-    }
-    case "halt":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_halt().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.halt();
-    return new MessageElement("return",(int)0);
-    }
-    case "setf_command":
-    {
-    double command=(MessageElementUtil.UnpackScalar<double>(vectorptr_messageelement_util.FindElement(rr_m,"command")));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_setf_command(command).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.setf_command(command);
-    return new MessageElement("return",(int)0);
-    }
-    case "getf_param":
-    {
-    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_getf_param(param_name).ContinueWith(t => rr_async_adapter.EndTask<object>(t,async_ret => MessageElementUtil.PackVarType("return",async_ret)));
-    return null;
-    }
-    object rr_ret=this.obj.getf_param(param_name);
-    return MessageElementUtil.PackVarType("return",rr_ret);
-    }
-    case "setf_param":
-    {
-    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
-    object value_=MessageElementUtil.UnpackVarType(vectorptr_messageelement_util.FindElement(rr_m,"value"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_setf_param(param_name, value_).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.setf_param(param_name, value_);
-    return new MessageElement("return",(int)0);
-    }
-    case "enable":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_enable().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.enable();
-    return new MessageElement("return",(int)0);
-    }
-    case "disable":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_disable().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.disable();
-    return new MessageElement("return",(int)0);
-    }
-    case "reset_errors":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_reset_errors().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.reset_errors();
-    return new MessageElement("return",(int)0);
-    }
-    case "home":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_home().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.home();
-    return new MessageElement("return",(int)0);
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override object GetSubObj(string name, string ind) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("");
-    }
-    public override void RegisterEvents(object rrobj1) {
-    obj=(Tool)rrobj1;
-    }
-    public override void UnregisterEvents(object rrobj1) {
-    obj=(Tool)rrobj1;
-    }
-    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void InitPipeServers(object rrobj1) {
-    obj=(Tool)rrobj1;
-    obj.tool_state_sensor_data=new Pipe<ToolStateSensorData>(innerskel.GetPipe("tool_state_sensor_data"));
-    }
-    public override void InitCallbackServers(object rrobj1) {
-    obj=(Tool)rrobj1;
-    }
-    public override void InitWireServers(object rrobj1) {
-    obj=(Tool)rrobj1;
-    obj.tool_state=new Wire<ToolState>(innerskel.GetWire("tool_state"));
-    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
-    }
-    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override string RRType { get { return "com.robotraconteur.robotics.tool.Tool"; } }
-}
-public class Tool_default_impl : Tool{
-    protected PipeBroadcaster<ToolStateSensorData> rrvar_tool_state_sensor_data;
-    protected WireBroadcaster<ToolState> rrvar_tool_state;
-    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
-    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
-    public virtual ToolInfo tool_info {get; set;} = default(ToolInfo);
-    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
-    public virtual uint isoch_downsample {get; set;} = default(uint);
-    public virtual void open() {
-    throw new NotImplementedException();    }
-    public virtual void close() {
-    throw new NotImplementedException();    }
-    public virtual void halt() {
-    throw new NotImplementedException();    }
-    public virtual void setf_command(double command) {
-    throw new NotImplementedException();    }
-    public virtual object getf_param(string param_name) {
-    throw new NotImplementedException();    }
-    public virtual void setf_param(string param_name, object value_) {
-    throw new NotImplementedException();    }
-    public virtual void enable() {
-    throw new NotImplementedException();    }
-    public virtual void disable() {
-    throw new NotImplementedException();    }
-    public virtual void reset_errors() {
-    throw new NotImplementedException();    }
-    public virtual void home() {
-    throw new NotImplementedException();    }
-    public virtual Pipe<ToolStateSensorData> tool_state_sensor_data {
-    get { return rrvar_tool_state_sensor_data.Pipe;  }
-    set {
-    if (rrvar_tool_state_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_tool_state_sensor_data= new PipeBroadcaster<ToolStateSensorData>(value);
-    }
-    }
-    public virtual Wire<ToolState> tool_state {
-    get { return rrvar_tool_state.Wire;  }
-    set {
-    if (rrvar_tool_state!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_tool_state= new WireBroadcaster<ToolState>(value);
-    }
-    }
-    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
-    get { return rrvar_device_clock_now.Wire;  }
-    set {
-    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
-    }
-    }
-}
-public static class RRExtensions{
-}
-}
-namespace com.robotraconteur.robotics.trajectory
-{
-public class JointTrajectoryWaypoint
-{
-    public double[] joint_position;
-    public double[] joint_velocity;
-    public double[] position_tolerance;
-    public double[] velocity_tolerance;
-    public InterpolationMode interpolation_mode;
-    public TrajectoryWaypointType waypoint_type;
-    public double time_from_start;
-}
-
-public class JointTrajectory
-{
-    public List<string> joint_names;
-    public List<com.robotraconteur.robotics.joints.JointPositionUnits> joint_units;
-    public List<JointTrajectoryWaypoint> waypoints;
-    public Dictionary<string,object> extended;
-}
-
-public class TrajectoryStatus
-{
-    public ulong seqno;
-    public com.robotraconteur.action.ActionStatusCode action_status;
-    public uint current_waypoint;
-    public double trajectory_time;
-}
-
-public class AdvancedJointTrajectoryDeviceWaypoint
-{
-    public List<double[]> joint_position;
-    public List<double[]> joint_velocity;
-    public List<double[]> joint_acceleration;
-    public List<double[]> joint_jerk;
-    public List<double[]> joint_effort;
-    public List<double[]> position_tolerance;
-    public List<double[]> velocity_tolerance;
-    public InterpolationMode interpolation_mode;
-    public TrajectoryWaypointType waypoint_type;
-    public Dictionary<string,object> signals;
-}
-
-public class AdvancedJointTrajectoryWaypoint
-{
-    public List<AdvancedJointTrajectoryDeviceWaypoint> joints;
-    public double time_from_start;
-}
-
-public class AdvancedJointTrajectoryDevice
-{
-    public com.robotraconteur.identifier.Identifier device;
-    public List<string> joint_names;
-    public List<com.robotraconteur.robotics.joints.JointPositionUnits> joint_units;
-    public List<com.robotraconteur.robotics.joints.JointEffortUnits> joint_effort_units;
-    public Dictionary<string,object> extended;
-}
-
-public class AdvancedJointTrajectory
-{
-    public List<AdvancedJointTrajectoryDevice> devices;
-    public List<AdvancedJointTrajectoryWaypoint> waypoints;
-    public Dictionary<string,object> extended;
-}
-
-public class FreeformJointTrajectoryWaypoint
-{
-    public List<object> joint_position;
-    public List<object> joint_velocity;
-    public List<object> position_tolerance;
-    public List<object> velocity_tolerance;
-    public string interpolation_mode;
-    public Dictionary<string,object> signals;
-    public double time_from_start;
-    public Dictionary<string,object> extended;
-}
-
-public class FreeformJointTrajectory
-{
-    public List<string> joint_names;
-    public List<string> joint_units;
-    public List<FreeformJointTrajectoryWaypoint> waypoints;
-    public Dictionary<string,object> extended;
-}
-
-public static class com__robotraconteur__robotics__trajectoryConstants 
-{
-}
-    public enum InterpolationMode
-    {
-    default_ = 0,
-    joint = 1,
-    linear = 2,
-    cylindrical = 3,
-    spherical = 4,
-    joint_cubic_spline = 5,
-    cubic_spline = 6,
-    custom = 7
-    };
-    public enum TrajectoryWaypointType
-    {
-    unspecified = 0,
-    start = 1,
-    path = 2,
-    goal = 3,
-    intermediate_stop = 4,
-    raster = 5,
-    other = 6
-    };
-}
-namespace com.robotraconteur.robotics.trajectory
-{
-public class com__robotraconteur__robotics__trajectoryFactory : ServiceFactory
-{
-    public override string DefString()
-{
-    const string s="service com.robotraconteur.robotics.trajectory\n\nstdver 0.10\n\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.identifier\nimport com.robotraconteur.action\n\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.robotics.joints.JointEffortUnits\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.action.ActionStatusCode\n\nenum InterpolationMode\ndefault = 0,\njoint,\nlinear,\ncylindrical,\nspherical,\njoint_cubic_spline,\ncubic_spline,\ncustom\nend\n\nenum TrajectoryWaypointType\nunspecified = 0,\nstart = 1,\npath,\ngoal,\nintermediate_stop,\nraster,\nother\nend\n\nstruct JointTrajectoryWaypoint\nfield double[] joint_position\nfield double[] joint_velocity\nfield double[] position_tolerance\nfield double[] velocity_tolerance\nfield InterpolationMode interpolation_mode\nfield TrajectoryWaypointType waypoint_type\nfield double time_from_start\nend\n\nstruct JointTrajectory\nfield string{list} joint_names\nfield JointPositionUnits{list} joint_units\nfield JointTrajectoryWaypoint{list} waypoints\nfield varvalue{string} extended\nend\n\nstruct TrajectoryStatus\nfield uint64 seqno\nfield ActionStatusCode action_status\nfield uint32 current_waypoint\nfield double trajectory_time\nend\n\nstruct AdvancedJointTrajectoryDeviceWaypoint\n# Use list for compound joints\nfield double[]{list} joint_position\nfield double[]{list} joint_velocity\nfield double[]{list} joint_acceleration\nfield double[]{list} joint_jerk\nfield double[]{list} joint_effort\nfield double[]{list} position_tolerance\nfield double[]{list} velocity_tolerance\nfield InterpolationMode interpolation_mode\nfield TrajectoryWaypointType waypoint_type\nfield varvalue{string} signals\nend\n\nstruct AdvancedJointTrajectoryWaypoint\nfield AdvancedJointTrajectoryDeviceWaypoint{list} joints\nfield double time_from_start\nend\n\nstruct AdvancedJointTrajectoryDevice\nfield Identifier device\nfield string{list} joint_names\nfield JointPositionUnits{list} joint_units\nfield JointEffortUnits{list} joint_effort_units\nfield varvalue{string} extended\nend\n\nstruct AdvancedJointTrajectory\nfield AdvancedJointTrajectoryDevice{list} devices\nfield AdvancedJointTrajectoryWaypoint{list} waypoints\nfield varvalue{string} extended\nend\n\nstruct FreeformJointTrajectoryWaypoint\nfield varvalue{list} joint_position\nfield varvalue{list} joint_velocity\nfield varvalue{list} position_tolerance\nfield varvalue{list} velocity_tolerance\nfield string interpolation_mode\nfield varvalue{string} signals\nfield double time_from_start\nfield varvalue{string} extended\nend\n\nstruct FreeformJointTrajectory\nfield string{list} joint_names\nfield string{list} joint_units\nfield FreeformJointTrajectoryWaypoint{list} waypoints\nfield varvalue{string} extended\nend\n\n";
-    return s;
-    }
-    public override string GetServiceName() {return "com.robotraconteur.robotics.trajectory";}
-    public JointTrajectoryWaypoint_stub JointTrajectoryWaypoint_stubentry;
-    public JointTrajectory_stub JointTrajectory_stubentry;
-    public TrajectoryStatus_stub TrajectoryStatus_stubentry;
-    public AdvancedJointTrajectoryDeviceWaypoint_stub AdvancedJointTrajectoryDeviceWaypoint_stubentry;
-    public AdvancedJointTrajectoryWaypoint_stub AdvancedJointTrajectoryWaypoint_stubentry;
-    public AdvancedJointTrajectoryDevice_stub AdvancedJointTrajectoryDevice_stubentry;
-    public AdvancedJointTrajectory_stub AdvancedJointTrajectory_stubentry;
-    public FreeformJointTrajectoryWaypoint_stub FreeformJointTrajectoryWaypoint_stubentry;
-    public FreeformJointTrajectory_stub FreeformJointTrajectory_stubentry;
-    public com__robotraconteur__robotics__trajectoryFactory()
-{
-    JointTrajectoryWaypoint_stubentry=new JointTrajectoryWaypoint_stub(this);
-    JointTrajectory_stubentry=new JointTrajectory_stub(this);
-    TrajectoryStatus_stubentry=new TrajectoryStatus_stub(this);
-    AdvancedJointTrajectoryDeviceWaypoint_stubentry=new AdvancedJointTrajectoryDeviceWaypoint_stub(this);
-    AdvancedJointTrajectoryWaypoint_stubentry=new AdvancedJointTrajectoryWaypoint_stub(this);
-    AdvancedJointTrajectoryDevice_stubentry=new AdvancedJointTrajectoryDevice_stub(this);
-    AdvancedJointTrajectory_stubentry=new AdvancedJointTrajectory_stub(this);
-    FreeformJointTrajectoryWaypoint_stubentry=new FreeformJointTrajectoryWaypoint_stub(this);
-    FreeformJointTrajectory_stubentry=new FreeformJointTrajectory_stub(this);
-    }
-    public override IStructureStub FindStructureStub(string objecttype)
-    {
-    if (objecttype=="JointTrajectoryWaypoint")    return JointTrajectoryWaypoint_stubentry;
-    if (objecttype=="JointTrajectory")    return JointTrajectory_stubentry;
-    if (objecttype=="TrajectoryStatus")    return TrajectoryStatus_stubentry;
-    if (objecttype=="AdvancedJointTrajectoryDeviceWaypoint")    return AdvancedJointTrajectoryDeviceWaypoint_stubentry;
-    if (objecttype=="AdvancedJointTrajectoryWaypoint")    return AdvancedJointTrajectoryWaypoint_stubentry;
-    if (objecttype=="AdvancedJointTrajectoryDevice")    return AdvancedJointTrajectoryDevice_stubentry;
-    if (objecttype=="AdvancedJointTrajectory")    return AdvancedJointTrajectory_stubentry;
-    if (objecttype=="FreeformJointTrajectoryWaypoint")    return FreeformJointTrajectoryWaypoint_stubentry;
-    if (objecttype=="FreeformJointTrajectory")    return FreeformJointTrajectory_stubentry;
-    throw new DataTypeException("Cannot find appropriate structure stub");
-    }
-    public override IPodStub FindPodStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override INamedArrayStub FindNamedArrayStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
-    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
-    if (CompareNamespace(objecttype, out objshort)) {
-    switch (objshort) {
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
-    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
-    }
-    throw new ServiceException("Could not create stub");
-    }
-    public override ServiceSkel CreateSkel(object obj) {
-    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
-    string objshort;
-    if (CompareNamespace(objtype, out objshort)) {
-    switch(objshort) {
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
-    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
-    }
-    throw new ServiceException("Could not create skel");
-    }
-    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
-    if (rr_exp==null) return rr_exp;
-    string rr_type=rr_exp.Error;
-    if (!rr_type.Contains(".")) return rr_exp;
-    string rr_stype;
-    if (CompareNamespace(rr_type, out rr_stype)) {
-    } else {
-    return RobotRaconteurNode.s.DownCastException(rr_exp); 
-    }
-    return rr_exp;
-    }
-}
-
-public class JointTrajectoryWaypoint_stub : IStructureStub {
-    public JointTrajectoryWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    JointTrajectoryWaypoint s = (JointTrajectoryWaypoint)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("joint_position",s.joint_position));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("joint_velocity",s.joint_velocity));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("position_tolerance",s.position_tolerance));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("velocity_tolerance",s.velocity_tolerance));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<InterpolationMode>("interpolation_mode",s.interpolation_mode));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<TrajectoryWaypointType>("waypoint_type",s.waypoint_type));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("time_from_start",s.time_from_start));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    JointTrajectoryWaypoint s=new JointTrajectoryWaypoint();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.joint_position =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"joint_position"));
-    s.joint_velocity =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"joint_velocity"));
-    s.position_tolerance =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"position_tolerance"));
-    s.velocity_tolerance =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"velocity_tolerance"));
-    s.interpolation_mode =MessageElementUtil.UnpackEnum<InterpolationMode>(MessageElement.FindElement(mm,"interpolation_mode"));
-    s.waypoint_type =MessageElementUtil.UnpackEnum<TrajectoryWaypointType>(MessageElement.FindElement(mm,"waypoint_type"));
-    s.time_from_start =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"time_from_start")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class JointTrajectory_stub : IStructureStub {
-    public JointTrajectory_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    JointTrajectory s = (JointTrajectory)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_names",s.joint_names));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.robotics.joints.JointPositionUnits>("joint_units",s.joint_units));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<JointTrajectoryWaypoint>("waypoints",s.waypoints));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.JointTrajectory",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    JointTrajectory s=new JointTrajectory();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.joint_names =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_names"));
-    s.joint_units =MessageElementUtil.UnpackList<com.robotraconteur.robotics.joints.JointPositionUnits>(MessageElement.FindElement(mm,"joint_units"));
-    s.waypoints =MessageElementUtil.UnpackList<JointTrajectoryWaypoint>(MessageElement.FindElement(mm,"waypoints"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class TrajectoryStatus_stub : IStructureStub {
-    public TrajectoryStatus_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    TrajectoryStatus s = (TrajectoryStatus)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<com.robotraconteur.action.ActionStatusCode>("action_status",s.action_status));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("current_waypoint",s.current_waypoint));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("trajectory_time",s.trajectory_time));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.TrajectoryStatus",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    TrajectoryStatus s=new TrajectoryStatus();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
-    s.action_status =MessageElementUtil.UnpackEnum<com.robotraconteur.action.ActionStatusCode>(MessageElement.FindElement(mm,"action_status"));
-    s.current_waypoint =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"current_waypoint")));
-    s.trajectory_time =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"trajectory_time")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class AdvancedJointTrajectoryDeviceWaypoint_stub : IStructureStub {
-    public AdvancedJointTrajectoryDeviceWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    AdvancedJointTrajectoryDeviceWaypoint s = (AdvancedJointTrajectoryDeviceWaypoint)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_position",s.joint_position));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_velocity",s.joint_velocity));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_acceleration",s.joint_acceleration));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_jerk",s.joint_jerk));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_effort",s.joint_effort));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("position_tolerance",s.position_tolerance));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("velocity_tolerance",s.velocity_tolerance));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<InterpolationMode>("interpolation_mode",s.interpolation_mode));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<TrajectoryWaypointType>("waypoint_type",s.waypoint_type));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("signals",s.signals));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectoryDeviceWaypoint",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    AdvancedJointTrajectoryDeviceWaypoint s=new AdvancedJointTrajectoryDeviceWaypoint();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.joint_position =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_position"));
-    s.joint_velocity =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_velocity"));
-    s.joint_acceleration =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_acceleration"));
-    s.joint_jerk =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_jerk"));
-    s.joint_effort =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_effort"));
-    s.position_tolerance =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"position_tolerance"));
-    s.velocity_tolerance =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"velocity_tolerance"));
-    s.interpolation_mode =MessageElementUtil.UnpackEnum<InterpolationMode>(MessageElement.FindElement(mm,"interpolation_mode"));
-    s.waypoint_type =MessageElementUtil.UnpackEnum<TrajectoryWaypointType>(MessageElement.FindElement(mm,"waypoint_type"));
-    s.signals =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"signals"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class AdvancedJointTrajectoryWaypoint_stub : IStructureStub {
-    public AdvancedJointTrajectoryWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    AdvancedJointTrajectoryWaypoint s = (AdvancedJointTrajectoryWaypoint)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<AdvancedJointTrajectoryDeviceWaypoint>("joints",s.joints));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("time_from_start",s.time_from_start));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectoryWaypoint",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    AdvancedJointTrajectoryWaypoint s=new AdvancedJointTrajectoryWaypoint();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.joints =MessageElementUtil.UnpackList<AdvancedJointTrajectoryDeviceWaypoint>(MessageElement.FindElement(mm,"joints"));
-    s.time_from_start =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"time_from_start")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class AdvancedJointTrajectoryDevice_stub : IStructureStub {
-    public AdvancedJointTrajectoryDevice_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    AdvancedJointTrajectoryDevice s = (AdvancedJointTrajectoryDevice)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device",s.device));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_names",s.joint_names));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.robotics.joints.JointPositionUnits>("joint_units",s.joint_units));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.robotics.joints.JointEffortUnits>("joint_effort_units",s.joint_effort_units));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectoryDevice",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    AdvancedJointTrajectoryDevice s=new AdvancedJointTrajectoryDevice();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.device =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"device"));
-    s.joint_names =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_names"));
-    s.joint_units =MessageElementUtil.UnpackList<com.robotraconteur.robotics.joints.JointPositionUnits>(MessageElement.FindElement(mm,"joint_units"));
-    s.joint_effort_units =MessageElementUtil.UnpackList<com.robotraconteur.robotics.joints.JointEffortUnits>(MessageElement.FindElement(mm,"joint_effort_units"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class AdvancedJointTrajectory_stub : IStructureStub {
-    public AdvancedJointTrajectory_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    AdvancedJointTrajectory s = (AdvancedJointTrajectory)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<AdvancedJointTrajectoryDevice>("devices",s.devices));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<AdvancedJointTrajectoryWaypoint>("waypoints",s.waypoints));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectory",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    AdvancedJointTrajectory s=new AdvancedJointTrajectory();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.devices =MessageElementUtil.UnpackList<AdvancedJointTrajectoryDevice>(MessageElement.FindElement(mm,"devices"));
-    s.waypoints =MessageElementUtil.UnpackList<AdvancedJointTrajectoryWaypoint>(MessageElement.FindElement(mm,"waypoints"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class FreeformJointTrajectoryWaypoint_stub : IStructureStub {
-    public FreeformJointTrajectoryWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    FreeformJointTrajectoryWaypoint s = (FreeformJointTrajectoryWaypoint)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("joint_position",s.joint_position));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("joint_velocity",s.joint_velocity));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("position_tolerance",s.position_tolerance));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("velocity_tolerance",s.velocity_tolerance));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackString("interpolation_mode",s.interpolation_mode));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("signals",s.signals));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("time_from_start",s.time_from_start));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.FreeformJointTrajectoryWaypoint",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    FreeformJointTrajectoryWaypoint s=new FreeformJointTrajectoryWaypoint();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.joint_position =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"joint_position"));
-    s.joint_velocity =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"joint_velocity"));
-    s.position_tolerance =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"position_tolerance"));
-    s.velocity_tolerance =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"velocity_tolerance"));
-    s.interpolation_mode =MessageElementUtil.UnpackString(MessageElement.FindElement(mm,"interpolation_mode"));
-    s.signals =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"signals"));
-    s.time_from_start =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"time_from_start")));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class FreeformJointTrajectory_stub : IStructureStub {
-    public FreeformJointTrajectory_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
-    private com__robotraconteur__robotics__trajectoryFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    FreeformJointTrajectory s = (FreeformJointTrajectory)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_names",s.joint_names));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_units",s.joint_units));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<FreeformJointTrajectoryWaypoint>("waypoints",s.waypoints));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.FreeformJointTrajectory",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    FreeformJointTrajectory s=new FreeformJointTrajectory();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.joint_names =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_names"));
-    s.joint_units =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_units"));
-    s.waypoints =MessageElementUtil.UnpackList<FreeformJointTrajectoryWaypoint>(MessageElement.FindElement(mm,"waypoints"));
     s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
     T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
     return st;
@@ -25300,6 +25237,1385 @@ public class Robot_default_impl : Robot{
     }
     }
 }
+public static class RRExtensions{
+}
+}
+namespace com.robotraconteur.robotics.tool
+{
+public class ToolInfo
+{
+    public com.robotraconteur.device.DeviceInfo device_info;
+    public ToolTypeCode tool_type;
+    public uint tool_capabilities;
+    public com.robotraconteur.geometry.Transform tcp;
+    public com.robotraconteur.geometry.SpatialInertia inertia;
+    public List<com.robotraconteur.fiducial.Fiducial> fiducials;
+    public double actuation_time;
+    public double close_position;
+    public double open_position;
+    public double command_min;
+    public double command_max;
+    public double command_close;
+    public double command_open;
+    public List<com.robotraconteur.sensor.SensorTypeCode> sensor_type;
+    public double[] sensor_min;
+    public double[] sensor_max;
+    public List<com.robotraconteur.units.SIUnit> sensor_units;
+    public Dictionary<string,object> extended;
+}
+
+public class ToolState
+{
+    public com.robotraconteur.datetime.TimeSpec3 ts;
+    public ulong seqno;
+    public uint tool_state_flags;
+    public double position;
+    public double command;
+    public double[] sensor;
+}
+
+public class ToolStateSensorData
+{
+    public com.robotraconteur.sensordata.SensorDataHeader data_header;
+    public ToolState robot_state;
+}
+
+[RobotRaconteurServiceObjectInterface()]
+public interface Tool : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
+{
+    com.robotraconteur.device.DeviceInfo device_info { get; 	}
+    ToolInfo tool_info { get; 	}
+    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
+    uint isoch_downsample { get;  set; 	}
+    void open();
+    void close();
+    void halt();
+    void setf_command(double command);
+    object getf_param(string param_name);
+    void setf_param(string param_name, object value_);
+    void enable();
+    void disable();
+    void reset_errors();
+    void home();
+    Pipe<ToolStateSensorData> tool_state_sensor_data{ get; set; }
+    Wire<ToolState> tool_state{ get; set; }
+    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
+}
+
+public static class com__robotraconteur__robotics__toolConstants 
+{
+}
+    public enum ToolTypeCode
+    {
+    unknown = 0,
+    basic_gripper = 1,
+    basic_continuous_gripper = 2,
+    pneumatic_gripper = 3,
+    electric_gripper = 4,
+    vacuum_gripper = 5,
+    soft_gripper = 6,
+    welder = 7,
+    hand = 8,
+    palletizer = 9,
+    other = 10
+    };
+    public enum ToolCapabilities
+    {
+    unknown = 0,
+    open_close_command = 0x1,
+    continuous_command = 0x2,
+    homing_command = 0x4,
+    software_reset_errors = 0x8,
+    software_enable = 0x10,
+    sensor_feedback = 0x20
+    };
+    public enum ToolStateFlags
+    {
+    unknown = 0,
+    error = 0x1,
+    fatal_error = 0x2,
+    estop = 0x4,
+    communication_failure = 0x8,
+    enabled = 0x10,
+    ready = 0x20,
+    opened = 0x40,
+    closed = 0x80,
+    between = 0x100,
+    actuating = 0x200,
+    homing = 0x400,
+    requires_homing = 0x800,
+    homed = 0x1000,
+    gripping = 0x2000,
+    missed = 0x4000
+    };
+}
+namespace com.robotraconteur.robotics.tool
+{
+public class com__robotraconteur__robotics__toolFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.robotics.tool\n\nstdver 0.10\n\nimport com.robotraconteur.device\nimport com.robotraconteur.geometry\nimport com.robotraconteur.sensor\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.units\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.datetime\nimport com.robotraconteur.fiducial\n\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.geometry.Transform\nusing com.robotraconteur.geometry.SpatialInertia\nusing com.robotraconteur.sensor.SensorTypeCode\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.units.SIUnit\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.datetime.TimeSpec3\nusing com.robotraconteur.fiducial.Fiducial\n\nenum ToolTypeCode\nunknown = 0,\nbasic_gripper,\nbasic_continuous_gripper,\npneumatic_gripper,\nelectric_gripper,\nvacuum_gripper,\nsoft_gripper,\nwelder,\nhand,\npalletizer,\nother\nend\n\nenum ToolCapabilities\nunknown = 0,\nopen_close_command = 0x1,\ncontinuous_command = 0x2,\nhoming_command = 0x4,\nsoftware_reset_errors = 0x8,\nsoftware_enable = 0x10,\nsensor_feedback = 0x20\nend\n\nenum ToolStateFlags\nunknown = 0,\nerror = 0x1,\nfatal_error = 0x2,\nestop = 0x4,\ncommunication_failure = 0x8,\nenabled = 0x10,\nready = 0x20,\nopened = 0x40,\nclosed = 0x80,\nbetween = 0x100,\nactuating = 0x200,\nhoming = 0x400,\nrequires_homing = 0x800,\nhomed = 0x1000,\ngripping = 0x2000,\nmissed = 0x4000\nend\n\nstruct ToolInfo\nfield DeviceInfo device_info\nfield ToolTypeCode tool_type\nfield uint32 tool_capabilities\nfield Transform tcp\nfield SpatialInertia inertia\nfield Fiducial{list} fiducials\nfield double actuation_time\nfield double close_position\nfield double open_position\nfield double command_min\nfield double command_max\nfield double command_close\nfield double command_open\nfield SensorTypeCode{list} sensor_type\nfield double[] sensor_min\nfield double[] sensor_max\nfield SIUnit{list} sensor_units\nfield varvalue{string} extended\nend\n\nstruct ToolState\nfield TimeSpec3 ts\nfield uint64 seqno\nfield uint32 tool_state_flags\nfield double position\nfield double command\nfield double[] sensor\nend\n\nstruct ToolStateSensorData\nfield SensorDataHeader data_header\nfield ToolState robot_state\nend\n\nobject Tool\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ToolInfo tool_info [readonly,nolock]\nfunction void open()\nfunction void close()\nfunction void halt() [urgent]\nfunction void setf_command(double command)\nwire ToolState tool_state [readonly,nolock]\npipe ToolStateSensorData tool_state_sensor_data [readonly,nolock]\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction void enable()\nfunction void disable() [urgent]\nfunction void reset_errors()\nfunction void home()\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.robotics.tool";}
+    public ToolInfo_stub ToolInfo_stubentry;
+    public ToolState_stub ToolState_stubentry;
+    public ToolStateSensorData_stub ToolStateSensorData_stubentry;
+    public com__robotraconteur__robotics__toolFactory()
+{
+    ToolInfo_stubentry=new ToolInfo_stub(this);
+    ToolState_stubentry=new ToolState_stub(this);
+    ToolStateSensorData_stubentry=new ToolStateSensorData_stub(this);
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    if (objecttype=="ToolInfo")    return ToolInfo_stubentry;
+    if (objecttype=="ToolState")    return ToolState_stubentry;
+    if (objecttype=="ToolStateSensorData")    return ToolStateSensorData_stubentry;
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    case "Tool":
+    return new Tool_stub(innerstub);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    case "Tool":
+    return new Tool_skel((Tool)obj);
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class ToolInfo_stub : IStructureStub {
+    public ToolInfo_stub(com__robotraconteur__robotics__toolFactory d) {def=d;}
+    private com__robotraconteur__robotics__toolFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ToolInfo s = (ToolInfo)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<ToolTypeCode>("tool_type",s.tool_type));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("tool_capabilities",s.tool_capabilities));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Transform>("tcp",ref s.tcp));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.SpatialInertia>("inertia",ref s.inertia));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.fiducial.Fiducial>("fiducials",s.fiducials));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("actuation_time",s.actuation_time));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("close_position",s.close_position));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("open_position",s.open_position));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_min",s.command_min));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_max",s.command_max));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_close",s.command_close));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command_open",s.command_open));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.sensor.SensorTypeCode>("sensor_type",s.sensor_type));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("sensor_min",s.sensor_min));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("sensor_max",s.sensor_max));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.units.SIUnit>("sensor_units",s.sensor_units));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.tool.ToolInfo",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ToolInfo s=new ToolInfo();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
+    s.tool_type =MessageElementUtil.UnpackEnum<ToolTypeCode>(MessageElement.FindElement(mm,"tool_type"));
+    s.tool_capabilities =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"tool_capabilities")));
+    s.tcp =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Transform>(MessageElement.FindElement(mm,"tcp"));
+    s.inertia =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.SpatialInertia>(MessageElement.FindElement(mm,"inertia"));
+    s.fiducials =MessageElementUtil.UnpackList<com.robotraconteur.fiducial.Fiducial>(MessageElement.FindElement(mm,"fiducials"));
+    s.actuation_time =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"actuation_time")));
+    s.close_position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"close_position")));
+    s.open_position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"open_position")));
+    s.command_min =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_min")));
+    s.command_max =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_max")));
+    s.command_close =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_close")));
+    s.command_open =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command_open")));
+    s.sensor_type =MessageElementUtil.UnpackList<com.robotraconteur.sensor.SensorTypeCode>(MessageElement.FindElement(mm,"sensor_type"));
+    s.sensor_min =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"sensor_min"));
+    s.sensor_max =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"sensor_max"));
+    s.sensor_units =MessageElementUtil.UnpackList<com.robotraconteur.units.SIUnit>(MessageElement.FindElement(mm,"sensor_units"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class ToolState_stub : IStructureStub {
+    public ToolState_stub(com__robotraconteur__robotics__toolFactory d) {def=d;}
+    private com__robotraconteur__robotics__toolFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ToolState s = (ToolState)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.datetime.TimeSpec3>("ts",ref s.ts));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("tool_state_flags",s.tool_state_flags));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("position",s.position));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("command",s.command));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("sensor",s.sensor));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.tool.ToolState",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ToolState s=new ToolState();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.ts =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.datetime.TimeSpec3>(MessageElement.FindElement(mm,"ts"));
+    s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
+    s.tool_state_flags =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"tool_state_flags")));
+    s.position =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"position")));
+    s.command =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"command")));
+    s.sensor =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"sensor"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class ToolStateSensorData_stub : IStructureStub {
+    public ToolStateSensorData_stub(com__robotraconteur__robotics__toolFactory d) {def=d;}
+    private com__robotraconteur__robotics__toolFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    ToolStateSensorData s = (ToolStateSensorData)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("data_header",s.data_header));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("robot_state",s.robot_state));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.tool.ToolStateSensorData",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    ToolStateSensorData s=new ToolStateSensorData();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.data_header =MessageElementUtil.UnpackStructure<com.robotraconteur.sensordata.SensorDataHeader>(MessageElement.FindElement(mm,"data_header"));
+    s.robot_state =MessageElementUtil.UnpackStructure<ToolState>(MessageElement.FindElement(mm,"robot_state"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public interface async_Tool : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
+{
+    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<ToolInfo> async_get_tool_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_open(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_close(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_halt(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_setf_command(double command,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_enable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_disable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_reset_errors(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+    Task async_home(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
+}
+public class Tool_stub : ServiceStub , Tool, async_Tool{
+    private Pipe<ToolStateSensorData> rr_tool_state_sensor_data;
+    private Wire<ToolState> rr_tool_state;
+    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
+    public Tool_stub(WrappedServiceStub innerstub) : base(innerstub) {
+    rr_tool_state_sensor_data=new Pipe<ToolStateSensorData>(innerstub.GetPipe("tool_state_sensor_data"));
+    rr_tool_state=new Wire<ToolState>(innerstub.GetWire("tool_state"));
+    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
+    }
+    public com.robotraconteur.device.DeviceInfo device_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
+    }
+    }
+    public ToolInfo tool_info {
+    get {
+    return MessageElementUtil.UnpackStructure<ToolInfo>(rr_innerstub.PropertyGet("tool_info"));
+    }
+    }
+    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
+    get {
+    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
+    }
+    }
+    public uint isoch_downsample {
+    get {
+    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
+    }
+    set {
+    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    rr_innerstub.PropertySet("isoch_downsample", m);
+    }
+    }
+    }
+    public void open() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("open",rr_param))
+    {
+    }
+    }
+    }
+    public void close() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("close",rr_param))
+    {
+    }
+    }
+    }
+    public void halt() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("halt",rr_param))
+    {
+    }
+    }
+    }
+    public void setf_command(double command) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<double>("command",command));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_command",rr_param))
+    {
+    }
+    }
+    }
+    public object getf_param(string param_name) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_param",rr_param))
+    {
+    return MessageElementUtil.UnpackVarType(rr_me);
+    }
+    }
+    }
+    public void setf_param(string param_name, object value_) {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_param",rr_param))
+    {
+    }
+    }
+    }
+    public void enable() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("enable",rr_param))
+    {
+    }
+    }
+    }
+    public void disable() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("disable",rr_param))
+    {
+    }
+    }
+    }
+    public void reset_errors() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("reset_errors",rr_param))
+    {
+    }
+    }
+    }
+    public void home() {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(MessageElement rr_me=rr_innerstub.FunctionCall("home",rr_param))
+    {
+    }
+    }
+    }
+    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    }
+    public Pipe<ToolStateSensorData> tool_state_sensor_data {
+    get { return rr_tool_state_sensor_data;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<ToolState> tool_state {
+    get { return rr_tool_state;  }
+    set { throw new InvalidOperationException();}
+    }
+    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rr_device_clock_now;  }
+    set { throw new InvalidOperationException();}
+    }
+    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<ToolInfo> async_get_tool_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("tool_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<ToolInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
+    return rr_ret;
+    } }
+    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
+    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
+    return rr_ret;
+    } }
+    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
+    {
+    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
+    }
+    }
+    public virtual async Task async_open(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("open",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_close(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("close",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_halt(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("halt",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_setf_command(double command,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackScalar<double>("command",command));
+    using(var rr_return = await rr_async_FunctionCall("setf_command",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    using(var rr_return = await rr_async_FunctionCall("getf_param",rr_param,rr_timeout)) {
+    var rr_ret=MessageElementUtil.UnpackVarType(rr_return);
+    return rr_ret;
+    } } }
+    public virtual async Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
+    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
+    using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_enable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("enable",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_disable(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("disable",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_reset_errors(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("reset_errors",rr_param,rr_timeout)) {
+    } } }
+    public virtual async Task async_home(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
+    {
+    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
+    {
+    using(var rr_return = await rr_async_FunctionCall("home",rr_param,rr_timeout)) {
+    } } }
+}
+public class Tool_skel : ServiceSkel {
+    protected Tool obj;
+    protected async_Tool async_obj;
+    public Tool_skel(object o) : base(o)    {
+    obj=(Tool)o;
+    async_obj = o as async_Tool;
+    }
+    public override void ReleaseCastObject() { 
+    obj=null;
+    async_obj=null;
+    base.ReleaseCastObject();
+    }
+    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "device_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "tool_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_tool_info().ContinueWith(t => async_adapter.EndTask<ToolInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    ToolInfo ret=obj.tool_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_info":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
+    return null;
+    }
+    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
+    return MessageElementUtil.PackStructure("return",ret);
+    }
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
+    return null;
+    }
+    uint ret=obj.isoch_downsample;
+    return MessageElementUtil.PackScalar<uint>("return",ret);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
+    switch (membername) {
+    case "isoch_downsample":
+    {
+    if (async_obj!=null)    {
+    async_adapter.MakeAsync();
+    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
+    return;
+    }
+    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
+    return;
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
+    switch (rr_membername) {
+    case "open":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_open().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.open();
+    return new MessageElement("return",(int)0);
+    }
+    case "close":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_close().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.close();
+    return new MessageElement("return",(int)0);
+    }
+    case "halt":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_halt().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.halt();
+    return new MessageElement("return",(int)0);
+    }
+    case "setf_command":
+    {
+    double command=(MessageElementUtil.UnpackScalar<double>(vectorptr_messageelement_util.FindElement(rr_m,"command")));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_setf_command(command).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.setf_command(command);
+    return new MessageElement("return",(int)0);
+    }
+    case "getf_param":
+    {
+    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_getf_param(param_name).ContinueWith(t => rr_async_adapter.EndTask<object>(t,async_ret => MessageElementUtil.PackVarType("return",async_ret)));
+    return null;
+    }
+    object rr_ret=this.obj.getf_param(param_name);
+    return MessageElementUtil.PackVarType("return",rr_ret);
+    }
+    case "setf_param":
+    {
+    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
+    object value_=MessageElementUtil.UnpackVarType(vectorptr_messageelement_util.FindElement(rr_m,"value"));
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_setf_param(param_name, value_).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.setf_param(param_name, value_);
+    return new MessageElement("return",(int)0);
+    }
+    case "enable":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_enable().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.enable();
+    return new MessageElement("return",(int)0);
+    }
+    case "disable":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_disable().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.disable();
+    return new MessageElement("return",(int)0);
+    }
+    case "reset_errors":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_reset_errors().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.reset_errors();
+    return new MessageElement("return",(int)0);
+    }
+    case "home":
+    {
+    if (async_obj!=null)    {
+    rr_async_adapter.MakeAsync();
+    async_obj.async_home().ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
+    return null;
+    }
+    this.obj.home();
+    return new MessageElement("return",(int)0);
+    }
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override object GetSubObj(string name, string ind) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("");
+    }
+    public override void RegisterEvents(object rrobj1) {
+    obj=(Tool)rrobj1;
+    }
+    public override void UnregisterEvents(object rrobj1) {
+    obj=(Tool)rrobj1;
+    }
+    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
+    switch (rr_membername) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member not found");
+    }
+    public override void InitPipeServers(object rrobj1) {
+    obj=(Tool)rrobj1;
+    obj.tool_state_sensor_data=new Pipe<ToolStateSensorData>(innerskel.GetPipe("tool_state_sensor_data"));
+    }
+    public override void InitCallbackServers(object rrobj1) {
+    obj=(Tool)rrobj1;
+    }
+    public override void InitWireServers(object rrobj1) {
+    obj=(Tool)rrobj1;
+    obj.tool_state=new Wire<ToolState>(innerskel.GetWire("tool_state"));
+    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
+    }
+    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
+    switch (name) {
+    default:
+    break;
+    }
+    throw new MemberNotFoundException("Member Not Found");
+    }
+    public override string RRType { get { return "com.robotraconteur.robotics.tool.Tool"; } }
+}
+public class Tool_default_impl : Tool{
+    protected PipeBroadcaster<ToolStateSensorData> rrvar_tool_state_sensor_data;
+    protected WireBroadcaster<ToolState> rrvar_tool_state;
+    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
+    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
+    public virtual ToolInfo tool_info {get; set;} = default(ToolInfo);
+    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
+    public virtual uint isoch_downsample {get; set;} = default(uint);
+    public virtual void open() {
+    throw new NotImplementedException();    }
+    public virtual void close() {
+    throw new NotImplementedException();    }
+    public virtual void halt() {
+    throw new NotImplementedException();    }
+    public virtual void setf_command(double command) {
+    throw new NotImplementedException();    }
+    public virtual object getf_param(string param_name) {
+    throw new NotImplementedException();    }
+    public virtual void setf_param(string param_name, object value_) {
+    throw new NotImplementedException();    }
+    public virtual void enable() {
+    throw new NotImplementedException();    }
+    public virtual void disable() {
+    throw new NotImplementedException();    }
+    public virtual void reset_errors() {
+    throw new NotImplementedException();    }
+    public virtual void home() {
+    throw new NotImplementedException();    }
+    public virtual Pipe<ToolStateSensorData> tool_state_sensor_data {
+    get { return rrvar_tool_state_sensor_data.Pipe;  }
+    set {
+    if (rrvar_tool_state_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_tool_state_sensor_data= new PipeBroadcaster<ToolStateSensorData>(value);
+    }
+    }
+    public virtual Wire<ToolState> tool_state {
+    get { return rrvar_tool_state.Wire;  }
+    set {
+    if (rrvar_tool_state!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_tool_state= new WireBroadcaster<ToolState>(value);
+    }
+    }
+    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
+    get { return rrvar_device_clock_now.Wire;  }
+    set {
+    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
+    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
+    }
+    }
+}
+public static class RRExtensions{
+}
+}
+namespace com.robotraconteur.robotics.trajectory
+{
+public class JointTrajectoryWaypoint
+{
+    public double[] joint_position;
+    public double[] joint_velocity;
+    public double[] position_tolerance;
+    public double[] velocity_tolerance;
+    public InterpolationMode interpolation_mode;
+    public TrajectoryWaypointType waypoint_type;
+    public double time_from_start;
+}
+
+public class JointTrajectory
+{
+    public List<string> joint_names;
+    public List<com.robotraconteur.robotics.joints.JointPositionUnits> joint_units;
+    public List<JointTrajectoryWaypoint> waypoints;
+    public Dictionary<string,object> extended;
+}
+
+public class TrajectoryStatus
+{
+    public ulong seqno;
+    public com.robotraconteur.action.ActionStatusCode action_status;
+    public uint current_waypoint;
+    public double trajectory_time;
+}
+
+public class AdvancedJointTrajectoryDeviceWaypoint
+{
+    public List<double[]> joint_position;
+    public List<double[]> joint_velocity;
+    public List<double[]> joint_acceleration;
+    public List<double[]> joint_jerk;
+    public List<double[]> joint_effort;
+    public List<double[]> position_tolerance;
+    public List<double[]> velocity_tolerance;
+    public InterpolationMode interpolation_mode;
+    public TrajectoryWaypointType waypoint_type;
+    public Dictionary<string,object> signals;
+}
+
+public class AdvancedJointTrajectoryWaypoint
+{
+    public List<AdvancedJointTrajectoryDeviceWaypoint> joints;
+    public double time_from_start;
+}
+
+public class AdvancedJointTrajectoryDevice
+{
+    public com.robotraconteur.identifier.Identifier device;
+    public List<string> joint_names;
+    public List<com.robotraconteur.robotics.joints.JointPositionUnits> joint_units;
+    public List<com.robotraconteur.robotics.joints.JointEffortUnits> joint_effort_units;
+    public Dictionary<string,object> extended;
+}
+
+public class AdvancedJointTrajectory
+{
+    public List<AdvancedJointTrajectoryDevice> devices;
+    public List<AdvancedJointTrajectoryWaypoint> waypoints;
+    public Dictionary<string,object> extended;
+}
+
+public class FreeformJointTrajectoryWaypoint
+{
+    public List<object> joint_position;
+    public List<object> joint_velocity;
+    public List<object> position_tolerance;
+    public List<object> velocity_tolerance;
+    public string interpolation_mode;
+    public Dictionary<string,object> signals;
+    public double time_from_start;
+    public Dictionary<string,object> extended;
+}
+
+public class FreeformJointTrajectory
+{
+    public List<string> joint_names;
+    public List<string> joint_units;
+    public List<FreeformJointTrajectoryWaypoint> waypoints;
+    public Dictionary<string,object> extended;
+}
+
+public static class com__robotraconteur__robotics__trajectoryConstants 
+{
+}
+    public enum InterpolationMode
+    {
+    default_ = 0,
+    joint = 1,
+    linear = 2,
+    cylindrical = 3,
+    spherical = 4,
+    joint_cubic_spline = 5,
+    cubic_spline = 6,
+    custom = 7
+    };
+    public enum TrajectoryWaypointType
+    {
+    unspecified = 0,
+    start = 1,
+    path = 2,
+    goal = 3,
+    intermediate_stop = 4,
+    raster = 5,
+    other = 6
+    };
+}
+namespace com.robotraconteur.robotics.trajectory
+{
+public class com__robotraconteur__robotics__trajectoryFactory : ServiceFactory
+{
+    public override string DefString()
+{
+    const string s="service com.robotraconteur.robotics.trajectory\n\nstdver 0.10\n\nimport com.robotraconteur.robotics.joints\nimport com.robotraconteur.identifier\nimport com.robotraconteur.action\n\nusing com.robotraconteur.robotics.joints.JointPositionUnits\nusing com.robotraconteur.robotics.joints.JointEffortUnits\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.action.ActionStatusCode\n\nenum InterpolationMode\ndefault = 0,\njoint,\nlinear,\ncylindrical,\nspherical,\njoint_cubic_spline,\ncubic_spline,\ncustom\nend\n\nenum TrajectoryWaypointType\nunspecified = 0,\nstart = 1,\npath,\ngoal,\nintermediate_stop,\nraster,\nother\nend\n\nstruct JointTrajectoryWaypoint\nfield double[] joint_position\nfield double[] joint_velocity\nfield double[] position_tolerance\nfield double[] velocity_tolerance\nfield InterpolationMode interpolation_mode\nfield TrajectoryWaypointType waypoint_type\nfield double time_from_start\nend\n\nstruct JointTrajectory\nfield string{list} joint_names\nfield JointPositionUnits{list} joint_units\nfield JointTrajectoryWaypoint{list} waypoints\nfield varvalue{string} extended\nend\n\nstruct TrajectoryStatus\nfield uint64 seqno\nfield ActionStatusCode action_status\nfield uint32 current_waypoint\nfield double trajectory_time\nend\n\nstruct AdvancedJointTrajectoryDeviceWaypoint\n# Use list for compound joints\nfield double[]{list} joint_position\nfield double[]{list} joint_velocity\nfield double[]{list} joint_acceleration\nfield double[]{list} joint_jerk\nfield double[]{list} joint_effort\nfield double[]{list} position_tolerance\nfield double[]{list} velocity_tolerance\nfield InterpolationMode interpolation_mode\nfield TrajectoryWaypointType waypoint_type\nfield varvalue{string} signals\nend\n\nstruct AdvancedJointTrajectoryWaypoint\nfield AdvancedJointTrajectoryDeviceWaypoint{list} joints\nfield double time_from_start\nend\n\nstruct AdvancedJointTrajectoryDevice\nfield Identifier device\nfield string{list} joint_names\nfield JointPositionUnits{list} joint_units\nfield JointEffortUnits{list} joint_effort_units\nfield varvalue{string} extended\nend\n\nstruct AdvancedJointTrajectory\nfield AdvancedJointTrajectoryDevice{list} devices\nfield AdvancedJointTrajectoryWaypoint{list} waypoints\nfield varvalue{string} extended\nend\n\nstruct FreeformJointTrajectoryWaypoint\nfield varvalue{list} joint_position\nfield varvalue{list} joint_velocity\nfield varvalue{list} position_tolerance\nfield varvalue{list} velocity_tolerance\nfield string interpolation_mode\nfield varvalue{string} signals\nfield double time_from_start\nfield varvalue{string} extended\nend\n\nstruct FreeformJointTrajectory\nfield string{list} joint_names\nfield string{list} joint_units\nfield FreeformJointTrajectoryWaypoint{list} waypoints\nfield varvalue{string} extended\nend\n\n";
+    return s;
+    }
+    public override string GetServiceName() {return "com.robotraconteur.robotics.trajectory";}
+    public JointTrajectoryWaypoint_stub JointTrajectoryWaypoint_stubentry;
+    public JointTrajectory_stub JointTrajectory_stubentry;
+    public TrajectoryStatus_stub TrajectoryStatus_stubentry;
+    public AdvancedJointTrajectoryDeviceWaypoint_stub AdvancedJointTrajectoryDeviceWaypoint_stubentry;
+    public AdvancedJointTrajectoryWaypoint_stub AdvancedJointTrajectoryWaypoint_stubentry;
+    public AdvancedJointTrajectoryDevice_stub AdvancedJointTrajectoryDevice_stubentry;
+    public AdvancedJointTrajectory_stub AdvancedJointTrajectory_stubentry;
+    public FreeformJointTrajectoryWaypoint_stub FreeformJointTrajectoryWaypoint_stubentry;
+    public FreeformJointTrajectory_stub FreeformJointTrajectory_stubentry;
+    public com__robotraconteur__robotics__trajectoryFactory()
+{
+    JointTrajectoryWaypoint_stubentry=new JointTrajectoryWaypoint_stub(this);
+    JointTrajectory_stubentry=new JointTrajectory_stub(this);
+    TrajectoryStatus_stubentry=new TrajectoryStatus_stub(this);
+    AdvancedJointTrajectoryDeviceWaypoint_stubentry=new AdvancedJointTrajectoryDeviceWaypoint_stub(this);
+    AdvancedJointTrajectoryWaypoint_stubentry=new AdvancedJointTrajectoryWaypoint_stub(this);
+    AdvancedJointTrajectoryDevice_stubentry=new AdvancedJointTrajectoryDevice_stub(this);
+    AdvancedJointTrajectory_stubentry=new AdvancedJointTrajectory_stub(this);
+    FreeformJointTrajectoryWaypoint_stubentry=new FreeformJointTrajectoryWaypoint_stub(this);
+    FreeformJointTrajectory_stubentry=new FreeformJointTrajectory_stub(this);
+    }
+    public override IStructureStub FindStructureStub(string objecttype)
+    {
+    if (objecttype=="JointTrajectoryWaypoint")    return JointTrajectoryWaypoint_stubentry;
+    if (objecttype=="JointTrajectory")    return JointTrajectory_stubentry;
+    if (objecttype=="TrajectoryStatus")    return TrajectoryStatus_stubentry;
+    if (objecttype=="AdvancedJointTrajectoryDeviceWaypoint")    return AdvancedJointTrajectoryDeviceWaypoint_stubentry;
+    if (objecttype=="AdvancedJointTrajectoryWaypoint")    return AdvancedJointTrajectoryWaypoint_stubentry;
+    if (objecttype=="AdvancedJointTrajectoryDevice")    return AdvancedJointTrajectoryDevice_stubentry;
+    if (objecttype=="AdvancedJointTrajectory")    return AdvancedJointTrajectory_stubentry;
+    if (objecttype=="FreeformJointTrajectoryWaypoint")    return FreeformJointTrajectoryWaypoint_stubentry;
+    if (objecttype=="FreeformJointTrajectory")    return FreeformJointTrajectory_stubentry;
+    throw new DataTypeException("Cannot find appropriate structure stub");
+    }
+    public override IPodStub FindPodStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override INamedArrayStub FindNamedArrayStub(string objecttype)
+    {
+    throw new DataTypeException("Cannot find appropriate pod stub");
+    }
+    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
+    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
+    if (CompareNamespace(objecttype, out objshort)) {
+    switch (objshort) {
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
+    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
+    }
+    throw new ServiceException("Could not create stub");
+    }
+    public override ServiceSkel CreateSkel(object obj) {
+    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
+    string objshort;
+    if (CompareNamespace(objtype, out objshort)) {
+    switch(objshort) {
+    default:
+    break;
+    }
+    } else {
+    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
+    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
+    }
+    throw new ServiceException("Could not create skel");
+    }
+    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
+    if (rr_exp==null) return rr_exp;
+    string rr_type=rr_exp.Error;
+    if (!rr_type.Contains(".")) return rr_exp;
+    string rr_stype;
+    if (CompareNamespace(rr_type, out rr_stype)) {
+    } else {
+    return RobotRaconteurNode.s.DownCastException(rr_exp); 
+    }
+    return rr_exp;
+    }
+}
+
+public class JointTrajectoryWaypoint_stub : IStructureStub {
+    public JointTrajectoryWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    JointTrajectoryWaypoint s = (JointTrajectoryWaypoint)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("joint_position",s.joint_position));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("joint_velocity",s.joint_velocity));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("position_tolerance",s.position_tolerance));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackArray<double>("velocity_tolerance",s.velocity_tolerance));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<InterpolationMode>("interpolation_mode",s.interpolation_mode));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<TrajectoryWaypointType>("waypoint_type",s.waypoint_type));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("time_from_start",s.time_from_start));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    JointTrajectoryWaypoint s=new JointTrajectoryWaypoint();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.joint_position =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"joint_position"));
+    s.joint_velocity =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"joint_velocity"));
+    s.position_tolerance =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"position_tolerance"));
+    s.velocity_tolerance =MessageElementUtil.UnpackArray<double>(MessageElement.FindElement(mm,"velocity_tolerance"));
+    s.interpolation_mode =MessageElementUtil.UnpackEnum<InterpolationMode>(MessageElement.FindElement(mm,"interpolation_mode"));
+    s.waypoint_type =MessageElementUtil.UnpackEnum<TrajectoryWaypointType>(MessageElement.FindElement(mm,"waypoint_type"));
+    s.time_from_start =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"time_from_start")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class JointTrajectory_stub : IStructureStub {
+    public JointTrajectory_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    JointTrajectory s = (JointTrajectory)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_names",s.joint_names));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.robotics.joints.JointPositionUnits>("joint_units",s.joint_units));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<JointTrajectoryWaypoint>("waypoints",s.waypoints));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.JointTrajectory",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    JointTrajectory s=new JointTrajectory();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.joint_names =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_names"));
+    s.joint_units =MessageElementUtil.UnpackList<com.robotraconteur.robotics.joints.JointPositionUnits>(MessageElement.FindElement(mm,"joint_units"));
+    s.waypoints =MessageElementUtil.UnpackList<JointTrajectoryWaypoint>(MessageElement.FindElement(mm,"waypoints"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class TrajectoryStatus_stub : IStructureStub {
+    public TrajectoryStatus_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    TrajectoryStatus s = (TrajectoryStatus)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("seqno",s.seqno));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<com.robotraconteur.action.ActionStatusCode>("action_status",s.action_status));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("current_waypoint",s.current_waypoint));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("trajectory_time",s.trajectory_time));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.TrajectoryStatus",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    TrajectoryStatus s=new TrajectoryStatus();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"seqno")));
+    s.action_status =MessageElementUtil.UnpackEnum<com.robotraconteur.action.ActionStatusCode>(MessageElement.FindElement(mm,"action_status"));
+    s.current_waypoint =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"current_waypoint")));
+    s.trajectory_time =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"trajectory_time")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class AdvancedJointTrajectoryDeviceWaypoint_stub : IStructureStub {
+    public AdvancedJointTrajectoryDeviceWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    AdvancedJointTrajectoryDeviceWaypoint s = (AdvancedJointTrajectoryDeviceWaypoint)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_position",s.joint_position));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_velocity",s.joint_velocity));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_acceleration",s.joint_acceleration));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_jerk",s.joint_jerk));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("joint_effort",s.joint_effort));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("position_tolerance",s.position_tolerance));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<double[]>("velocity_tolerance",s.velocity_tolerance));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<InterpolationMode>("interpolation_mode",s.interpolation_mode));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackEnum<TrajectoryWaypointType>("waypoint_type",s.waypoint_type));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("signals",s.signals));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectoryDeviceWaypoint",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    AdvancedJointTrajectoryDeviceWaypoint s=new AdvancedJointTrajectoryDeviceWaypoint();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.joint_position =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_position"));
+    s.joint_velocity =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_velocity"));
+    s.joint_acceleration =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_acceleration"));
+    s.joint_jerk =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_jerk"));
+    s.joint_effort =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"joint_effort"));
+    s.position_tolerance =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"position_tolerance"));
+    s.velocity_tolerance =MessageElementUtil.UnpackList<double[]>(MessageElement.FindElement(mm,"velocity_tolerance"));
+    s.interpolation_mode =MessageElementUtil.UnpackEnum<InterpolationMode>(MessageElement.FindElement(mm,"interpolation_mode"));
+    s.waypoint_type =MessageElementUtil.UnpackEnum<TrajectoryWaypointType>(MessageElement.FindElement(mm,"waypoint_type"));
+    s.signals =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"signals"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class AdvancedJointTrajectoryWaypoint_stub : IStructureStub {
+    public AdvancedJointTrajectoryWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    AdvancedJointTrajectoryWaypoint s = (AdvancedJointTrajectoryWaypoint)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<AdvancedJointTrajectoryDeviceWaypoint>("joints",s.joints));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("time_from_start",s.time_from_start));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectoryWaypoint",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    AdvancedJointTrajectoryWaypoint s=new AdvancedJointTrajectoryWaypoint();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.joints =MessageElementUtil.UnpackList<AdvancedJointTrajectoryDeviceWaypoint>(MessageElement.FindElement(mm,"joints"));
+    s.time_from_start =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"time_from_start")));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class AdvancedJointTrajectoryDevice_stub : IStructureStub {
+    public AdvancedJointTrajectoryDevice_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    AdvancedJointTrajectoryDevice s = (AdvancedJointTrajectoryDevice)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device",s.device));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_names",s.joint_names));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.robotics.joints.JointPositionUnits>("joint_units",s.joint_units));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.robotics.joints.JointEffortUnits>("joint_effort_units",s.joint_effort_units));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectoryDevice",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    AdvancedJointTrajectoryDevice s=new AdvancedJointTrajectoryDevice();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.device =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"device"));
+    s.joint_names =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_names"));
+    s.joint_units =MessageElementUtil.UnpackList<com.robotraconteur.robotics.joints.JointPositionUnits>(MessageElement.FindElement(mm,"joint_units"));
+    s.joint_effort_units =MessageElementUtil.UnpackList<com.robotraconteur.robotics.joints.JointEffortUnits>(MessageElement.FindElement(mm,"joint_effort_units"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class AdvancedJointTrajectory_stub : IStructureStub {
+    public AdvancedJointTrajectory_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    AdvancedJointTrajectory s = (AdvancedJointTrajectory)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<AdvancedJointTrajectoryDevice>("devices",s.devices));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<AdvancedJointTrajectoryWaypoint>("waypoints",s.waypoints));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.AdvancedJointTrajectory",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    AdvancedJointTrajectory s=new AdvancedJointTrajectory();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.devices =MessageElementUtil.UnpackList<AdvancedJointTrajectoryDevice>(MessageElement.FindElement(mm,"devices"));
+    s.waypoints =MessageElementUtil.UnpackList<AdvancedJointTrajectoryWaypoint>(MessageElement.FindElement(mm,"waypoints"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class FreeformJointTrajectoryWaypoint_stub : IStructureStub {
+    public FreeformJointTrajectoryWaypoint_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    FreeformJointTrajectoryWaypoint s = (FreeformJointTrajectoryWaypoint)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("joint_position",s.joint_position));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("joint_velocity",s.joint_velocity));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("position_tolerance",s.position_tolerance));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<object>("velocity_tolerance",s.velocity_tolerance));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackString("interpolation_mode",s.interpolation_mode));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("signals",s.signals));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("time_from_start",s.time_from_start));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.FreeformJointTrajectoryWaypoint",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    FreeformJointTrajectoryWaypoint s=new FreeformJointTrajectoryWaypoint();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.joint_position =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"joint_position"));
+    s.joint_velocity =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"joint_velocity"));
+    s.position_tolerance =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"position_tolerance"));
+    s.velocity_tolerance =MessageElementUtil.UnpackList<object>(MessageElement.FindElement(mm,"velocity_tolerance"));
+    s.interpolation_mode =MessageElementUtil.UnpackString(MessageElement.FindElement(mm,"interpolation_mode"));
+    s.signals =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"signals"));
+    s.time_from_start =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"time_from_start")));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
+public class FreeformJointTrajectory_stub : IStructureStub {
+    public FreeformJointTrajectory_stub(com__robotraconteur__robotics__trajectoryFactory d) {def=d;}
+    private com__robotraconteur__robotics__trajectoryFactory def;
+    public MessageElementNestedElementList PackStructure(object s1) {
+    using(vectorptr_messageelement m=new vectorptr_messageelement())
+    {
+    if (s1 ==null) return null;
+    FreeformJointTrajectory s = (FreeformJointTrajectory)s1;
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_names",s.joint_names));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<string>("joint_units",s.joint_units));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<FreeformJointTrajectoryWaypoint>("waypoints",s.waypoints));
+    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
+    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.robotics.trajectory.FreeformJointTrajectory",m);
+    }
+    }
+    public T UnpackStructure<T>(MessageElementNestedElementList m) {
+    if (m == null ) return default(T);
+    FreeformJointTrajectory s=new FreeformJointTrajectory();
+    using(vectorptr_messageelement mm=m.Elements)
+    {
+    s.joint_names =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_names"));
+    s.joint_units =MessageElementUtil.UnpackList<string>(MessageElement.FindElement(mm,"joint_units"));
+    s.waypoints =MessageElementUtil.UnpackList<FreeformJointTrajectoryWaypoint>(MessageElement.FindElement(mm,"waypoints"));
+    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
+    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
+    return st;
+    }
+    }
+}
+
 public static class RRExtensions{
 }
 }
@@ -29665,1321 +30981,5 @@ public static class RRExtensions{
     s[i].AssignFromNumericArray(ref a1);
     }
     }
-}
-}
-namespace com.robotraconteur.device.isoch
-{
-public class IsochInfo
-{
-    public double update_rate;
-    public com.robotraconteur.datetime.TimeSpec2 isoch_epoch;
-    public uint max_downsample;
-}
-
-[RobotRaconteurServiceObjectInterface()]
-public interface IsochDevice
-{
-    IsochInfo isoch_info { get; 	}
-    uint isoch_downsample { get;  set; 	}
-}
-
-}
-namespace com.robotraconteur.device.isoch
-{
-public class com__robotraconteur__device__isochFactory : ServiceFactory
-{
-    public override string DefString()
-{
-    const string s="service com.robotraconteur.device.isoch\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.datetime.TimeSpec2\n\nstruct IsochInfo\nfield double update_rate\nfield TimeSpec2 isoch_epoch\nfield uint32 max_downsample\nend\n\nobject IsochDevice\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nend\n\n";
-    return s;
-    }
-    public override string GetServiceName() {return "com.robotraconteur.device.isoch";}
-    public IsochInfo_stub IsochInfo_stubentry;
-    public com__robotraconteur__device__isochFactory()
-{
-    IsochInfo_stubentry=new IsochInfo_stub(this);
-    }
-    public override IStructureStub FindStructureStub(string objecttype)
-    {
-    if (objecttype=="IsochInfo")    return IsochInfo_stubentry;
-    throw new DataTypeException("Cannot find appropriate structure stub");
-    }
-    public override IPodStub FindPodStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override INamedArrayStub FindNamedArrayStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
-    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
-    if (CompareNamespace(objecttype, out objshort)) {
-    switch (objshort) {
-    case "IsochDevice":
-    return new IsochDevice_stub(innerstub);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
-    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
-    }
-    throw new ServiceException("Could not create stub");
-    }
-    public override ServiceSkel CreateSkel(object obj) {
-    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
-    string objshort;
-    if (CompareNamespace(objtype, out objshort)) {
-    switch(objshort) {
-    case "IsochDevice":
-    return new IsochDevice_skel((IsochDevice)obj);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
-    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
-    }
-    throw new ServiceException("Could not create skel");
-    }
-    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
-    if (rr_exp==null) return rr_exp;
-    string rr_type=rr_exp.Error;
-    if (!rr_type.Contains(".")) return rr_exp;
-    string rr_stype;
-    if (CompareNamespace(rr_type, out rr_stype)) {
-    } else {
-    return RobotRaconteurNode.s.DownCastException(rr_exp); 
-    }
-    return rr_exp;
-    }
-}
-
-public class IsochInfo_stub : IStructureStub {
-    public IsochInfo_stub(com__robotraconteur__device__isochFactory d) {def=d;}
-    private com__robotraconteur__device__isochFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    IsochInfo s = (IsochInfo)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("update_rate",s.update_rate));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.TimeSpec2>("isoch_epoch",ref s.isoch_epoch));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<uint>("max_downsample",s.max_downsample));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.device.isoch.IsochInfo",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    IsochInfo s=new IsochInfo();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.update_rate =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"update_rate")));
-    s.isoch_epoch =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.TimeSpec2>(MessageElement.FindElement(mm,"isoch_epoch"));
-    s.max_downsample =(MessageElementUtil.UnpackScalar<uint>(MessageElement.FindElement(mm,"max_downsample")));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public interface async_IsochDevice
-{
-    Task<IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-}
-public class IsochDevice_stub : ServiceStub , IsochDevice, async_IsochDevice{
-    public IsochDevice_stub(WrappedServiceStub innerstub) : base(innerstub) {
-    }
-    public IsochInfo isoch_info {
-    get {
-    return MessageElementUtil.UnpackStructure<IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
-    }
-    }
-    public uint isoch_downsample {
-    get {
-    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
-    }
-    set {
-    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
-    {
-    rr_innerstub.PropertySet("isoch_downsample", m);
-    }
-    }
-    }
-    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    }
-    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public virtual async Task<IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<IsochInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
-    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
-    return rr_ret;
-    } }
-    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
-    {
-    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
-    }
-    }
-}
-public class IsochDevice_skel : ServiceSkel {
-    protected IsochDevice obj;
-    protected async_IsochDevice async_obj;
-    public IsochDevice_skel(object o) : base(o)    {
-    obj=(IsochDevice)o;
-    async_obj = o as async_IsochDevice;
-    }
-    public override void ReleaseCastObject() { 
-    obj=null;
-    async_obj=null;
-    base.ReleaseCastObject();
-    }
-    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    case "isoch_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    IsochInfo ret=obj.isoch_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "isoch_downsample":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
-    return null;
-    }
-    uint ret=obj.isoch_downsample;
-    return MessageElementUtil.PackScalar<uint>("return",ret);
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    case "isoch_downsample":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
-    return;
-    }
-    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
-    return;
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override object GetSubObj(string name, string ind) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("");
-    }
-    public override void RegisterEvents(object rrobj1) {
-    obj=(IsochDevice)rrobj1;
-    }
-    public override void UnregisterEvents(object rrobj1) {
-    obj=(IsochDevice)rrobj1;
-    }
-    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void InitPipeServers(object rrobj1) {
-    obj=(IsochDevice)rrobj1;
-    }
-    public override void InitCallbackServers(object rrobj1) {
-    obj=(IsochDevice)rrobj1;
-    }
-    public override void InitWireServers(object rrobj1) {
-    obj=(IsochDevice)rrobj1;
-    }
-    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override string RRType { get { return "com.robotraconteur.device.isoch.IsochDevice"; } }
-}
-public class IsochDevice_default_impl : IsochDevice{
-    public virtual IsochInfo isoch_info {get; set;} = default(IsochInfo);
-    public virtual uint isoch_downsample {get; set;} = default(uint);
-}
-public static class RRExtensions{
-}
-}
-namespace com.robotraconteur.objectrecognition
-{
-public class ObjectRecognitionTemplate
-{
-    public com.robotraconteur.identifier.Identifier object_identifier;
-    public com.robotraconteur.device.DeviceClass object_class;
-    public com.robotraconteur.geometry.shapes.ShapeObject object_shape;
-    public List<com.robotraconteur.fiducial.Fiducial> object_fiducials;
-    public Dictionary<string,object> extended;
-}
-
-public class RecognizedObject
-{
-    public com.robotraconteur.identifier.Identifier recognized_object;
-    public com.robotraconteur.device.DeviceClass recognized_object_class;
-    public com.robotraconteur.geometry.NamedPoseWithCovariance pose;
-    public double confidence;
-    public Dictionary<string,object> extended;
-}
-
-public class RecognizedObjects
-{
-    public List<RecognizedObject> recognized_objects;
-    public object source_data;
-    public Dictionary<string,object> extended;
-}
-
-public class ObjectRecognitionSensorInfo
-{
-    public com.robotraconteur.device.DeviceInfo device_info;
-    public com.robotraconteur.geometry.BoundingBox range;
-    public com.robotraconteur.geometry.Vector3 resolution;
-    public List<com.robotraconteur.param.ParameterInfo> param_info;
-    public List<com.robotraconteur.identifier.Identifier> object_template_identifiers;
-    public List<com.robotraconteur.device.DeviceClass> object_template_classes;
-    public Dictionary<string,object> extended;
-}
-
-public class ObjectRecognitionSensorData
-{
-    public com.robotraconteur.sensordata.SensorDataHeader sensor_data;
-    public RecognizedObjects recognized_objects;
-}
-
-[RobotRaconteurServiceObjectInterface()]
-public interface ObjectRecognitionSensor : com.robotraconteur.device.Device, com.robotraconteur.device.clock.DeviceClock, com.robotraconteur.device.isoch.IsochDevice
-{
-    com.robotraconteur.device.DeviceInfo device_info { get; 	}
-    ObjectRecognitionSensorInfo object_recognition_sensor_info { get; 	}
-    com.robotraconteur.device.isoch.IsochInfo isoch_info { get; 	}
-    uint isoch_downsample { get;  set; 	}
-    RecognizedObjects capture_recognized_objects();
-    object getf_param(string param_name);
-    void setf_param(string param_name, object value_);
-    ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier);
-    ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class);
-    Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data{ get; set; }
-    Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now{ get; set; }
-}
-
-}
-namespace com.robotraconteur.objectrecognition
-{
-public class com__robotraconteur__objectrecognitionFactory : ServiceFactory
-{
-    public override string DefString()
-{
-    const string s="service com.robotraconteur.objectrecognition\n\nstdver 0.10\n\nimport com.robotraconteur.identifier\nimport com.robotraconteur.geometry\nimport com.robotraconteur.geometry.shapes\nimport com.robotraconteur.param\nimport com.robotraconteur.device\nimport com.robotraconteur.device.isoch\nimport com.robotraconteur.sensordata\nimport com.robotraconteur.device.clock\nimport com.robotraconteur.fiducial\n\nusing com.robotraconteur.identifier.Identifier\nusing com.robotraconteur.device.Device\nusing com.robotraconteur.device.DeviceInfo\nusing com.robotraconteur.device.DeviceClass\nusing com.robotraconteur.device.isoch.IsochDevice\nusing com.robotraconteur.device.isoch.IsochInfo\nusing com.robotraconteur.param.ParameterInfo\nusing com.robotraconteur.geometry.shapes.ShapeObject\nusing com.robotraconteur.geometry.NamedPoseWithCovariance\nusing com.robotraconteur.geometry.BoundingBox\nusing com.robotraconteur.geometry.Vector3\nusing com.robotraconteur.sensordata.SensorDataHeader\nusing com.robotraconteur.device.clock.DeviceClock\nusing com.robotraconteur.device.clock.DeviceTime\nusing com.robotraconteur.fiducial.Fiducial\n\nstruct ObjectRecognitionTemplate\nfield Identifier object_identifier\nfield DeviceClass object_class\nfield ShapeObject object_shape\nfield Fiducial{list} object_fiducials\nfield varvalue{string} extended\nend\n\nstruct RecognizedObject\nfield Identifier recognized_object\nfield DeviceClass recognized_object_class\nfield NamedPoseWithCovariance pose\nfield double confidence\nfield varvalue{string} extended\nend\n\nstruct RecognizedObjects\nfield RecognizedObject{list} recognized_objects\nfield varvalue source_data\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorInfo\nfield DeviceInfo device_info\nfield BoundingBox range\nfield Vector3 resolution\nfield ParameterInfo{list} param_info\nfield Identifier{list} object_template_identifiers\nfield DeviceClass{list} object_template_classes\nfield varvalue{string} extended\nend\n\nstruct ObjectRecognitionSensorData\nfield SensorDataHeader sensor_data\nfield RecognizedObjects recognized_objects\nend\n\nobject ObjectRecognitionSensor\nimplements Device\nimplements DeviceClock\nimplements IsochDevice\nproperty DeviceInfo device_info [readonly,nolock]\nproperty ObjectRecognitionSensorInfo object_recognition_sensor_info [readonly,nolock]\nfunction RecognizedObjects capture_recognized_objects()\npipe ObjectRecognitionSensorData object_recognition_sensor_data [readonly]\nfunction varvalue getf_param(string param_name)\nfunction void setf_param(string param_name, varvalue value)\nfunction ObjectRecognitionTemplate getf_object_template(Identifier object_identifier)\nfunction ObjectRecognitionTemplate getf_object_class_template(Identifier object_class)\nproperty IsochInfo isoch_info [readonly,nolock]\nproperty uint32 isoch_downsample [perclient]\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n";
-    return s;
-    }
-    public override string GetServiceName() {return "com.robotraconteur.objectrecognition";}
-    public ObjectRecognitionTemplate_stub ObjectRecognitionTemplate_stubentry;
-    public RecognizedObject_stub RecognizedObject_stubentry;
-    public RecognizedObjects_stub RecognizedObjects_stubentry;
-    public ObjectRecognitionSensorInfo_stub ObjectRecognitionSensorInfo_stubentry;
-    public ObjectRecognitionSensorData_stub ObjectRecognitionSensorData_stubentry;
-    public com__robotraconteur__objectrecognitionFactory()
-{
-    ObjectRecognitionTemplate_stubentry=new ObjectRecognitionTemplate_stub(this);
-    RecognizedObject_stubentry=new RecognizedObject_stub(this);
-    RecognizedObjects_stubentry=new RecognizedObjects_stub(this);
-    ObjectRecognitionSensorInfo_stubentry=new ObjectRecognitionSensorInfo_stub(this);
-    ObjectRecognitionSensorData_stubentry=new ObjectRecognitionSensorData_stub(this);
-    }
-    public override IStructureStub FindStructureStub(string objecttype)
-    {
-    if (objecttype=="ObjectRecognitionTemplate")    return ObjectRecognitionTemplate_stubentry;
-    if (objecttype=="RecognizedObject")    return RecognizedObject_stubentry;
-    if (objecttype=="RecognizedObjects")    return RecognizedObjects_stubentry;
-    if (objecttype=="ObjectRecognitionSensorInfo")    return ObjectRecognitionSensorInfo_stubentry;
-    if (objecttype=="ObjectRecognitionSensorData")    return ObjectRecognitionSensorData_stubentry;
-    throw new DataTypeException("Cannot find appropriate structure stub");
-    }
-    public override IPodStub FindPodStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override INamedArrayStub FindNamedArrayStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
-    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
-    if (CompareNamespace(objecttype, out objshort)) {
-    switch (objshort) {
-    case "ObjectRecognitionSensor":
-    return new ObjectRecognitionSensor_stub(innerstub);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
-    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
-    }
-    throw new ServiceException("Could not create stub");
-    }
-    public override ServiceSkel CreateSkel(object obj) {
-    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
-    string objshort;
-    if (CompareNamespace(objtype, out objshort)) {
-    switch(objshort) {
-    case "ObjectRecognitionSensor":
-    return new ObjectRecognitionSensor_skel((ObjectRecognitionSensor)obj);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
-    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
-    }
-    throw new ServiceException("Could not create skel");
-    }
-    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
-    if (rr_exp==null) return rr_exp;
-    string rr_type=rr_exp.Error;
-    if (!rr_type.Contains(".")) return rr_exp;
-    string rr_stype;
-    if (CompareNamespace(rr_type, out rr_stype)) {
-    } else {
-    return RobotRaconteurNode.s.DownCastException(rr_exp); 
-    }
-    return rr_exp;
-    }
-}
-
-public class ObjectRecognitionTemplate_stub : IStructureStub {
-    public ObjectRecognitionTemplate_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
-    private com__robotraconteur__objectrecognitionFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    ObjectRecognitionTemplate s = (ObjectRecognitionTemplate)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_identifier",s.object_identifier));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_class",s.object_class));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("object_shape",s.object_shape));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.fiducial.Fiducial>("object_fiducials",s.object_fiducials));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionTemplate",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ObjectRecognitionTemplate s=new ObjectRecognitionTemplate();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.object_identifier =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"object_identifier"));
-    s.object_class =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"object_class"));
-    s.object_shape =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.shapes.ShapeObject>(MessageElement.FindElement(mm,"object_shape"));
-    s.object_fiducials =MessageElementUtil.UnpackList<com.robotraconteur.fiducial.Fiducial>(MessageElement.FindElement(mm,"object_fiducials"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class RecognizedObject_stub : IStructureStub {
-    public RecognizedObject_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
-    private com__robotraconteur__objectrecognitionFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    RecognizedObject s = (RecognizedObject)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_object",s.recognized_object));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_object_class",s.recognized_object_class));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("pose",s.pose));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<double>("confidence",s.confidence));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.RecognizedObject",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    RecognizedObject s=new RecognizedObject();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.recognized_object =MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"recognized_object"));
-    s.recognized_object_class =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"recognized_object_class"));
-    s.pose =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.NamedPoseWithCovariance>(MessageElement.FindElement(mm,"pose"));
-    s.confidence =(MessageElementUtil.UnpackScalar<double>(MessageElement.FindElement(mm,"confidence")));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class RecognizedObjects_stub : IStructureStub {
-    public RecognizedObjects_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
-    private com__robotraconteur__objectrecognitionFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    RecognizedObjects s = (RecognizedObjects)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<RecognizedObject>("recognized_objects",s.recognized_objects));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackVarType("source_data",s.source_data));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.RecognizedObjects",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    RecognizedObjects s=new RecognizedObjects();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.recognized_objects =MessageElementUtil.UnpackList<RecognizedObject>(MessageElement.FindElement(mm,"recognized_objects"));
-    s.source_data =MessageElementUtil.UnpackVarType(MessageElement.FindElement(mm,"source_data"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class ObjectRecognitionSensorInfo_stub : IStructureStub {
-    public ObjectRecognitionSensorInfo_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
-    private com__robotraconteur__objectrecognitionFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    ObjectRecognitionSensorInfo s = (ObjectRecognitionSensorInfo)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("device_info",s.device_info));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("range",s.range));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackNamedArrayToArray<com.robotraconteur.geometry.Vector3>("resolution",ref s.resolution));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.param.ParameterInfo>("param_info",s.param_info));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.identifier.Identifier>("object_template_identifiers",s.object_template_identifiers));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackListType<com.robotraconteur.device.DeviceClass>("object_template_classes",s.object_template_classes));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackMapType<string,object>("extended",s.extended));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionSensorInfo",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ObjectRecognitionSensorInfo s=new ObjectRecognitionSensorInfo();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.device_info =MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(MessageElement.FindElement(mm,"device_info"));
-    s.range =MessageElementUtil.UnpackStructure<com.robotraconteur.geometry.BoundingBox>(MessageElement.FindElement(mm,"range"));
-    s.resolution =MessageElementUtil.UnpackNamedArrayFromArray<com.robotraconteur.geometry.Vector3>(MessageElement.FindElement(mm,"resolution"));
-    s.param_info =MessageElementUtil.UnpackList<com.robotraconteur.param.ParameterInfo>(MessageElement.FindElement(mm,"param_info"));
-    s.object_template_identifiers =MessageElementUtil.UnpackList<com.robotraconteur.identifier.Identifier>(MessageElement.FindElement(mm,"object_template_identifiers"));
-    s.object_template_classes =MessageElementUtil.UnpackList<com.robotraconteur.device.DeviceClass>(MessageElement.FindElement(mm,"object_template_classes"));
-    s.extended =MessageElementUtil.UnpackMap<string,object>(MessageElement.FindElement(mm,"extended"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public class ObjectRecognitionSensorData_stub : IStructureStub {
-    public ObjectRecognitionSensorData_stub(com__robotraconteur__objectrecognitionFactory d) {def=d;}
-    private com__robotraconteur__objectrecognitionFactory def;
-    public MessageElementNestedElementList PackStructure(object s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    if (s1 ==null) return null;
-    ObjectRecognitionSensorData s = (ObjectRecognitionSensorData)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("sensor_data",s.sensor_data));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackStructure("recognized_objects",s.recognized_objects));
-    return new MessageElementNestedElementList(DataTypes.structure_t,"com.robotraconteur.objectrecognition.ObjectRecognitionSensorData",m);
-    }
-    }
-    public T UnpackStructure<T>(MessageElementNestedElementList m) {
-    if (m == null ) return default(T);
-    ObjectRecognitionSensorData s=new ObjectRecognitionSensorData();
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    s.sensor_data =MessageElementUtil.UnpackStructure<com.robotraconteur.sensordata.SensorDataHeader>(MessageElement.FindElement(mm,"sensor_data"));
-    s.recognized_objects =MessageElementUtil.UnpackStructure<RecognizedObjects>(MessageElement.FindElement(mm,"recognized_objects"));
-    T st; try {st=(T)((object)s);} catch (InvalidCastException) {throw new DataTypeMismatchException("Wrong structuretype");}
-    return st;
-    }
-    }
-}
-
-public interface async_ObjectRecognitionSensor : com.robotraconteur.device.async_Device, com.robotraconteur.device.clock.async_DeviceClock, com.robotraconteur.device.isoch.async_IsochDevice
-{
-    Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<ObjectRecognitionSensorInfo> async_get_object_recognition_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<RecognizedObjects> async_capture_recognized_objects(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<ObjectRecognitionTemplate> async_getf_object_template(com.robotraconteur.identifier.Identifier object_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-    Task<ObjectRecognitionTemplate> async_getf_object_class_template(com.robotraconteur.identifier.Identifier object_class,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE);
-}
-public class ObjectRecognitionSensor_stub : ServiceStub , ObjectRecognitionSensor, async_ObjectRecognitionSensor{
-    private Pipe<ObjectRecognitionSensorData> rr_object_recognition_sensor_data;
-    private Wire<com.robotraconteur.device.clock.DeviceTime> rr_device_clock_now;
-    public ObjectRecognitionSensor_stub(WrappedServiceStub innerstub) : base(innerstub) {
-    rr_object_recognition_sensor_data=new Pipe<ObjectRecognitionSensorData>(innerstub.GetPipe("object_recognition_sensor_data"));
-    rr_device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerstub.GetWire("device_clock_now"));
-    }
-    public com.robotraconteur.device.DeviceInfo device_info {
-    get {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_innerstub.PropertyGet("device_info"));
-    }
-    }
-    public ObjectRecognitionSensorInfo object_recognition_sensor_info {
-    get {
-    return MessageElementUtil.UnpackStructure<ObjectRecognitionSensorInfo>(rr_innerstub.PropertyGet("object_recognition_sensor_info"));
-    }
-    }
-    public com.robotraconteur.device.isoch.IsochInfo isoch_info {
-    get {
-    return MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_innerstub.PropertyGet("isoch_info"));
-    }
-    }
-    public uint isoch_downsample {
-    get {
-    return (MessageElementUtil.UnpackScalar<uint>(rr_innerstub.PropertyGet("isoch_downsample")));
-    }
-    set {
-    using(MessageElement m=MessageElementUtil.PackScalar<uint>("value",value))
-    {
-    rr_innerstub.PropertySet("isoch_downsample", m);
-    }
-    }
-    }
-    public RecognizedObjects capture_recognized_objects() {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("capture_recognized_objects",rr_param))
-    {
-    return MessageElementUtil.UnpackStructure<RecognizedObjects>(rr_me);
-    }
-    }
-    }
-    public object getf_param(string param_name) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_param",rr_param))
-    {
-    return MessageElementUtil.UnpackVarType(rr_me);
-    }
-    }
-    }
-    public void setf_param(string param_name, object value_) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("setf_param",rr_param))
-    {
-    }
-    }
-    }
-    public ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_identifier",object_identifier));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_object_template",rr_param))
-    {
-    return MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_me);
-    }
-    }
-    }
-    public ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class) {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_class",object_class));
-    using(MessageElement rr_me=rr_innerstub.FunctionCall("getf_object_class_template",rr_param))
-    {
-    return MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_me);
-    }
-    }
-    }
-    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    }
-    public Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data {
-    get { return rr_object_recognition_sensor_data;  }
-    set { throw new InvalidOperationException();}
-    }
-    public Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
-    get { return rr_device_clock_now;  }
-    set { throw new InvalidOperationException();}
-    }
-    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public virtual async Task<com.robotraconteur.device.DeviceInfo> async_get_device_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("device_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.DeviceInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<ObjectRecognitionSensorInfo> async_get_object_recognition_sensor_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("object_recognition_sensor_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionSensorInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<com.robotraconteur.device.isoch.IsochInfo> async_get_isoch_info(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("isoch_info",rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<com.robotraconteur.device.isoch.IsochInfo>(rr_value);
-    return rr_ret;
-    } }
-    public virtual async Task<uint> async_get_isoch_downsample(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(var rr_value = await rr_async_PropertyGet("isoch_downsample",rr_timeout)) {
-    var rr_ret=(MessageElementUtil.UnpackScalar<uint>(rr_value));
-    return rr_ret;
-    } }
-    public virtual async Task async_set_isoch_downsample(uint value, int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(MessageElement mm=MessageElementUtil.PackScalar<uint>("value",value))
-    {
-    await rr_async_PropertySet("isoch_downsample",mm,rr_timeout);
-    }
-    }
-    public virtual async Task<RecognizedObjects> async_capture_recognized_objects(int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    using(var rr_return = await rr_async_FunctionCall("capture_recognized_objects",rr_param,rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<RecognizedObjects>(rr_return);
-    return rr_ret;
-    } } }
-    public virtual async Task<object> async_getf_param(string param_name,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    using(var rr_return = await rr_async_FunctionCall("getf_param",rr_param,rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackVarType(rr_return);
-    return rr_ret;
-    } } }
-    public virtual async Task async_setf_param(string param_name, object value_,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackString("param_name",param_name));
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackVarType("value",value_));
-    using(var rr_return = await rr_async_FunctionCall("setf_param",rr_param,rr_timeout)) {
-    } } }
-    public virtual async Task<ObjectRecognitionTemplate> async_getf_object_template(com.robotraconteur.identifier.Identifier object_identifier,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_identifier",object_identifier));
-    using(var rr_return = await rr_async_FunctionCall("getf_object_template",rr_param,rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_return);
-    return rr_ret;
-    } } }
-    public virtual async Task<ObjectRecognitionTemplate> async_getf_object_class_template(com.robotraconteur.identifier.Identifier object_class,int rr_timeout=RobotRaconteurNode.RR_TIMEOUT_INFINITE)
-    {
-    using(vectorptr_messageelement rr_param=new vectorptr_messageelement())
-    {
-    MessageElementUtil.AddMessageElementDispose(rr_param,MessageElementUtil.PackStructure("object_class",object_class));
-    using(var rr_return = await rr_async_FunctionCall("getf_object_class_template",rr_param,rr_timeout)) {
-    var rr_ret=MessageElementUtil.UnpackStructure<ObjectRecognitionTemplate>(rr_return);
-    return rr_ret;
-    } } }
-}
-public class ObjectRecognitionSensor_skel : ServiceSkel {
-    protected ObjectRecognitionSensor obj;
-    protected async_ObjectRecognitionSensor async_obj;
-    public ObjectRecognitionSensor_skel(object o) : base(o)    {
-    obj=(ObjectRecognitionSensor)o;
-    async_obj = o as async_ObjectRecognitionSensor;
-    }
-    public override void ReleaseCastObject() { 
-    obj=null;
-    async_obj=null;
-    base.ReleaseCastObject();
-    }
-    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    case "device_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_device_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.DeviceInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    com.robotraconteur.device.DeviceInfo ret=obj.device_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "object_recognition_sensor_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_object_recognition_sensor_info().ContinueWith(t => async_adapter.EndTask<ObjectRecognitionSensorInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    ObjectRecognitionSensorInfo ret=obj.object_recognition_sensor_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "isoch_info":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_isoch_info().ContinueWith(t => async_adapter.EndTask<com.robotraconteur.device.isoch.IsochInfo>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    com.robotraconteur.device.isoch.IsochInfo ret=obj.isoch_info;
-    return MessageElementUtil.PackStructure("return",ret);
-    }
-    case "isoch_downsample":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_get_isoch_downsample().ContinueWith(t => async_adapter.EndTask<uint>(t,async_ret => MessageElementUtil.PackScalar<uint>("return",async_ret)));
-    return null;
-    }
-    uint ret=obj.isoch_downsample;
-    return MessageElementUtil.PackScalar<uint>("return",ret);
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    case "isoch_downsample":
-    {
-    if (async_obj!=null)    {
-    async_adapter.MakeAsync();
-    async_obj.async_set_isoch_downsample((MessageElementUtil.UnpackScalar<uint>(m))).ContinueWith(t => async_adapter.EndTask(t));
-    return;
-    }
-    obj.isoch_downsample=(MessageElementUtil.UnpackScalar<uint>(m));
-    return;
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
-    switch (rr_membername) {
-    case "capture_recognized_objects":
-    {
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_capture_recognized_objects().ContinueWith(t => rr_async_adapter.EndTask<RecognizedObjects>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    RecognizedObjects rr_ret=this.obj.capture_recognized_objects();
-    return MessageElementUtil.PackStructure("return",rr_ret);
-    }
-    case "getf_param":
-    {
-    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_getf_param(param_name).ContinueWith(t => rr_async_adapter.EndTask<object>(t,async_ret => MessageElementUtil.PackVarType("return",async_ret)));
-    return null;
-    }
-    object rr_ret=this.obj.getf_param(param_name);
-    return MessageElementUtil.PackVarType("return",rr_ret);
-    }
-    case "setf_param":
-    {
-    string param_name=MessageElementUtil.UnpackString(vectorptr_messageelement_util.FindElement(rr_m,"param_name"));
-    object value_=MessageElementUtil.UnpackVarType(vectorptr_messageelement_util.FindElement(rr_m,"value"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_setf_param(param_name, value_).ContinueWith(t => rr_async_adapter.EndTask(t,new MessageElement("return",(int)0)));
-    return null;
-    }
-    this.obj.setf_param(param_name, value_);
-    return new MessageElement("return",(int)0);
-    }
-    case "getf_object_template":
-    {
-    com.robotraconteur.identifier.Identifier object_identifier=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"object_identifier"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_getf_object_template(object_identifier).ContinueWith(t => rr_async_adapter.EndTask<ObjectRecognitionTemplate>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    ObjectRecognitionTemplate rr_ret=this.obj.getf_object_template(object_identifier);
-    return MessageElementUtil.PackStructure("return",rr_ret);
-    }
-    case "getf_object_class_template":
-    {
-    com.robotraconteur.identifier.Identifier object_class=MessageElementUtil.UnpackStructure<com.robotraconteur.identifier.Identifier>(vectorptr_messageelement_util.FindElement(rr_m,"object_class"));
-    if (async_obj!=null)    {
-    rr_async_adapter.MakeAsync();
-    async_obj.async_getf_object_class_template(object_class).ContinueWith(t => rr_async_adapter.EndTask<ObjectRecognitionTemplate>(t,async_ret => MessageElementUtil.PackStructure("return",async_ret)));
-    return null;
-    }
-    ObjectRecognitionTemplate rr_ret=this.obj.getf_object_class_template(object_class);
-    return MessageElementUtil.PackStructure("return",rr_ret);
-    }
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override object GetSubObj(string name, string ind) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("");
-    }
-    public override void RegisterEvents(object rrobj1) {
-    obj=(ObjectRecognitionSensor)rrobj1;
-    }
-    public override void UnregisterEvents(object rrobj1) {
-    obj=(ObjectRecognitionSensor)rrobj1;
-    }
-    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void InitPipeServers(object rrobj1) {
-    obj=(ObjectRecognitionSensor)rrobj1;
-    obj.object_recognition_sensor_data=new Pipe<ObjectRecognitionSensorData>(innerskel.GetPipe("object_recognition_sensor_data"));
-    }
-    public override void InitCallbackServers(object rrobj1) {
-    obj=(ObjectRecognitionSensor)rrobj1;
-    }
-    public override void InitWireServers(object rrobj1) {
-    obj=(ObjectRecognitionSensor)rrobj1;
-    obj.device_clock_now=new Wire<com.robotraconteur.device.clock.DeviceTime>(innerskel.GetWire("device_clock_now"));
-    }
-    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override string RRType { get { return "com.robotraconteur.objectrecognition.ObjectRecognitionSensor"; } }
-}
-public class ObjectRecognitionSensor_default_impl : ObjectRecognitionSensor{
-    protected PipeBroadcaster<ObjectRecognitionSensorData> rrvar_object_recognition_sensor_data;
-    protected WireBroadcaster<com.robotraconteur.device.clock.DeviceTime> rrvar_device_clock_now;
-    public virtual com.robotraconteur.device.DeviceInfo device_info {get; set;} = default(com.robotraconteur.device.DeviceInfo);
-    public virtual ObjectRecognitionSensorInfo object_recognition_sensor_info {get; set;} = default(ObjectRecognitionSensorInfo);
-    public virtual com.robotraconteur.device.isoch.IsochInfo isoch_info {get; set;} = default(com.robotraconteur.device.isoch.IsochInfo);
-    public virtual uint isoch_downsample {get; set;} = default(uint);
-    public virtual RecognizedObjects capture_recognized_objects() {
-    throw new NotImplementedException();    }
-    public virtual object getf_param(string param_name) {
-    throw new NotImplementedException();    }
-    public virtual void setf_param(string param_name, object value_) {
-    throw new NotImplementedException();    }
-    public virtual ObjectRecognitionTemplate getf_object_template(com.robotraconteur.identifier.Identifier object_identifier) {
-    throw new NotImplementedException();    }
-    public virtual ObjectRecognitionTemplate getf_object_class_template(com.robotraconteur.identifier.Identifier object_class) {
-    throw new NotImplementedException();    }
-    public virtual Pipe<ObjectRecognitionSensorData> object_recognition_sensor_data {
-    get { return rrvar_object_recognition_sensor_data.Pipe;  }
-    set {
-    if (rrvar_object_recognition_sensor_data!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_object_recognition_sensor_data= new PipeBroadcaster<ObjectRecognitionSensorData>(value);
-    }
-    }
-    public virtual Wire<com.robotraconteur.device.clock.DeviceTime> device_clock_now {
-    get { return rrvar_device_clock_now.Wire;  }
-    set {
-    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_device_clock_now= new WireBroadcaster<com.robotraconteur.device.clock.DeviceTime>(value);
-    }
-    }
-}
-public static class RRExtensions{
-}
-}
-namespace com.robotraconteur.device.clock
-{
-public struct DeviceTime
-{
-    public com.robotraconteur.datetime.TimeSpec2 device_ts;
-    public com.robotraconteur.datetime.DateTimeUTC device_utc;
-    public ulong device_seqno;
-}
-
-[RobotRaconteurServiceObjectInterface()]
-public interface DeviceClock
-{
-    Wire<DeviceTime> device_clock_now{ get; set; }
-}
-
-}
-namespace com.robotraconteur.device.clock
-{
-public class com__robotraconteur__device__clockFactory : ServiceFactory
-{
-    public override string DefString()
-{
-    const string s="service com.robotraconteur.device.clock\n\nstdver 0.10\n\nimport com.robotraconteur.datetime\n\nusing com.robotraconteur.datetime.TimeSpec2\nusing com.robotraconteur.datetime.DateTimeUTC\n\npod DeviceTime\nfield TimeSpec2 device_ts\nfield DateTimeUTC device_utc\nfield uint64 device_seqno\nend\n\nobject DeviceClock\nwire DeviceTime device_clock_now [readonly,nolock]\nend\n\n";
-    return s;
-    }
-    public override string GetServiceName() {return "com.robotraconteur.device.clock";}
-    public DeviceTime_stub DeviceTime_stubentry;
-    public com__robotraconteur__device__clockFactory()
-{
-    DeviceTime_stubentry=new DeviceTime_stub(this);
-    }
-    public override IStructureStub FindStructureStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate structure stub");
-    }
-    public override IPodStub FindPodStub(string objecttype)
-    {
-    if (objecttype=="DeviceTime")    return DeviceTime_stubentry;
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override INamedArrayStub FindNamedArrayStub(string objecttype)
-    {
-    throw new DataTypeException("Cannot find appropriate pod stub");
-    }
-    public override ServiceStub CreateStub(WrappedServiceStub innerstub) {
-    string objecttype=innerstub.RR_objecttype.GetServiceDefinition().Name + "." + innerstub.RR_objecttype.Name;    string objshort;
-    if (CompareNamespace(objecttype, out objshort)) {
-    switch (objshort) {
-    case "DeviceClock":
-    return new DeviceClock_stub(innerstub);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objecttype).Item1;
-    return RobotRaconteurNode.s.GetServiceType(ext_service_type).CreateStub(innerstub);
-    }
-    throw new ServiceException("Could not create stub");
-    }
-    public override ServiceSkel CreateSkel(object obj) {
-    string objtype = RobotRaconteurNode.GetTypeString(ServiceSkelUtil.FindParentInterface(obj.GetType()));
-    string objshort;
-    if (CompareNamespace(objtype, out objshort)) {
-    switch(objshort) {
-    case "DeviceClock":
-    return new DeviceClock_skel((DeviceClock)obj);
-    default:
-    break;
-    }
-    } else {
-    string ext_service_type=RobotRaconteurNode.SplitQualifiedName(objtype).Item1;
-    return RobotRaconteurNode.s.GetServiceFactory(ext_service_type).CreateSkel(obj);
-    }
-    throw new ServiceException("Could not create skel");
-    }
-    public override RobotRaconteurException DownCastException(RobotRaconteurException rr_exp){
-    if (rr_exp==null) return rr_exp;
-    string rr_type=rr_exp.Error;
-    if (!rr_type.Contains(".")) return rr_exp;
-    string rr_stype;
-    if (CompareNamespace(rr_type, out rr_stype)) {
-    } else {
-    return RobotRaconteurNode.s.DownCastException(rr_exp); 
-    }
-    return rr_exp;
-    }
-}
-
-public class DeviceTime_stub : PodStub<DeviceTime> {
-    public DeviceTime_stub(com__robotraconteur__device__clockFactory d) {def=d;}
-    private com__robotraconteur__device__clockFactory def;
-    public override MessageElementNestedElementList PackPod(ref DeviceTime s1) {
-    using(vectorptr_messageelement m=new vectorptr_messageelement())
-    {
-    DeviceTime s = (DeviceTime)s1;
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.TimeSpec2>("device_ts",ref s.device_ts));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackPodToArray<com.robotraconteur.datetime.DateTimeUTC>("device_utc",ref s.device_utc));
-    MessageElementUtil.AddMessageElementDispose(m,MessageElementUtil.PackScalar<ulong>("device_seqno",s.device_seqno));
-    return new MessageElementNestedElementList(DataTypes.pod_t,"",m);
-    }
-    }
-    public override DeviceTime UnpackPod(MessageElementNestedElementList m) {
-    if (m == null ) throw new NullReferenceException("Pod must not be null");
-    using(vectorptr_messageelement mm=m.Elements)
-    {
-    DeviceTime s = new DeviceTime();
-    s.device_ts =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.TimeSpec2>(MessageElement.FindElement(mm,"device_ts"));
-    s.device_utc =MessageElementUtil.UnpackPodFromArray<com.robotraconteur.datetime.DateTimeUTC>(MessageElement.FindElement(mm,"device_utc"));
-    s.device_seqno =(MessageElementUtil.UnpackScalar<ulong>(MessageElement.FindElement(mm,"device_seqno")));
-    return s;
-    }
-    }
-    public override string TypeName { get { return "com.robotraconteur.device.clock.DeviceTime"; } }}
-
-public interface async_DeviceClock
-{
-}
-public class DeviceClock_stub : ServiceStub , DeviceClock, async_DeviceClock{
-    private Wire<DeviceTime> rr_device_clock_now;
-    public DeviceClock_stub(WrappedServiceStub innerstub) : base(innerstub) {
-    rr_device_clock_now=new Wire<DeviceTime>(innerstub.GetWire("device_clock_now"));
-    }
-    public override void DispatchEvent(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    }
-    public Wire<DeviceTime> device_clock_now {
-    get { return rr_device_clock_now;  }
-    set { throw new InvalidOperationException();}
-    }
-    public override MessageElement CallbackCall(string rr_membername, vectorptr_messageelement rr_m) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-}
-public class DeviceClock_skel : ServiceSkel {
-    protected DeviceClock obj;
-    protected async_DeviceClock async_obj;
-    public DeviceClock_skel(object o) : base(o)    {
-    obj=(DeviceClock)o;
-    async_obj = o as async_DeviceClock;
-    }
-    public override void ReleaseCastObject() { 
-    obj=null;
-    async_obj=null;
-    base.ReleaseCastObject();
-    }
-    public override MessageElement CallGetProperty(string membername, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void CallSetProperty(string membername, MessageElement m, WrappedServiceSkelAsyncAdapter async_adapter) {
-    switch (membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override MessageElement CallFunction(string rr_membername, vectorptr_messageelement rr_m, WrappedServiceSkelAsyncAdapter rr_async_adapter) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override object GetSubObj(string name, string ind) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("");
-    }
-    public override void RegisterEvents(object rrobj1) {
-    obj=(DeviceClock)rrobj1;
-    }
-    public override void UnregisterEvents(object rrobj1) {
-    obj=(DeviceClock)rrobj1;
-    }
-    public override object GetCallbackFunction(uint rr_endpoint, string rr_membername) {
-    switch (rr_membername) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member not found");
-    }
-    public override void InitPipeServers(object rrobj1) {
-    obj=(DeviceClock)rrobj1;
-    }
-    public override void InitCallbackServers(object rrobj1) {
-    obj=(DeviceClock)rrobj1;
-    }
-    public override void InitWireServers(object rrobj1) {
-    obj=(DeviceClock)rrobj1;
-    obj.device_clock_now=new Wire<DeviceTime>(innerskel.GetWire("device_clock_now"));
-    }
-    public override WrappedArrayMemoryDirector GetArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedMultiDimArrayMemoryDirector GetMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodArrayMemoryDirector GetPodArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedPodMultiDimArrayMemoryDirector GetPodMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedArrayMemoryDirector GetNamedArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override WrappedNamedMultiDimArrayMemoryDirector GetNamedMultiDimArrayMemory(string name) {
-    switch (name) {
-    default:
-    break;
-    }
-    throw new MemberNotFoundException("Member Not Found");
-    }
-    public override string RRType { get { return "com.robotraconteur.device.clock.DeviceClock"; } }
-}
-public class DeviceClock_default_impl : DeviceClock{
-    protected WireBroadcaster<DeviceTime> rrvar_device_clock_now;
-    public virtual Wire<DeviceTime> device_clock_now {
-    get { return rrvar_device_clock_now.Wire;  }
-    set {
-    if (rrvar_device_clock_now!=null) throw new InvalidOperationException("Pipe already set");
-    rrvar_device_clock_now= new WireBroadcaster<DeviceTime>(value);
-    }
-    }
-}
-public static class RRExtensions{
 }
 }
