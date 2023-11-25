@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,18 +12,37 @@
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
     <RepositoryUrl>https://github.com/robotraconteur/RobotRaconteurNET.Companion</RepositoryUrl>
-    <PackageVersion>0.2.0--dev2</PackageVersion>
+    <PackageVersion>0.2.0--dev8</PackageVersion>
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Converters\" />
+    <Compile Include="Converters\*.cs" />
+    <Compile Include="Util\*.cs" />
+    <Compile Include="InfoParser\*.cs" />
+    <Compile Include="Robot\*.cs" />    
+  </ItemGroup>
+
+  <ItemGroup>
+    <RobotRaconteurGenCSharp Include="robdef/group1/*.robdef">
+      <Pack>true</Pack>
+      <PackagePath>content\resources\robdef\</PackagePath>
+    </RobotRaconteurGenCSharp>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="robdef/group1/*.robdef">
+      <Pack>true</Pack>
+      <PackagePath>content\resources\robdef\group1</PackagePath>
+    </Content>
+    <None Include="targets\RobotRaconteurNET.Companion.props" Pack="true" PackagePath="build\netstandard2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="GeneralRoboticsToolboxNET" Version="0.1.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="Mono.Posix.NETStandard" Version="5.20.1-preview" />
-    <PackageReference Include="RobotRaconteurNET" Version="0.18.1--dev6756595317" />
+    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+    <PackageReference Include="RobotRaconteurNET" Version="0.18.1" />
     <PackageReference Include="YamlDotNet" Version="13.7.1" />
   </ItemGroup>
 

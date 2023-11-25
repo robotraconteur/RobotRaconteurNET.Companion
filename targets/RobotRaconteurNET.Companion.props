@@ -1,0 +1,5 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <RobotRaconteurGenIncludePath Include="$(MSBuildThisFileDirectory)../../content/resources/robdef/group1" />
+  </ItemGroup>
+</Project>
