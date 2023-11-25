@@ -13,6 +13,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - uses: actions/setup-dotnet@v3
         id: dotnet
         with:
@@ -21,10 +23,18 @@ jobs:
         run: dotnet restore
       - name: dotnet build
         run: dotnet build /p:Platform="Any Cpu" /p:Configuration=Release
+      - name: Archive nupkg files
+        uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: |
+            **/*.nupkg
   build-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - name: Setup ppa
         run: |
           sudo apt-get install software-properties-common -y
