@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - created
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        id: dotnet
+        with:
+          dotnet-version: "6.0.x"
+      - name: dotnet build
+        run: dotnet build --configuration Release
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup ppa
+        run: |
+          apt-get install software-properties-common -y
+          sudo add-apt-repository ppa:robotraconteur/ppa -y
+      - name: Install RR native packages
+        run: sudo apt-get install robotraconteur-dev librobotraconteur-net-native
+      - uses: actions/setup-dotnet@v3
+        id: dotnet
+        with:
+          dotnet-version: "6.0.x"
+      - name: dotnet build
+        run: dotnet build --configuration Release
+          
