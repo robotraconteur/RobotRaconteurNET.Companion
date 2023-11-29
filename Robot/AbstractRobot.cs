@@ -1907,5 +1907,10 @@ namespace RobotRaconteur.Companion.Robot
         {
             throw new NotImplementedException();
         }
+
+        public bool TryNext(out TrajectoryStatus value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
