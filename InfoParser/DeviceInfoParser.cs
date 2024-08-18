@@ -41,6 +41,8 @@ namespace RobotRaconteur.Companion.InfoParser
         public YamlNamedPose device_origin_pose { get; set; }
         public Dictionary<string, YamlVarValue> extended { get; set; }
 
+        public List<YamlIdentifier> tags { get; set; }
+
         public void CopyTo(com.robotraconteur.device.DeviceInfo device_info)
         {
             device_info.device = device?.ToRRInfo();
@@ -56,6 +58,15 @@ namespace RobotRaconteur.Companion.InfoParser
             device_info.implemented_types = implemented_types?.Select(x => x ?? "").ToList();
             device_info.device_origin_pose = device_origin_pose?.ToRRInfo();
             device_info.extended = extended?.ToDictionary(x => x.Key, x => x.Value.value);
+
+            if (tags != null)
+            {
+                if (extended == null )
+                {
+                    device_info.extended = new Dictionary<string, object>();
+                }
+                device_info.extended["tags"] = tags.Select(x => x.ToRRInfo()).ToList();
+            }
         }
 
         public com.robotraconteur.device.DeviceInfo ToRRInfo()
