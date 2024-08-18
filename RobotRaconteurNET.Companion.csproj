@@ -42,7 +42,7 @@
     <PackageReference Include="GeneralRoboticsToolboxNET" Version="0.1.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
-    <PackageReference Include="RobotRaconteurNET" Version="0.18.1" />
+    <PackageReference Include="RobotRaconteurNET" Version="1.2.2" />
     <PackageReference Include="YamlDotNet" Version="13.7.1" />
   </ItemGroup>
 
