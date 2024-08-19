@@ -2,6 +2,7 @@
 using com.robotraconteur.identifier;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Text;
 
 namespace RobotRaconteur.Companion.Util
@@ -37,6 +38,11 @@ namespace RobotRaconteur.Companion.Util
             TryAddIdentifier(o, "model", info.model);
             TryAddString(o, "serial_number", info.serial_number);
             TryAddString(o, "user_description", info.user_description);
+            List<Identifier> tags = info?.extended?.ContainsKey("tags") ?? false ? (List<Identifier>)info.extended["tags"] : null;
+            if (tags != null)
+            {
+                o.Add("tags", string.Join(",",tags.ConvertAll(x => IdentifierUtil.IdentifierToString(x))));
+            }
             return o;
         }
     }
