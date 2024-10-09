@@ -24,7 +24,7 @@ jobs:
       - name: dotnet build
         run: dotnet build /p:Platform="Any Cpu" /p:Configuration=Release
       - name: Archive nupkg files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: nupkg
           path: |
