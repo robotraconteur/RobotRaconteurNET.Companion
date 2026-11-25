@@ -78,7 +78,7 @@ namespace RobotRaconteur.Companion.Robot
 
             for (int i=0; i<joint_count; i++)
             {
-                var j = robot_info.joint_info[i];
+                var j = robot_info.joint_info[(int)chain.joint_numbers[i]];
                 switch(j.joint_type)
                 {
                     case com.robotraconteur.robotics.joints.JointType.revolute:

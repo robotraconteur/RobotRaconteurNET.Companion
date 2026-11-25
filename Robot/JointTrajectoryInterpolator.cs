@@ -183,7 +183,7 @@ namespace RobotRaconteur.Companion.Robot
 
             joint_pos = ret;
             current_waypoint = 0;
-            for (int i=0; i<joint_splines.Count; i++)
+            for (int i=0; i<waypoint_times.Length; i++)
             {
                 if (waypoint_times[i] > time)
                 {

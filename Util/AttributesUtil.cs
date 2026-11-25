@@ -29,7 +29,7 @@ namespace RobotRaconteur.Companion.Util
             return false;
         }
 
-        public static Dictionary<string,object> GetDefaultServiceAtributesFromDeviceInfo(DeviceInfo info)
+        public static Dictionary<string,object> GetDefaultServiceAttributesFromDeviceInfo(DeviceInfo info)
         {
             var o = new Dictionary<string, object>();
             TryAddIdentifier(o,"device", info.device);

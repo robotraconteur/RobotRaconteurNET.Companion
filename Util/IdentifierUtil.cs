@@ -140,9 +140,9 @@ namespace RobotRaconteur.Companion.Util
 
         public static Identifier StringToIdentifier(string string_id)
         {
-            const string name_regex = "(?:[a-zA-Z](?:\\w*[a-zA-Z0-9])?)(?:\\.[a-zA-Z](?:\\w*[a-zA-Z0-9])?)+";
+            const string name_regex = "(?:[a-zA-Z](?:\\w*[a-zA-Z0-9])?)(?:\\.[a-zA-Z](?:\\w*[a-zA-Z0-9])?)*";
             const string uuid_regex = @"\{?[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}?";
-            string identifier_regex = $"(?:({name_regex})\\|({uuid_regex}))|({name_regex})|({uuid_regex})";
+            string identifier_regex = $"^(?:(?:({name_regex})\\|({uuid_regex}))|({name_regex})|({uuid_regex}))\\z";
             var r = new Regex(identifier_regex);
             var res = r.Match(string_id);
             if (!res.Success)

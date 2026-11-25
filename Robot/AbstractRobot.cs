@@ -222,7 +222,7 @@ namespace RobotRaconteur.Companion.Robot
         protected int _update_period = 10;
         protected virtual void _loop_thread_func()
         { 
-            // Use a spin wait loop to get higher timing accurancy
+            // Use a spin wait loop to get higher timing accuracy
             SpinWait spin_wait = new SpinWait();
 
             long next_wait = _stopwatch.ElapsedMilliseconds;
@@ -491,8 +491,8 @@ namespace RobotRaconteur.Companion.Robot
             a_rob_state.joint_velocity_command = rob_state.joint_velocity_command;
             a_rob_state.kin_chain_tcp = rob_state.kin_chain_tcp;
             a_rob_state.trajectory_running = rob_state.trajectory_running;
-            a_rob_state.joint_position_units = Enumerable.Repeat<byte>((byte)JointPositionUnits.radian, 7).ToArray();
-            a_rob_state.joint_effort_units = Enumerable.Repeat<byte>((byte)JointEffortUnits.newton_meter, 7).ToArray();
+            a_rob_state.joint_position_units = Enumerable.Repeat<byte>((byte)JointPositionUnits.radian, _joint_count).ToArray();
+            a_rob_state.joint_effort_units = Enumerable.Repeat<byte>((byte)JointEffortUnits.newton_meter, _joint_count).ToArray();
             a_rob_state.trajectory_running = _trajectory_valid;
             a_rob_state.trajectory_time = _trajectory_current_time;
             a_rob_state.trajectory_max_time = _trajectory_max_time;
@@ -776,10 +776,10 @@ namespace RobotRaconteur.Companion.Robot
                                         pos_cmd_j[i] = pos_cmd.command[i] * (Math.PI / 180.0);
                                         break;
                                     case JointPositionUnits.ticks_rot:
-                                        pos_cmd_j[i] = (pos_cmd.command[i] / (double)(2 ^ 20)) * (Math.PI * 2.0);
+                                        pos_cmd_j[i] = (pos_cmd.command[i] / (double)(1 << 20)) * (Math.PI * 2.0);
                                         break;
                                     case JointPositionUnits.nanoticks_rot:
-                                        pos_cmd_j[i] = (pos_cmd.command[i] / (double)(2 ^ 20) * 1e9) * (Math.PI * 2.0);
+                                        pos_cmd_j[i] = (pos_cmd.command[i] / (double)(1 << 20) * 1e9) * (Math.PI * 2.0);
                                         break;
                                     default:
                                         {
@@ -844,10 +844,10 @@ namespace RobotRaconteur.Companion.Robot
                                         vel_cmd_j[i] = vel_cmd.command[i] * (Math.PI / 180.0);
                                         break;
                                     case JointVelocityUnits.ticks_rot_second:
-                                        vel_cmd_j[i] = (vel_cmd.command[i] / (double)(2 ^ 20)) * (Math.PI * 2.0);
+                                        vel_cmd_j[i] = (vel_cmd.command[i] / (double)(1 << 20)) * (Math.PI * 2.0);
                                         break;
                                     case JointVelocityUnits.nanoticks_rot_second:
-                                        vel_cmd_j[i] = (vel_cmd.command[i] / (double)(2 ^ 20) * 1e9) * (Math.PI * 2.0);
+                                        vel_cmd_j[i] = (vel_cmd.command[i] / (double)(1 << 20) * 1e9) * (Math.PI * 2.0);
                                         break;
                                     default:
                                         {

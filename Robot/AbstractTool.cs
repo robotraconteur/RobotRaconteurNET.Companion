@@ -32,11 +32,14 @@ namespace RobotRaconteur.Companion.Robot
         public AbstractTool(ToolInfo tool_info)
         {
             _tool_info = tool_info;
-            _tool_uuid = tool_info.device_info.device.uuid;
             this.tool_info = tool_info;
             if (tool_info != null)
             {
                 this.device_info = tool_info.device_info;
+                if (tool_info.device_info?.device != null)
+                {
+                    _tool_uuid = tool_info.device_info.device.uuid;
+                }
             }
         }
         public virtual void Dispose()
@@ -74,7 +77,7 @@ namespace RobotRaconteur.Companion.Robot
 
         protected virtual void _loop_thread_func(object obj)
         {
-            // Use a spin wait loop to get higher timing accurancy
+            // Use a spin wait loop to get higher timing accuracy
             SpinWait spin_wait = new SpinWait();
 
             long next_wait = _stopwatch.ElapsedMilliseconds;

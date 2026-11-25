@@ -34,7 +34,7 @@ namespace RobotRaconteur.Companion.InfoParser
         public List<YamlDeviceOption> options { get; set; }
         public List<YamlDeviceCapability> capabilities { get; set; }
         public string serial_number { get; set; }
-        public List<YamlDeviceClass> device_classes;
+        public List<YamlDeviceClass> device_classes { get; set; }
         public string user_description { get; set; }
         public YamlResourceIdentifier description_resource { get; set; }
         public List<string> implemented_types { get; set; }
@@ -203,7 +203,21 @@ namespace RobotRaconteur.Companion.InfoParser
 
         public static Tuple<DeviceInfo, LocalIdentifierLocks> LoadDeviceInfoYamlWithIdentifierLocks(YamlDeviceInfo yaml_device_info, string device_name_override = null)
         {
-            throw new NotImplementedException();
+            var device_info = yaml_device_info.ToRRInfo();
+            if (device_name_override != null)
+            {
+                device_info.device = IdentifierUtil.CreateIdentifierFromName(device_name_override);
+            }
+            LocalIdentifierLocks ident_locks = null;
+            if (device_info.device != null
+                && !String.IsNullOrEmpty(device_info.device.name)
+                && device_info.device.uuid.uuid_bytes.All(x => x == 0))
+            {
+                var l = LocalIdentifiersManager.GetIdentifierForNameAndLock("device", device_info.device.name);
+                device_info.device.uuid = l.Identifier.uuid;
+                ident_locks = new LocalIdentifierLocks(l);
+            }
+            return Tuple.Create<DeviceInfo, LocalIdentifierLocks>(device_info, ident_locks);
         }        
     }
 

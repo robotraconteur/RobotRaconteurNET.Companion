@@ -47,15 +47,44 @@ namespace RobotRaconteur.Companion.Util
 
             var node_dirs = RobotRaconteurNode.s.GetNodeDirectories();
 
+            // Same scope as the C++ and Python companions: identifiers/<category>/<name>
             var categories = new vectorstring();
+            categories.Add("identifiers");
             categories.Add(category);
+
+            // Migrate a UUID stored by older versions of this library under <category>/<name>
+            // (without the "identifiers" prefix) so existing devices keep their identifier
+            MigrateLegacyIdentifier(node_dirs, category, name);
 
             var p = RobotRaconteurNET.GetUuidForNameAndLock(node_dirs, name, categories);
 
             var ret_id = IdentifierUtil.CreateIdentifier(name, p.uuid.ToString("D"));
 
             return new LocalIdentifierLock(ret_id, p.fd);            
-        }        
+        }
+
+        static void MigrateLegacyIdentifier(NodeDirectories node_dirs, string category, string name)
+        {
+            try
+            {
+                string config_dir = node_dirs.user_config_dir.string_();
+                string new_path = Path.Combine(config_dir, "identifiers", category, name);
+                string legacy_path = Path.Combine(config_dir, category, name);
+                if (File.Exists(new_path) || !File.Exists(legacy_path))
+                {
+                    return;
+                }
+                Directory.CreateDirectory(Path.GetDirectoryName(new_path));
+                File.Copy(legacy_path, new_path, false);
+            }
+            catch (IOException)
+            {
+                // Best effort: if the legacy identifier cannot be migrated, a new UUID is generated
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+        }
     }
 
     public class LocalIdentifierLock : IDisposable
